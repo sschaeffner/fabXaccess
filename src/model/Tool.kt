@@ -9,15 +9,3 @@ data class Tool(
     val toolState: ToolState,
     val wikiLink: String
 )
-
-
-enum class ToolType {
-    UNLOCK,
-    KEEP
-}
-
-enum class ToolState {
-    GOOD,
-    MEDIUM,
-    BAD
-}

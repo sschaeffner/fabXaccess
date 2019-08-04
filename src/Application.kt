@@ -11,6 +11,18 @@ import io.ktor.features.*
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+val user1 = User(
+    1,
+    "Herr Tester",
+    "tester",
+    "1234",
+    false,
+    null,
+    "0x11223344556677"
+)
+
+val userList = listOf(user1)
+
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
@@ -20,23 +32,16 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
+        route("/api") {
+            route("/user") {
+                get("") {
+                    call.respond(userList)
+                }
 
-        get("/json/gson") {
-            call.respond(mapOf("hello" to "world"))
-        }
-
-        get("/api/user/1") {
-            call.respond(User(
-                1,
-                "Herr Tester",
-                "tester",
-                "1234",
-                false,
-                null,
-                "0x11223344556677"))
+                get("/{id}") {
+                    call.respond(user1)
+                }
+            }
         }
     }
 }
