@@ -21,41 +21,7 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.IllegalArgumentException
 
-fun main(args: Array<String>) {
-
-    transaction(DbHandler.db) {
-        addLogger(StdOutSqlLogger)
-
-        val user1 = User.new {
-            name = "Tester 1"
-            wikiName = "wikiTester1"
-            phoneNumber = "0049 123 456"
-            locked = false
-            lockedReason = ""
-            cardId = "11223344556677"
-        }
-
-        val device1 = Device.new {
-            name = "Device 1"
-            mac = "aaffeeaaffee"
-            secret = "someSecret"
-            bgImageUrl = "http://bla"
-        }
-
-        val tool1 = Tool.new {
-            device = device1
-            name = "Tool 1"
-            pin = 0
-            toolType = ToolType.UNLOCK
-            toolState = ToolState.GOOD
-            wikiLink = ""
-        }
-
-        user1.permissions = SizedCollection(listOf(tool1))
-    }
-
-    io.ktor.server.netty.EngineMain.main(args)
-}
+fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
 val userService = UserService()
 val deviceService =  DeviceService()
@@ -64,6 +30,8 @@ val toolService = ToolService()
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+    if (!testing) addTestContent()
+
     install(ContentNegotiation) {
         jackson {}
     }
@@ -157,5 +125,38 @@ fun Application.module(testing: Boolean = false) {
                 }
             }
         }
+    }
+}
+
+fun addTestContent() {
+    transaction(DbHandler.db) {
+        addLogger(StdOutSqlLogger)
+
+        val user1 = User.new {
+            name = "Tester 1"
+            wikiName = "wikiTester1"
+            phoneNumber = "0049 123 456"
+            locked = false
+            lockedReason = ""
+            cardId = "11223344556677"
+        }
+
+        val device1 = Device.new {
+            name = "Device 1"
+            mac = "aaffeeaaffee"
+            secret = "someSecret"
+            bgImageUrl = "http://bla"
+        }
+
+        val tool1 = Tool.new {
+            device = device1
+            name = "Tool 1"
+            pin = 0
+            toolType = ToolType.UNLOCK
+            toolState = ToolState.GOOD
+            wikiLink = ""
+        }
+
+        user1.permissions = SizedCollection(listOf(tool1))
     }
 }
