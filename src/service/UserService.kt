@@ -1,6 +1,7 @@
 package cloud.fabx.service
 
 import cloud.fabx.db.DbHandler.dbQuery
+import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
 import cloud.fabx.model.Tool
@@ -30,6 +31,17 @@ class UserService {
         }
 
         toUserDto(newUser)
+    }
+
+    suspend fun editUser(id: Int, editUser: EditUserDto) = dbQuery {
+        val user = User.findById(id) ?: throw IllegalArgumentException("User with id $id does not exist")
+
+        editUser.name?.let { user.name = it }
+        editUser.wikiName?.let { user.wikiName = it }
+        editUser.phoneNumber?.let { user.phoneNumber = it }
+        editUser.locked?.let { user.locked = it }
+        editUser.lockedReason?.let { user.lockedReason = it }
+        editUser.cardId?.let { user.cardId = it }
     }
 
     suspend fun addUserPermission(userId: Int, toolId: Int) = dbQuery {

@@ -67,6 +67,21 @@ fun Application.module(testing: Boolean = false) {
                     }
                 }
 
+                put("/{id}") {
+                    val user: UserDto? = call.parameters["id"]?.toInt()?.let {
+                        userService.getUserById(it)
+                    }
+
+                    if (user == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                    } else {
+                        val editUser = call.receive<EditUserDto>()
+                        userService.editUser(user.id, editUser)
+
+                        call.respond(HttpStatusCode.OK)
+                    }
+                }
+
                 post("/{id}/permissions") {
                     val userPermission = call.receive<UserPermissionDto>()
                     userService.addUserPermission(userPermission.userId, userPermission.toolId)

@@ -6,7 +6,7 @@ data class UserDto(
     val wikiName: String,
     val phoneNumer: String,
     val locked: Boolean,
-    val lockedReason: String?,
+    val lockedReason: String,
     val cardId: String,
 
     val permissions: List<ToolDto>
