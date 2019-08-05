@@ -1,6 +1,7 @@
 package cloud.fabx.service
 
 import cloud.fabx.db.DbHandler.dbQuery
+import cloud.fabx.dto.EditToolDto
 import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
 import cloud.fabx.model.Device
@@ -31,6 +32,21 @@ class ToolService {
 
             toToolDto(newTool)
         }
+    }
+
+    suspend fun editTool(id: Int, editTool: EditToolDto) = dbQuery {
+        val tool = Tool.findById(id) ?: throw IllegalArgumentException("Tool with id $id does not exist")
+
+        editTool.deviceId?.let {deviceId ->
+            Device.findById(deviceId)?.let {device ->
+                tool.device = device
+            }
+        }
+        editTool.name?.let { tool.name = it }
+        editTool.pin?.let { tool.pin = it }
+        editTool.toolType?.let { tool.toolType = it }
+        editTool.toolState?.let { tool.toolState = it }
+        editTool.wikiLink?.let { tool.wikiLink = it }
     }
 
     fun toToolDto(tool: Tool): ToolDto {

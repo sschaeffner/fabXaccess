@@ -157,6 +157,21 @@ fun Application.module(testing: Boolean = false) {
                     }
                 }
 
+                put("/{id}") {
+                    val tool: ToolDto? = call.parameters["id"]?.toInt()?.let {
+                        toolService.getToolById(it)
+                    }
+
+                    if (tool == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                    } else {
+                        val editTool = call.receive<EditToolDto>()
+                        toolService.editTool(tool.id, editTool)
+
+                        call.respond(HttpStatusCode.OK)
+                    }
+                }
+
                 post("") {
                     val tool = call.receive<NewToolDto>()
                     call.respond(toolService.createNewTool(tool))
