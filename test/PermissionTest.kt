@@ -205,11 +205,100 @@ class PermissionTest: CommonTest() {
                 assertEquals(1, userDto.id)
                 assertEquals(0, userDto.permissions.size)
             }
-
-
-
         }
 
         Unit
     }
+
+    @Test
+    fun testClientApiPermission() = runBlocking {
+        withTestApplication({ module(testing = true) }) {
+
+            val mapper = jacksonObjectMapper()
+
+            // CREATE USER
+            handleRequest(HttpMethod.Post, "/api/user") {
+                setBody(mapper.writeValueAsString(
+                    NewUserDto(
+                        "New User 1",
+                        "newUserWikiName",
+                        "123456",
+                        "aabbccdd"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val userDto = mapper.readValue<UserDto>(response.content!!)
+                assertEquals(1, userDto.id)
+            }
+
+            // CREATE DEVICE
+            handleRequest(HttpMethod.Post, "/api/device") {
+                setBody(mapper.writeValueAsString(
+                    NewDeviceDto(
+                        "New Device 1",
+                        "aaffeeaaffee",
+                        "newSecret",
+                        "http://bgurl"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
+                assertEquals(1, deviceDto.id)
+            }
+
+            // CREATE TOOL
+            handleRequest(HttpMethod.Post, "/api/tool") {
+                setBody(
+                    mapper.writeValueAsString(
+                        NewToolDto(
+                            1,
+                            "New Tool 1",
+                            0,
+                            ToolType.UNLOCK,
+                            ToolState.GOOD,
+                            "http://wikiurl"
+                        )
+                    )
+                )
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+                assertEquals(1, toolDto.id)
+            }
+
+            // ADD PERMISSION
+            handleRequest(HttpMethod.Post, "/api/user/1/permissions") {
+                setBody(
+                    mapper.writeValueAsString(
+                        UserPermissionDto(
+                            1,
+                            1
+                        )
+                    )
+                )
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+           handleRequest(HttpMethod.Get, "/clientApi/1/aabbccdd").apply {
+               assertEquals(HttpStatusCode.OK, response.status())
+
+               val toolIds = mapper.readValue<List<Int>>(response.content!!)
+               assertEquals(1, toolIds.size)
+               assertEquals(1, toolIds[0])
+           }
+        }
+
+        Unit
+    }
+
 }

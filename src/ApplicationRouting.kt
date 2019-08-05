@@ -137,4 +137,15 @@ fun Route.routes() {
             }
         }
     }
+
+    route("/clientApi") {
+        get("/{deviceId}/{cardId}") {
+            val deviceId = call.parameters["deviceId"]!!.toInt()
+            val cardId = call.parameters["cardId"]!!
+
+            val toolsWithPermission = permissionService.getPermissionsForCardId(deviceId, cardId)
+
+            call.respond(toolsWithPermission)
+        }
+    }
 }

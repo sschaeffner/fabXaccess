@@ -11,7 +11,7 @@ object Users: IntIdTable() {
     val phoneNumber = varchar("phoneNumber", 64)
     val locked = bool("locked")
     val lockedReason = varchar("lockedReason", 256)
-    val cardId = varchar("cardId", 16)
+    val cardId = varchar("cardId", 16).uniqueIndex("cardIdUniqueIndex")
 }
 
 class User(id: EntityID<Int>): IntEntity(id) {

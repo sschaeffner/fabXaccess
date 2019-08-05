@@ -3,6 +3,7 @@ package cloud.fabx
 import cloud.fabx.db.DbHandler
 import cloud.fabx.model.*
 import cloud.fabx.service.DeviceService
+import cloud.fabx.service.PermissionService
 import cloud.fabx.service.ToolService
 import cloud.fabx.service.UserService
 import com.fasterxml.jackson.core.JsonProcessingException
@@ -24,6 +25,7 @@ fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 val userService = UserService()
 val deviceService =  DeviceService()
 val toolService = ToolService()
+val permissionService = PermissionService()
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
