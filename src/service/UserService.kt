@@ -3,9 +3,13 @@ package cloud.fabx.service
 import cloud.fabx.db.DbHandler.dbQuery
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
+import cloud.fabx.model.Tool
 import cloud.fabx.model.User
+import org.jetbrains.exposed.sql.SizedCollection
 
 class UserService {
+
+    private val toolService = ToolService()
 
     suspend fun getAllUsers(): List<UserDto> = dbQuery {
         User.all().map{ toUserDto(it) }.toCollection(ArrayList())
@@ -30,6 +34,20 @@ class UserService {
         return toUserDto(userInDb)
     }
 
+    suspend fun addUserPermission(userId: Int, toolId: Int) = dbQuery {
+        val user = User.findById(userId)
+        val tool = Tool.findById(toolId)
+
+        user?.let { userIt ->
+            tool?.let { toolIt ->
+                val newPermissions = userIt.permissions.toCollection(ArrayList())
+                newPermissions.add(toolIt)
+
+                user.permissions = SizedCollection(newPermissions)
+            }
+        }
+    }
+
     private fun toUserDto(user: User): UserDto {
         return UserDto(
             user.id.value,
@@ -38,7 +56,8 @@ class UserService {
             user.phoneNumber,
             user.locked,
             user.lockedReason,
-            user.cardId
+            user.cardId,
+            user.permissions.map { toolService.toToolDto(it) }.toCollection(ArrayList())
         )
     }
 }

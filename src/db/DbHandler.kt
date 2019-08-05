@@ -2,6 +2,7 @@ package cloud.fabx.db
 
 import cloud.fabx.model.Devices
 import cloud.fabx.model.Tools
+import cloud.fabx.model.UserPermissions
 import cloud.fabx.model.Users
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,6 +22,7 @@ object DbHandler {
             SchemaUtils.create(Users)
             SchemaUtils.create(Devices)
             SchemaUtils.create(Tools)
+            SchemaUtils.create(UserPermissions)
         }
 
         db

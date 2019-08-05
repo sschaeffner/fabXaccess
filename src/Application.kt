@@ -14,6 +14,7 @@ import io.ktor.http.*
 import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.request.receive
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -23,7 +24,7 @@ fun main(args: Array<String>) {
     transaction(DbHandler.db) {
         addLogger(StdOutSqlLogger)
 
-        User.new {
+        val user1 = User.new {
             name = "Tester 1"
             wikiName = "wikiTester1"
             phoneNumber = "0049 123 456"
@@ -32,20 +33,22 @@ fun main(args: Array<String>) {
             cardId = "11223344556677"
         }
 
-        Device.new {
+        val device1 = Device.new {
             name = "Device 1"
             mac = "aaffeeaaffee"
             secret = "someSecret"
             bgImageUrl = "http://bla"
         }
 
-        Tool.new {
+        val tool1 = Tool.new {
             name = "Tool 1"
             pin = 0
             toolType = ToolType.UNLOCK
             toolState = ToolState.GOOD
             wikiLink = ""
         }
+
+        user1.permissions = SizedCollection(listOf(tool1))
     }
 
     io.ktor.server.netty.EngineMain.main(args)
@@ -85,6 +88,12 @@ fun Application.module(testing: Boolean = false) {
                     } else {
                         call.respond(HttpStatusCode.NotFound)
                     }
+                }
+
+                post("/{id}/permissions") {
+                    val userPermission = call.receive<NewUserPermissionDto>()
+                    userService.addUserPermission(userPermission.userId, userPermission.toolId)
+                    call.respond(HttpStatusCode.OK)
                 }
 
                 post("") {

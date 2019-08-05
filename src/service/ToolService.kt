@@ -29,7 +29,7 @@ class ToolService {
         return toToolDto(toolInDb)
     }
 
-    private fun toToolDto(tool: Tool): ToolDto {
+    fun toToolDto(tool: Tool): ToolDto {
         return ToolDto(
             tool.id.value,
             tool.name,
