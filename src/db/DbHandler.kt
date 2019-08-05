@@ -29,7 +29,7 @@ object DbHandler {
     }
 
     suspend fun <T> dbQuery(block: () -> T) = withContext(Dispatchers.IO) {
-            transaction {
+            transaction(db) {
                 block()
             }
         }

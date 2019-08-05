@@ -4,6 +4,7 @@ import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 
 data class NewToolDto (
+    val deviceId: Int,
     val name: String,
     val pin: Int,
     val toolType: ToolType,

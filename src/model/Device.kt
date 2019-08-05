@@ -19,4 +19,6 @@ class Device(id: EntityID<Int>): IntEntity(id) {
     var mac by Devices.mac
     var secret by Devices.secret
     var bgImageUrl by Devices.bgImageUrl
+
+    val tools by Tool referrersOn Tools.device
 }

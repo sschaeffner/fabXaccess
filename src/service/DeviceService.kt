@@ -7,6 +7,8 @@ import cloud.fabx.model.Device
 
 class DeviceService {
 
+    private val toolService = ToolService()
+
     suspend fun getAllDevices(): List<DeviceDto> = dbQuery {
         Device.all().map{ toDeviceDto(it) }.toCollection(ArrayList())
     }
@@ -15,17 +17,15 @@ class DeviceService {
         Device.findById(id)?.let { toDeviceDto(it) }
     }
 
-    suspend fun createNewDevice(device: NewDeviceDto): DeviceDto {
-        val deviceInDb = dbQuery {
-            Device.new {
-                name = device.name
-                mac = device.mac
-                secret = device.secret
-                bgImageUrl = device.bgImageUrl
-            }
+    suspend fun createNewDevice(device: NewDeviceDto): DeviceDto = dbQuery {
+        val newDevice = Device.new {
+            name = device.name
+            mac = device.mac
+            secret = device.secret
+            bgImageUrl = device.bgImageUrl
         }
 
-        return toDeviceDto(deviceInDb)
+        toDeviceDto(newDevice)
     }
 
     private fun toDeviceDto(device: Device): DeviceDto {
@@ -34,7 +34,8 @@ class DeviceService {
             device.name,
             device.mac,
             device.secret,
-            device.bgImageUrl
+            device.bgImageUrl,
+            device.tools.map { toolService.toToolDto(it) }.toCollection(ArrayList())
         )
     }
 }

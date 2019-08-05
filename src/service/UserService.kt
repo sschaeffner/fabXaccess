@@ -19,19 +19,17 @@ class UserService {
         User.findById(id)?.let { toUserDto(it) }
     }
 
-    suspend fun createNewUser(user: NewUserDto): UserDto {
-        val userInDb = dbQuery {
-            User.new {
-                name = user.name
-                wikiName = user.wikiName
-                phoneNumber = user.phoneNumber
-                locked = false
-                lockedReason = ""
-                cardId = user.cardId
-            }
+    suspend fun createNewUser(user: NewUserDto): UserDto = dbQuery {
+        val newUser = User.new {
+            name = user.name
+            wikiName = user.wikiName
+            phoneNumber = user.phoneNumber
+            locked = false
+            lockedReason = ""
+            cardId = user.cardId
         }
 
-        return toUserDto(userInDb)
+        toUserDto(newUser)
     }
 
     suspend fun addUserPermission(userId: Int, toolId: Int) = dbQuery {

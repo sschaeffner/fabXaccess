@@ -14,10 +14,12 @@ import io.ktor.http.*
 import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.request.receive
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.lang.IllegalArgumentException
 
 fun main(args: Array<String>) {
 
@@ -41,6 +43,7 @@ fun main(args: Array<String>) {
         }
 
         val tool1 = Tool.new {
+            device = device1
             name = "Tool 1"
             pin = 0
             toolType = ToolType.UNLOCK
@@ -68,6 +71,12 @@ fun Application.module(testing: Boolean = false) {
     install(StatusPages) {
         exception<JsonProcessingException> { cause ->
             call.respond(HttpStatusCode.BadRequest, cause.originalMessage)
+        }
+        exception<ExposedSQLException> { cause ->
+            call.respond(HttpStatusCode.InternalServerError, cause.localizedMessage)
+        }
+        exception<IllegalArgumentException> { cause ->
+            call.respond(HttpStatusCode.BadRequest, cause.localizedMessage)
         }
     }
 
