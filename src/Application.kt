@@ -68,8 +68,16 @@ fun Application.module(testing: Boolean = false) {
                 }
 
                 post("/{id}/permissions") {
-                    val userPermission = call.receive<NewUserPermissionDto>()
+                    val userPermission = call.receive<UserPermissionDto>()
                     userService.addUserPermission(userPermission.userId, userPermission.toolId)
+                    call.respond(HttpStatusCode.OK)
+                }
+
+                delete("/{id}/permissions/{toolId}") {
+                    val userId = call.parameters["id"]!!.toInt()
+                    val toolId = call.parameters["toolId"]!!.toInt()
+
+                    userService.removeUserPermission(userId, toolId)
                     call.respond(HttpStatusCode.OK)
                 }
 
