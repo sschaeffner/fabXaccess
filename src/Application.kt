@@ -119,6 +119,21 @@ fun Application.module(testing: Boolean = false) {
                     }
                 }
 
+                put("/{id}") {
+                    val device: DeviceDto? = call.parameters["id"]?.toInt()?.let {
+                        deviceService.getDeviceById(it)
+                    }
+
+                    if (device == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                    } else {
+                        val editDevice = call.receive<EditDeviceDto>()
+                        deviceService.editDevice(device.id, editDevice)
+
+                        call.respond(HttpStatusCode.OK)
+                    }
+                }
+
                 post("") {
                     val device = call.receive<NewDeviceDto>()
                     call.respond(deviceService.createNewDevice(device))
