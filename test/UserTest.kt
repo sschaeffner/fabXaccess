@@ -11,13 +11,27 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class UserTest {
+class UserTest: CommonTest() {
+
     @Test
-    fun testCreateAndGetUser() {
+    fun testGetAllUsers() = runBlocking {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/api/user").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals("[]", response.content)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testCreateAndGetUser() = runBlocking {
         withTestApplication({ module(testing = true) }) {
 
             val mapper = jacksonObjectMapper()
@@ -38,14 +52,14 @@ class UserTest {
 
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
-                assertEquals(userDto.id, 1)
-                assertEquals(userDto.name, "New User 1")
-                assertEquals(userDto.wikiName, "newUserWikiName")
-                assertEquals(userDto.phoneNumer, "123456")
-                assertEquals(userDto.locked, false)
+                assertEquals(1, userDto.id)
+                assertEquals("New User 1", userDto.name)
+                assertEquals("newUserWikiName", userDto.wikiName)
+                assertEquals("123456", userDto.phoneNumer)
+                assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason!!.isEmpty())
-                assertEquals(userDto.cardId, "aabbccdd")
-                assertEquals(userDto.permissions.size, 0)
+                assertEquals("aabbccdd", userDto.cardId)
+                assertEquals(0, userDto.permissions.size)
             }
 
             handleRequest(HttpMethod.Get, "/api/user/1").apply {
@@ -54,16 +68,18 @@ class UserTest {
 
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
-                assertEquals(userDto.id, 1)
-                assertEquals(userDto.name, "New User 1")
-                assertEquals(userDto.wikiName, "newUserWikiName")
-                assertEquals(userDto.phoneNumer, "123456")
-                assertEquals(userDto.locked, false)
+                assertEquals(1, userDto.id)
+                assertEquals("New User 1", userDto.name)
+                assertEquals("newUserWikiName", userDto.wikiName)
+                assertEquals("123456", userDto.phoneNumer)
+                assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason!!.isEmpty())
-                assertEquals(userDto.cardId, "aabbccdd")
-                assertEquals(userDto.permissions.size, 0)
+                assertEquals("aabbccdd", userDto.cardId)
+                assertEquals(0, userDto.permissions.size)
 
             }
         }
+
+        Unit
     }
 }

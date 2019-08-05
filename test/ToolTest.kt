@@ -1,8 +1,6 @@
 package cloud.fabx
 
-import cloud.fabx.dto.NewDeviceDto
-import cloud.fabx.dto.NewToolDto
-import cloud.fabx.dto.ToolDto
+import cloud.fabx.dto.*
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -14,14 +12,27 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ToolTest {
+class ToolTest: CommonTest() {
 
     @Test
-    fun testCreateAndGetTool() {
+    fun testGetAllTools() = runBlocking {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/api/tool").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals("[]", response.content)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testCreateAndGetTool() = runBlocking {
         withTestApplication({ module(testing = true) }) {
             val mapper = jacksonObjectMapper()
 
@@ -39,6 +50,9 @@ class ToolTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+
+                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
+                assertEquals(1, deviceDto.id)
             }
 
             handleRequest(HttpMethod.Post, "/api/tool") {
@@ -61,12 +75,12 @@ class ToolTest {
 
                 val toolDto = mapper.readValue<ToolDto>(response.content!!)
 
-                assertEquals(toolDto.id, 1)
-                assertEquals(toolDto.deviceId, 1)
-                assertEquals(toolDto.pin, 0)
-                assertEquals(toolDto.toolType, ToolType.UNLOCK)
-                assertEquals(toolDto.toolState, ToolState.GOOD)
-                assertEquals(toolDto.wikiLink, "http://wikiurl")
+                assertEquals(1, toolDto.id)
+                assertEquals(1, toolDto.deviceId)
+                assertEquals(0, toolDto.pin)
+                assertEquals(ToolType.UNLOCK, toolDto.toolType)
+                assertEquals(ToolState.GOOD, toolDto.toolState)
+                assertEquals("http://wikiurl", toolDto.wikiLink)
             }
 
             handleRequest(HttpMethod.Get, "/api/tool/1").apply {
@@ -75,13 +89,15 @@ class ToolTest {
 
                 val toolDto = mapper.readValue<ToolDto>(response.content!!)
 
-                assertEquals(toolDto.id, 1)
-                assertEquals(toolDto.deviceId, 1)
-                assertEquals(toolDto.pin, 0)
-                assertEquals(toolDto.toolType, ToolType.UNLOCK)
-                assertEquals(toolDto.toolState, ToolState.GOOD)
-                assertEquals(toolDto.wikiLink, "http://wikiurl")
+                assertEquals(1, toolDto.id)
+                assertEquals(1, toolDto.deviceId)
+                assertEquals(0, toolDto.pin)
+                assertEquals(ToolType.UNLOCK, toolDto.toolType)
+                assertEquals(ToolState.GOOD, toolDto.toolState)
+                assertEquals("http://wikiurl", toolDto.wikiLink)
             }
         }
+
+        Unit
     }
 }

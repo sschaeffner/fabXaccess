@@ -11,13 +11,27 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class DeviceTest {
+class DeviceTest: CommonTest() {
+
     @Test
-    fun testCreateAndGetDevice() {
+    fun testGetAllDevices() = runBlocking {
+        withTestApplication({ module(testing = true) }) {
+            handleRequest(HttpMethod.Get, "/api/device").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals("[]", response.content)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testCreateAndGetDevice() = runBlocking {
         withTestApplication ({ module(testing = true) }){
             val mapper = jacksonObjectMapper()
 
@@ -37,10 +51,11 @@ class DeviceTest {
 
                 val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
 
-                assertEquals(deviceDto.name, "New Device 1")
-                assertEquals(deviceDto.mac, "aaffeeaaffee")
-                assertEquals(deviceDto.secret, "newSecret")
-                assertEquals(deviceDto.bgImageUrl, "http://bgurl")
+                assertEquals(1, deviceDto.id)
+                assertEquals("New Device 1", deviceDto.name)
+                assertEquals("aaffeeaaffee", deviceDto.mac)
+                assertEquals("newSecret", deviceDto.secret)
+                assertEquals("http://bgurl", deviceDto.bgImageUrl)
                 assertTrue(deviceDto.tools.isEmpty())
             }
 
@@ -50,12 +65,15 @@ class DeviceTest {
 
                 val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
 
-                assertEquals(deviceDto.name, "New Device 1")
-                assertEquals(deviceDto.mac, "aaffeeaaffee")
-                assertEquals(deviceDto.secret, "newSecret")
-                assertEquals(deviceDto.bgImageUrl, "http://bgurl")
+                assertEquals(1, deviceDto.id)
+                assertEquals("New Device 1", deviceDto.name)
+                assertEquals("aaffeeaaffee", deviceDto.mac )
+                assertEquals("newSecret", deviceDto.secret)
+                assertEquals("http://bgurl", deviceDto.bgImageUrl)
                 assertTrue(deviceDto.tools.isEmpty())
             }
         }
+
+        Unit
     }
 }

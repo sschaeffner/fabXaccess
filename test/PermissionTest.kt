@@ -12,13 +12,14 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class PermissionTest {
+class PermissionTest: CommonTest() {
     @Test
-    fun testPermissions() {
+    fun testPermissions() = runBlocking {
         withTestApplication({ module(testing = true) }) {
 
             val mapper = jacksonObjectMapper()
@@ -36,6 +37,9 @@ class PermissionTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+
+                val userDto = mapper.readValue<UserDto>(response.content!!)
+                assertEquals(1, userDto.id)
             }
 
             // CREATE DEVICE
@@ -51,6 +55,9 @@ class PermissionTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+
+                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
+                assertEquals(1, deviceDto.id)
             }
 
             // CREATE TOOL
@@ -70,6 +77,9 @@ class PermissionTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+
+                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+                assertEquals(1, toolDto.id)
             }
 
             // ADD PERMISSION
@@ -93,10 +103,12 @@ class PermissionTest {
 
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
-                assertEquals(userDto.id, 1)
-                assertEquals(userDto.permissions.size, 1)
-                assertEquals(userDto.permissions[0].deviceId, 1)
+                assertEquals(1, userDto.id)
+                assertEquals(1, userDto.permissions.size)
+                assertEquals(1, userDto.permissions[0].deviceId)
             }
         }
+
+        Unit
     }
 }
