@@ -2,9 +2,7 @@ package cloud.fabx
 
 import cloud.fabx.db.DbHandler
 import cloud.fabx.dto.*
-import cloud.fabx.model.Device
-import cloud.fabx.model.User
-import cloud.fabx.model.Tool
+import cloud.fabx.model.*
 import cloud.fabx.service.DeviceService
 import cloud.fabx.service.ToolService
 import cloud.fabx.service.UserService
@@ -38,10 +36,15 @@ fun main(args: Array<String>) {
             name = "Device 1"
             mac = "aaffeeaaffee"
             secret = "someSecret"
+            bgImageUrl = "http://bla"
         }
 
         Tool.new {
-
+            name = "Tool 1"
+            pin = 0
+            toolType = ToolType.UNLOCK
+            toolState = ToolState.GOOD
+            wikiLink = ""
         }
     }
 

@@ -9,6 +9,7 @@ object Devices: IntIdTable() {
     val name = varchar("name", 64)
     val mac = varchar("mac", 64)
     val secret = varchar("secret", 64)
+    val bgImageUrl = varchar("bgImageUrl", 256)
 }
 
 class Device(id: EntityID<Int>): IntEntity(id) {
@@ -17,4 +18,5 @@ class Device(id: EntityID<Int>): IntEntity(id) {
     var name by Devices.name
     var mac by Devices.mac
     var secret by Devices.secret
+    var bgImageUrl by Devices.bgImageUrl
 }

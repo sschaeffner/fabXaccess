@@ -21,6 +21,7 @@ class DeviceService {
                 name = device.name
                 mac = device.mac
                 secret = device.secret
+                bgImageUrl = device.bgImageUrl
             }
         }
 
@@ -32,7 +33,8 @@ class DeviceService {
             device.id.value,
             device.name,
             device.mac,
-            device.secret
+            device.secret,
+            device.bgImageUrl
         )
     }
 }
