@@ -8,7 +8,7 @@ import io.ktor.routing.route
 
 fun Route.clientApi() {
     route("/clientApi") {
-        get("/{deviceId}/{cardId}") {
+        get("/{deviceId}/permissions/{cardId}") {
             val deviceId = call.parameters["deviceId"]!!.toInt()
             val cardId = call.parameters["cardId"]!!
 
