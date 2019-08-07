@@ -48,7 +48,8 @@ fun Application.module(testing: Boolean = false) {
         }
     }
     install(Routing) {
-        routes()
+        api()
+        clientApi()
     }
 }
 

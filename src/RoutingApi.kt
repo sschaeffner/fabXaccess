@@ -7,7 +7,7 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.*
 
-fun Route.routes() {
+fun Route.api() {
     route("/api") {
         route("/user") {
             get("") {
@@ -135,17 +135,6 @@ fun Route.routes() {
                 val tool = call.receive<NewToolDto>()
                 call.respond(toolService.createNewTool(tool))
             }
-        }
-    }
-
-    route("/clientApi") {
-        get("/{deviceId}/{cardId}") {
-            val deviceId = call.parameters["deviceId"]!!.toInt()
-            val cardId = call.parameters["cardId"]!!
-
-            val toolsWithPermission = permissionService.getPermissionsForCardId(deviceId, cardId)
-
-            call.respond(toolsWithPermission)
         }
     }
 }
