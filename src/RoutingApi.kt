@@ -43,7 +43,7 @@ fun Route.api() {
 
             post("/{id}/permissions") {
                 val userPermission = call.receive<UserPermissionDto>()
-                userService.addUserPermission(userPermission.userId, userPermission.toolId)
+                permissionService.addUserPermission(userPermission.userId, userPermission.toolId)
                 call.respond(HttpStatusCode.OK)
             }
 
@@ -51,7 +51,7 @@ fun Route.api() {
                 val userId = call.parameters["id"]!!.toInt()
                 val toolId = call.parameters["toolId"]!!.toInt()
 
-                userService.removeUserPermission(userId, toolId)
+                permissionService.removeUserPermission(userId, toolId)
                 call.respond(HttpStatusCode.OK)
             }
 

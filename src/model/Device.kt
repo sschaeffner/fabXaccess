@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.IntIdTable
 
 object Devices: IntIdTable() {
     val name = varchar("name", 64)
-    val mac = varchar("mac", 64)
+    val mac = varchar("mac", 64).uniqueIndex("deviceMacUniqueIndex")
     val secret = varchar("secret", 64)
     val bgImageUrl = varchar("bgImageUrl", 256)
 }

@@ -15,11 +15,10 @@ import io.ktor.server.testing.withTestApplication
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class PermissionTest: CommonTest() {
+class ClientApiTest: CommonTest() {
     @Test
-    fun testPermissions() = runBlocking {
+    fun testClientApiPermission() = runBlocking {
         withTestApplication({ module(testing = true) }) {
 
             val mapper = jacksonObjectMapper()
@@ -97,15 +96,10 @@ class PermissionTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
+            handleRequest(HttpMethod.Get, "/clientApi/aaffeeaaffee/permissions/aabbccdd").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
 
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, userDto.id)
-                assertEquals(1, userDto.permissions.size)
-                assertEquals(1, userDto.permissions[0].deviceId)
+                assertEquals("1", response.content?.trim())
             }
         }
 
@@ -113,39 +107,23 @@ class PermissionTest: CommonTest() {
     }
 
     @Test
-    fun testDeletePermission() = runBlocking {
+    fun testClientApiConfig() = runBlocking {
         withTestApplication({ module(testing = true) }) {
 
             val mapper = jacksonObjectMapper()
 
-            // CREATE USER
-            handleRequest(HttpMethod.Post, "/api/user") {
-                setBody(mapper.writeValueAsString(
-                    NewUserDto(
-                        "New User 1",
-                        "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-                assertEquals(1, userDto.id)
-            }
-
             // CREATE DEVICE
             handleRequest(HttpMethod.Post, "/api/device") {
-                setBody(mapper.writeValueAsString(
-                    NewDeviceDto(
-                        "New Device 1",
-                        "aaffeeaaffee",
-                        "newSecret",
-                        "http://bgurl"
+                setBody(
+                    mapper.writeValueAsString(
+                        NewDeviceDto(
+                            "New Device 1",
+                            "aaffeeaaffee",
+                            "newSecret",
+                            "http://bgurl"
+                        )
                     )
-                ))
+                )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
@@ -176,34 +154,30 @@ class PermissionTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
-            // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/user/1/permissions") {
+            // CREATE TOOL 2
+            handleRequest(HttpMethod.Post, "/api/tool") {
                 setBody(
                     mapper.writeValueAsString(
-                        UserPermissionDto(
+                        NewToolDto(
                             1,
-                            1
+                            "New Tool 2",
+                            1,
+                            ToolType.UNLOCK,
+                            ToolState.GOOD,
+                            "http://wikiurl2"
                         )
                     )
                 )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+
+                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+                assertEquals(2, toolDto.id)
             }
 
-            //REMOVE PERMISSION
-            handleRequest(HttpMethod.Delete, "/api/user/1/permissions/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, userDto.id)
-                assertEquals(0, userDto.permissions.size)
+            handleRequest(HttpMethod.Get, "/clientApi/aaffeeaaffee/config").apply {
+                assertEquals("New Device 1\n1,0,UNLOCK,New Tool 1\n2,1,UNLOCK,New Tool 2", response.content?.trim())
             }
         }
 

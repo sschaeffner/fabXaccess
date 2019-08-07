@@ -13,6 +13,10 @@ object Tools: IntIdTable() {
     val wikiLink = varchar("wikiLink", 256)
 
     val device = reference("device", Devices)
+
+    init {
+        index("ToolDevicePinUniqueIndex", true, device, pin)
+    }
 }
 
 class Tool(id: EntityID<Int>): IntEntity(id) {

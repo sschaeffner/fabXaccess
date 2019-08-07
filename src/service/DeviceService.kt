@@ -5,6 +5,7 @@ import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.EditDeviceDto
 import cloud.fabx.dto.NewDeviceDto
 import cloud.fabx.model.Device
+import cloud.fabx.model.Devices
 import cloud.fabx.model.User
 import java.lang.IllegalArgumentException
 
@@ -18,6 +19,10 @@ class DeviceService {
 
     suspend fun getDeviceById(id: Int): DeviceDto? = dbQuery {
         Device.findById(id)?.let { toDeviceDto(it) }
+    }
+
+    suspend fun getDeviceByMac(mac: String): DeviceDto? = dbQuery {
+        Device.find { Devices.mac eq mac }.firstOrNull()?.let { toDeviceDto(it) }
     }
 
     suspend fun createNewDevice(device: NewDeviceDto): DeviceDto = dbQuery {
@@ -40,7 +45,7 @@ class DeviceService {
         editDevice.bgImageUrl?.let { device.bgImageUrl = it }
     }
 
-    private fun toDeviceDto(device: Device): DeviceDto {
+    fun toDeviceDto(device: Device): DeviceDto {
         return DeviceDto(
             device.id.value,
             device.name,

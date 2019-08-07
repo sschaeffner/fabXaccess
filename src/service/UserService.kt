@@ -44,36 +44,6 @@ class UserService {
         editUser.cardId?.let { user.cardId = it }
     }
 
-    suspend fun addUserPermission(userId: Int, toolId: Int) = dbQuery {
-        val user = User.findById(userId)
-        val tool = Tool.findById(toolId)
-
-        user?.let { userIt ->
-            tool?.let { toolIt ->
-                val newPermissions = userIt.permissions.toCollection(ArrayList())
-                newPermissions.add(toolIt)
-
-                user.permissions = SizedCollection(newPermissions)
-            }
-        }
-    }
-
-    suspend fun removeUserPermission(userId: Int, toolId: Int) = dbQuery {
-        val user = User.findById(userId)
-        val tool = Tool.findById(toolId)
-
-        user?.let { userIt ->
-            tool?.let { toolIt ->
-                val newPermissions = userIt.permissions.toCollection(ArrayList())
-                val success = newPermissions.remove(toolIt)
-
-                if (!success) throw IllegalArgumentException("User never head permission for tool ${toolIt.id}/${toolIt.name}")
-
-                user.permissions = SizedCollection(newPermissions)
-            }
-        }
-    }
-
     private fun toUserDto(user: User): UserDto {
         return UserDto(
             user.id.value,
