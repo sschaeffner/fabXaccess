@@ -24,7 +24,7 @@ class ToolTest: CommonTest() {
     @Test
     fun testGetAllTools() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            handleRequest(HttpMethod.Get, "/api/tool").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/tool").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("[]", response.content)
             }
@@ -38,7 +38,7 @@ class ToolTest: CommonTest() {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
                         NewDeviceDto(
@@ -57,7 +57,7 @@ class ToolTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -86,7 +86,7 @@ class ToolTest: CommonTest() {
                 assertEquals("http://wikiurl", toolDto.wikiLink)
             }
 
-            handleRequest(HttpMethod.Get, "/api/tool/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -109,7 +109,7 @@ class ToolTest: CommonTest() {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
                         NewDeviceDto(
@@ -128,7 +128,7 @@ class ToolTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -149,7 +149,7 @@ class ToolTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
-            handleRequest(HttpMethod.Put, "/api/tool/1") {
+            handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
                 setBody(
                     mapper.writeValueAsString(EditToolDto(
                         null,
@@ -165,7 +165,7 @@ class ToolTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/tool/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -191,7 +191,7 @@ class ToolTest: CommonTest() {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
                         NewDeviceDto(
@@ -210,7 +210,7 @@ class ToolTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
                         NewDeviceDto(
@@ -229,7 +229,7 @@ class ToolTest: CommonTest() {
                 assertEquals(2, deviceDto.id)
             }
 
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -250,7 +250,7 @@ class ToolTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
-            handleRequest(HttpMethod.Put, "/api/tool/1") {
+            handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
                 setBody(
                     mapper.writeValueAsString(EditToolDto(
                         2,
@@ -266,7 +266,7 @@ class ToolTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/tool/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 

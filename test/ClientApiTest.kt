@@ -27,7 +27,7 @@ class ClientApiTest: CommonTest() {
             val mapper = jacksonObjectMapper()
 
             // CREATE USER
-            handleRequest(HttpMethod.Post, "/api/user") {
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
@@ -45,7 +45,7 @@ class ClientApiTest: CommonTest() {
             }
 
             // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
                     NewDeviceDto(
                         "New Device 1",
@@ -63,7 +63,7 @@ class ClientApiTest: CommonTest() {
             }
 
             // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -85,7 +85,7 @@ class ClientApiTest: CommonTest() {
             }
 
             // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/user/1/permissions") {
+            handleRequest(HttpMethod.Post, "/api/v1/user/1/permissions") {
                 setBody(
                     mapper.writeValueAsString(
                         UserPermissionDto(
@@ -99,7 +99,7 @@ class ClientApiTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/clientApi/aaffeeaaffee/permissions/aabbccdd").apply {
+            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
 
                 assertEquals("1", response.content?.trim())
@@ -116,7 +116,7 @@ class ClientApiTest: CommonTest() {
             val mapper = jacksonObjectMapper()
 
             // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
                         NewDeviceDto(
@@ -136,7 +136,7 @@ class ClientApiTest: CommonTest() {
             }
 
             // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -158,7 +158,7 @@ class ClientApiTest: CommonTest() {
             }
 
             // CREATE TOOL 2
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -179,7 +179,7 @@ class ClientApiTest: CommonTest() {
                 assertEquals(2, toolDto.id)
             }
 
-            handleRequest(HttpMethod.Get, "/clientApi/aaffeeaaffee/config").apply {
+            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config").apply {
                 assertEquals("New Device 1\n1,0,UNLOCK,New Tool 1\n2,1,UNLOCK,New Tool 2", response.content?.trim())
             }
         }

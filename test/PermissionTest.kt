@@ -27,7 +27,7 @@ class PermissionTest: CommonTest() {
             val mapper = jacksonObjectMapper()
 
             // CREATE USER
-            handleRequest(HttpMethod.Post, "/api/user") {
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
@@ -45,7 +45,7 @@ class PermissionTest: CommonTest() {
             }
 
             // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
                     NewDeviceDto(
                         "New Device 1",
@@ -63,7 +63,7 @@ class PermissionTest: CommonTest() {
             }
 
             // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -85,7 +85,7 @@ class PermissionTest: CommonTest() {
             }
 
             // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/user/1/permissions") {
+            handleRequest(HttpMethod.Post, "/api/v1/user/1/permissions") {
                 setBody(
                     mapper.writeValueAsString(
                         UserPermissionDto(
@@ -99,7 +99,7 @@ class PermissionTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -121,7 +121,7 @@ class PermissionTest: CommonTest() {
             val mapper = jacksonObjectMapper()
 
             // CREATE USER
-            handleRequest(HttpMethod.Post, "/api/user") {
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
@@ -139,7 +139,7 @@ class PermissionTest: CommonTest() {
             }
 
             // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
                     NewDeviceDto(
                         "New Device 1",
@@ -157,7 +157,7 @@ class PermissionTest: CommonTest() {
             }
 
             // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/tool") {
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
@@ -179,7 +179,7 @@ class PermissionTest: CommonTest() {
             }
 
             // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/user/1/permissions") {
+            handleRequest(HttpMethod.Post, "/api/v1/user/1/permissions") {
                 setBody(
                     mapper.writeValueAsString(
                         UserPermissionDto(
@@ -194,11 +194,11 @@ class PermissionTest: CommonTest() {
             }
 
             //REMOVE PERMISSION
-            handleRequest(HttpMethod.Delete, "/api/user/1/permissions/1").apply {
+            handleRequest(HttpMethod.Delete, "/api/v1/user/1/permissions/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 

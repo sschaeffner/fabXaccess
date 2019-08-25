@@ -8,7 +8,7 @@ import io.ktor.response.respond
 import io.ktor.routing.*
 
 fun Route.api() {
-    route("/api") {
+    route("/api/v1") {
         route("/user") {
             get("") {
                 call.respond(userService.getAllUsers())
@@ -26,7 +26,7 @@ fun Route.api() {
                 }
             }
 
-            put("/{id}") {
+            patch("/{id}") {
                 val user: UserDto? = call.parameters["id"]?.toInt()?.let {
                     userService.getUserById(it)
                 }
@@ -78,7 +78,7 @@ fun Route.api() {
                 }
             }
 
-            put("/{id}") {
+            patch("/{id}") {
                 val device: DeviceDto? = call.parameters["id"]?.toInt()?.let {
                     deviceService.getDeviceById(it)
                 }
@@ -116,7 +116,7 @@ fun Route.api() {
                 }
             }
 
-            put("/{id}") {
+            patch("/{id}") {
                 val tool: ToolDto? = call.parameters["id"]?.toInt()?.let {
                     toolService.getToolById(it)
                 }

@@ -19,7 +19,7 @@ class ApiAuthTest: CommonTest() {
     @Test
     fun getAllUsersWithoutAuthenticationThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = true) }) {
-            handleRequest(HttpMethod.Get, "/api/user").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user").apply {
                 assertEquals("Basic realm=\"fabX access API\", charset=UTF-8", response.headers[HttpHeaders.WWWAuthenticate])
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
             }
@@ -32,7 +32,7 @@ class ApiAuthTest: CommonTest() {
     @Test
     fun getAllUsersWithAuthentication() = runBlocking {
         withTestApplication({ module(demoContent = true, apiAuthentication = true) }) {
-            handleRequest(HttpMethod.Get, "/api/user") {
+            handleRequest(HttpMethod.Get, "/api/v1/user") {
                 addBasicAuth("admin1", "demopassword")
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
@@ -46,7 +46,7 @@ class ApiAuthTest: CommonTest() {
     @Test
     fun getAllUsersWithInvalidAuthenticationThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = true, apiAuthentication = true) }) {
-            handleRequest(HttpMethod.Get, "/api/user") {
+            handleRequest(HttpMethod.Get, "/api/v1/user") {
                 addBasicAuth("admin1", "blub")
             }.apply {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())

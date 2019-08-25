@@ -15,12 +15,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/user/1",
+							"raw": "{{api_root}}/user/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"user",
 								"1"
 							]
@@ -34,12 +33,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/user",
+							"raw": "{{api_root}}/user",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"user"
 							]
 						}
@@ -63,12 +61,11 @@
 							"raw": "{\n\t\"name\": \"New User 1\",\n\t\"wikiName\": \"newUserWikiName\",\n\t\"phoneNumber\": \"123456789\",\n\t\"cardId\": \"42424242\"\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/user",
+							"raw": "{{api_root}}/user",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"user"
 							]
 						}
@@ -78,7 +75,7 @@
 				{
 					"name": "Edit User",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -92,12 +89,11 @@
 							"raw": "{\n\t\"name\": \"Tester Tester 1\"\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/user/1",
+							"raw": "{{api_root}}/user/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"user",
 								"1"
 							]
@@ -122,12 +118,11 @@
 							"raw": "{\n\t\"userId\": 1,\n\t\"toolId\": 1\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/user/1/permissions",
+							"raw": "{{api_root}}/user/1/permissions",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"user",
 								"1",
 								"permissions"
@@ -142,12 +137,11 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/user/1/permissions/1",
+							"raw": "{{api_root}}/user/1/permissions/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"user",
 								"1",
 								"permissions",
@@ -168,12 +162,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/device/1",
+							"raw": "{{api_root}}/device/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"device",
 								"1"
 							]
@@ -187,12 +180,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/device",
+							"raw": "{{api_root}}/device",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"device"
 							]
 						}
@@ -216,12 +208,11 @@
 							"raw": "{\n\t\"name\": \"new Device 1\",\n\t\"mac\": \"ffeeffeeffee\",\n\t\"secret\": \"newSecret\",\n\t\"bgImageUrl\": \"http://blub\"\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/device",
+							"raw": "{{api_root}}/device",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"device"
 							]
 						}
@@ -231,7 +222,7 @@
 				{
 					"name": "Edit Device",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -245,12 +236,11 @@
 							"raw": "{\n\t\"name\": \"Edited Device Name 1\"\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/device/1",
+							"raw": "{{api_root}}/device/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"device",
 								"1"
 							]
@@ -269,12 +259,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/tool/1",
+							"raw": "{{api_root}}/tool/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"tool",
 								"1"
 							]
@@ -288,12 +277,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/api/tool",
+							"raw": "{{api_root}}/tool",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"tool"
 							]
 						}
@@ -314,15 +302,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"deviceId\": 1,\n\t\"name\": \"new Tool 1\",\n\t\"pin\": 0,\n\t\"toolType\": \"UNLOCK\",\n\t\"toolState\": \"GOOD\",\n\t\"wikiLink\": \"\"\n}"
+							"raw": "{\n\t\"deviceId\": 1,\n\t\"name\": \"new Tool 1\",\n\t\"pin\": 1,\n\t\"toolType\": \"UNLOCK\",\n\t\"toolState\": \"GOOD\",\n\t\"wikiLink\": \"\"\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/tool",
+							"raw": "{{api_root}}/tool",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"tool"
 							]
 						}
@@ -332,7 +319,7 @@
 				{
 					"name": "Edit Tool",
 					"request": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -346,12 +333,11 @@
 							"raw": "{\n\t\"name\": \"Edited Tool Name\",\n\t\"toolType\": \"KEEP\"\n}"
 						},
 						"url": {
-							"raw": "{{api_root}}/api/tool/1",
+							"raw": "{{api_root}}/tool/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"api",
 								"tool",
 								"1"
 							]
@@ -370,12 +356,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/clientApi/aaffeeaaffee/permissions/11223344556677",
+							"raw": "{{clientapi_root}}/aaffeeaaffee/permissions/11223344556677",
 							"host": [
-								"{{api_root}}"
+								"{{clientapi_root}}"
 							],
 							"path": [
-								"clientApi",
 								"aaffeeaaffee",
 								"permissions",
 								"11223344556677"
@@ -390,12 +375,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api_root}}/clientApi/aaffeeaaffee/config",
+							"raw": "{{clientapi_root}}/aaffeeaaffee/config",
 							"host": [
-								"{{api_root}}"
+								"{{clientapi_root}}"
 							],
 							"path": [
-								"clientApi",
 								"aaffeeaaffee",
 								"config"
 							]
@@ -404,6 +388,43 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "demopassword",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin1",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "90106e1c-d943-414d-82e9-a602bec3b0a3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b99da5f5-50e8-4959-9e85-a3890ef6aab7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }

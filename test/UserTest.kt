@@ -24,7 +24,7 @@ class UserTest: CommonTest() {
     @Test
     fun testGetAllUsers() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            handleRequest(HttpMethod.Get, "/api/user").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("[]", response.content)
             }
@@ -39,7 +39,7 @@ class UserTest: CommonTest() {
 
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/user") {
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
@@ -65,7 +65,7 @@ class UserTest: CommonTest() {
                 assertEquals(0, userDto.permissions.size)
             }
 
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -92,7 +92,7 @@ class UserTest: CommonTest() {
 
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/user") {
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
@@ -109,7 +109,7 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
             }
 
-            handleRequest(HttpMethod.Put, "/api/user/1") {
+            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
                 setBody(mapper.writeValueAsString(
                     EditUserDto(
                         "Edit Username 1",
@@ -126,7 +126,7 @@ class UserTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -153,7 +153,7 @@ class UserTest: CommonTest() {
 
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/user") {
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
@@ -170,7 +170,7 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
             }
 
-            handleRequest(HttpMethod.Put, "/api/user/1") {
+            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
                 setBody(mapper.writeValueAsString(
                     EditUserDto(
                         "Edit Username 1",
@@ -186,7 +186,7 @@ class UserTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/user/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 

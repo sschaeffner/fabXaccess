@@ -24,7 +24,7 @@ class DeviceTest: CommonTest() {
     @Test
     fun testGetAllDevices() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            handleRequest(HttpMethod.Get, "/api/device").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/device").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("[]", response.content)
             }
@@ -38,7 +38,7 @@ class DeviceTest: CommonTest() {
         withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
                     NewDeviceDto(
                         "New Device 1",
@@ -62,7 +62,7 @@ class DeviceTest: CommonTest() {
                 assertTrue(deviceDto.tools.isEmpty())
             }
 
-            handleRequest(HttpMethod.Get, "/api/device/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/device/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -85,7 +85,7 @@ class DeviceTest: CommonTest() {
         withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
                     NewDeviceDto(
                         "New Device 1",
@@ -99,7 +99,7 @@ class DeviceTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Put, "/api/device/1") {
+            handleRequest(HttpMethod.Patch, "/api/v1/device/1") {
                 setBody(mapper.writeValueAsString(
                     EditDeviceDto(
                         "Edited Devicename 1",
@@ -113,7 +113,7 @@ class DeviceTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/device/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/device/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
@@ -136,7 +136,7 @@ class DeviceTest: CommonTest() {
         withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
             val mapper = jacksonObjectMapper()
 
-            handleRequest(HttpMethod.Post, "/api/device") {
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
                     NewDeviceDto(
                         "New Device 1",
@@ -150,7 +150,7 @@ class DeviceTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Put, "/api/device/1") {
+            handleRequest(HttpMethod.Patch, "/api/v1/device/1") {
                 setBody(mapper.writeValueAsString(
                     EditDeviceDto(
                         "Edited Devicename 1",
@@ -164,7 +164,7 @@ class DeviceTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/device/1").apply {
+            handleRequest(HttpMethod.Get, "/api/v1/device/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
