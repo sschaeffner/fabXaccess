@@ -12,15 +12,17 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@KtorExperimentalAPI
 class PermissionTest: CommonTest() {
     @Test
     fun testPermissions() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 
@@ -114,7 +116,7 @@ class PermissionTest: CommonTest() {
 
     @Test
     fun testDeletePermission() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 

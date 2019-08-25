@@ -12,14 +12,17 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@KtorExperimentalAPI
 class ClientApiTest: CommonTest() {
+
     @Test
     fun testClientApiPermission() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 
@@ -108,7 +111,7 @@ class ClientApiTest: CommonTest() {
 
     @Test
     fun testClientApiConfig() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 

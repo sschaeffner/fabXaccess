@@ -12,16 +12,18 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@KtorExperimentalAPI
 class UserTest: CommonTest() {
 
     @Test
     fun testGetAllUsers() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             handleRequest(HttpMethod.Get, "/api/user").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("[]", response.content)
@@ -33,7 +35,7 @@ class UserTest: CommonTest() {
 
     @Test
     fun testCreateAndGetUser() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 
@@ -86,7 +88,7 @@ class UserTest: CommonTest() {
 
     @Test
     fun testEditUserSingleParam() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 
@@ -147,7 +149,7 @@ class UserTest: CommonTest() {
 
     @Test
     fun testEditUserAllParams() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
 

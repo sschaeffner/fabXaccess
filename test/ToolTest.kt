@@ -12,16 +12,18 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@KtorExperimentalAPI
 class ToolTest: CommonTest() {
 
     @Test
     fun testGetAllTools() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             handleRequest(HttpMethod.Get, "/api/tool").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("[]", response.content)
@@ -33,7 +35,7 @@ class ToolTest: CommonTest() {
 
     @Test
     fun testCreateAndGetTool() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
             handleRequest(HttpMethod.Post, "/api/device") {
@@ -104,7 +106,7 @@ class ToolTest: CommonTest() {
 
     @Test
     fun testEditToolSingleParameter() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
             handleRequest(HttpMethod.Post, "/api/device") {
@@ -186,7 +188,7 @@ class ToolTest: CommonTest() {
 
     @Test
     fun testEditToolAllParameters() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
             handleRequest(HttpMethod.Post, "/api/device") {

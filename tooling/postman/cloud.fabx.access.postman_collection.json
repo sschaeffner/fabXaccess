@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "925bbdd5-940e-4f10-95eb-93d7e96eb006",
+		"name": "cloud.fabx.access",
+		"description": "Access System of fabx.cloud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/user/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/user",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"New User 1\",\n\t\"wikiName\": \"newUserWikiName\",\n\t\"phoneNumber\": \"123456789\",\n\t\"cardId\": \"42424242\"\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/user",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Tester Tester 1\"\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/user/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User Permission",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userId\": 1,\n\t\"toolId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/user/1/permissions",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"1",
+								"permissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove User Permission",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/user/1/permissions/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"1",
+								"permissions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Device",
+			"item": [
+				{
+					"name": "Get Device",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/device/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"device",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Devices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/device",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"device"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Device",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"new Device 1\",\n\t\"mac\": \"ffeeffeeffee\",\n\t\"secret\": \"newSecret\",\n\t\"bgImageUrl\": \"http://blub\"\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/device",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"device"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Device",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Edited Device Name 1\"\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/device/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"device",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tool",
+			"item": [
+				{
+					"name": "Get Tool",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/tool/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"tool",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/api/tool",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"tool"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Tool",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"deviceId\": 1,\n\t\"name\": \"new Tool 1\",\n\t\"pin\": 0,\n\t\"toolType\": \"UNLOCK\",\n\t\"toolState\": \"GOOD\",\n\t\"wikiLink\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/tool",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"tool"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Tool",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Edited Tool Name\",\n\t\"toolType\": \"KEEP\"\n}"
+						},
+						"url": {
+							"raw": "{{api_root}}/api/tool/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"api",
+								"tool",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "clientApi",
+			"item": [
+				{
+					"name": "Get Permissions for Device",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/clientApi/aaffeeaaffee/permissions/11223344556677",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"clientApi",
+								"aaffeeaaffee",
+								"permissions",
+								"11223344556677"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Config for Device",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/clientApi/aaffeeaaffee/config",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"clientApi",
+								"aaffeeaaffee",
+								"config"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

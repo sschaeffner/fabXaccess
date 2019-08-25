@@ -1,9 +1,6 @@
 package cloud.fabx.db
 
-import cloud.fabx.model.Devices
-import cloud.fabx.model.Tools
-import cloud.fabx.model.UserPermissions
-import cloud.fabx.model.Users
+import cloud.fabx.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -23,6 +20,7 @@ object DbHandler {
             SchemaUtils.create(Devices)
             SchemaUtils.create(Tools)
             SchemaUtils.create(UserPermissions)
+            SchemaUtils.create(Admins)
         }
 
         db

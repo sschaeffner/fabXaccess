@@ -12,16 +12,18 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@KtorExperimentalAPI
 class DeviceTest: CommonTest() {
 
     @Test
     fun testGetAllDevices() = runBlocking {
-        withTestApplication({ module(testing = true) }) {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             handleRequest(HttpMethod.Get, "/api/device").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("[]", response.content)
@@ -33,7 +35,7 @@ class DeviceTest: CommonTest() {
 
     @Test
     fun testCreateAndGetDevice() = runBlocking {
-        withTestApplication ({ module(testing = true) }){
+        withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
             val mapper = jacksonObjectMapper()
 
             handleRequest(HttpMethod.Post, "/api/device") {
@@ -80,7 +82,7 @@ class DeviceTest: CommonTest() {
 
     @Test
     fun testEditDeviceSingleParameter() = runBlocking {
-        withTestApplication ({ module(testing = true) }){
+        withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
             val mapper = jacksonObjectMapper()
 
             handleRequest(HttpMethod.Post, "/api/device") {
@@ -131,7 +133,7 @@ class DeviceTest: CommonTest() {
 
     @Test
     fun testEditDeviceAllParameters() = runBlocking {
-        withTestApplication ({ module(testing = true) }){
+        withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
             val mapper = jacksonObjectMapper()
 
             handleRequest(HttpMethod.Post, "/api/device") {
