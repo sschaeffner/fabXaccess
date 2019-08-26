@@ -59,10 +59,20 @@ class DeviceService {
 
     suspend fun checkDeviceCredentials(mac: String, secret: String): Boolean = dbQuery {
         val device = Device.find {
-            (Devices.mac eq mac) and
-            (Devices.secret eq secret)
+            Devices.mac eq mac
         }.firstOrNull()
 
-        device != null
+        if (device != null) {
+            device.secret == secret
+        } else {
+            Device.new {
+                this.name = "new device $mac"
+                this.mac = mac
+                this.secret = secret
+                this.bgImageUrl = ""
+            }
+
+            true
+        }
     }
 }

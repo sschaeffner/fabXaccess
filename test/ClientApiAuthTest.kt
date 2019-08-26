@@ -15,6 +15,7 @@ import io.ktor.server.testing.withTestApplication
 import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
 import kotlinx.coroutines.runBlocking
+import org.eclipse.jetty.http.HttpStatus
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -254,6 +255,39 @@ class ClientApiAuthTest: CommonTest() {
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("1", response.content?.trim())
+            }
+
+            Unit
+        }
+    }
+
+    @Test
+    fun authenticateWithNewDevice() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
+            val mapper = jacksonObjectMapper()
+
+            // CREATE DEVICE
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
+                setBody(mapper.writeValueAsString(
+                    NewDeviceDto(
+                        "New Device 1",
+                        "aaffeeaaffee",
+                        "newSecret",
+                        "http://bgurl"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
+                assertEquals(1, deviceDto.id)
+            }
+
+            handleRequest(HttpMethod.Get, "/clientApi/v1/aabbccaabbcc/config") {
+                addBasicAuth("aaffeeaaffee", "someothersecret")
+            }.apply {
+                assertEquals(HttpStatusCode.Unauthorized, response.status())
             }
 
             Unit
