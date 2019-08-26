@@ -55,10 +55,4 @@ class ApiAuthTest: CommonTest() {
 
         Unit
     }
-
-    @InternalAPI
-    private fun TestApplicationRequest.addBasicAuth(user: String, password: String) {
-        val encoded = "$user:$password".toByteArray(Charsets.UTF_8).encodeBase64()
-        addHeader(HttpHeaders.Authorization, "Basic $encoded")
-    }
 }

@@ -7,6 +7,7 @@ import cloud.fabx.dto.NewDeviceDto
 import cloud.fabx.model.Device
 import cloud.fabx.model.Devices
 import cloud.fabx.model.User
+import org.jetbrains.exposed.sql.and
 import java.lang.IllegalArgumentException
 
 class DeviceService {
@@ -54,5 +55,14 @@ class DeviceService {
             device.bgImageUrl,
             device.tools.map { toolService.toToolDto(it) }.toCollection(ArrayList())
         )
+    }
+
+    suspend fun checkDeviceCredentials(mac: String, secret: String): Boolean = dbQuery {
+        val device = Device.find {
+            (Devices.mac eq mac) and
+            (Devices.secret eq secret)
+        }.firstOrNull()
+
+        device != null
     }
 }

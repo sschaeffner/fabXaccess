@@ -61,7 +61,16 @@ fun Application.module(demoContent: Boolean = true, apiAuthentication: Boolean =
                 }
             }
         }
-
+        basic(name = "clientApiAuth") {
+            realm = "fabX access client API"
+            validate {credentials ->
+                if (deviceService.checkDeviceCredentials(credentials.name, credentials.password)) {
+                    UserIdPrincipal(credentials.name)
+                } else {
+                    null
+                }
+            }
+        }
     }
     install(Routing) {
         if (apiAuthentication) {
@@ -72,8 +81,9 @@ fun Application.module(demoContent: Boolean = true, apiAuthentication: Boolean =
             api()
         }
         if (clientApiAuthentication) {
-            //TODO client api authentication
-            clientApi()
+            authenticate("clientApiAuth") {
+                clientApi()
+            }
         } else {
             clientApi()
         }

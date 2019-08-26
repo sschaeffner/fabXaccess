@@ -387,6 +387,43 @@
 					},
 					"response": []
 				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "someSecret",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "aaffeeaaffee",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "73534ed7-c392-47d4-b1c0-aba8a9707f71",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5e2140b2-6778-4b25-b7dc-2eab14b4aabc",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
 			]
 		}
 	],
