@@ -19,8 +19,10 @@ object DbHandler {
             SchemaUtils.create(Users)
             SchemaUtils.create(Devices)
             SchemaUtils.create(Tools)
-            SchemaUtils.create(UserPermissions)
             SchemaUtils.create(Admins)
+            SchemaUtils.create(Qualifications)
+            SchemaUtils.create(UserQualifications)
+            SchemaUtils.create(ToolQualifications)
         }
 
         db

@@ -9,5 +9,6 @@ data class EditToolDto(
     val pin: Int?,
     val toolType: ToolType?,
     val toolState: ToolState?,
-    val wikiLink: String?
+    val wikiLink: String?,
+    val qualifications: List<Int>?
 )

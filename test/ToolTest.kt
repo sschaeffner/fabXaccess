@@ -38,6 +38,7 @@ class ToolTest: CommonTest() {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
+            // CREATE DEVICE
             handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
@@ -57,6 +58,23 @@ class ToolTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
+            }
+
+            // CREATE TOOL
             handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
@@ -66,7 +84,8 @@ class ToolTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf(1)
                         )
                     )
                 )
@@ -84,6 +103,7 @@ class ToolTest: CommonTest() {
                 assertEquals(ToolType.UNLOCK, toolDto.toolType)
                 assertEquals(ToolState.GOOD, toolDto.toolState)
                 assertEquals("http://wikiurl", toolDto.wikiLink)
+                assertEquals(1, toolDto.qualifications.size)
             }
 
             handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
@@ -109,6 +129,7 @@ class ToolTest: CommonTest() {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
+            // CREATE DEVICE
             handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
@@ -128,6 +149,23 @@ class ToolTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
+            }
+
+            // CREATE TOOL
             handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
@@ -137,7 +175,8 @@ class ToolTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf(1)
                         )
                     )
                 )
@@ -154,6 +193,7 @@ class ToolTest: CommonTest() {
                     mapper.writeValueAsString(EditToolDto(
                         null,
                         "Edited Tool Name",
+                        null,
                         null,
                         null,
                         null,
@@ -178,6 +218,8 @@ class ToolTest: CommonTest() {
                 assertEquals(ToolType.UNLOCK, toolDto.toolType)
                 assertEquals(ToolState.GOOD, toolDto.toolState)
                 assertEquals("http://wikiurl", toolDto.wikiLink)
+                assertEquals(1, toolDto.qualifications.size)
+                assertEquals(1, toolDto.qualifications[0].id)
             }
 
         }
@@ -191,6 +233,7 @@ class ToolTest: CommonTest() {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             val mapper = jacksonObjectMapper()
 
+            // CREATE DEVICE
             handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
@@ -210,6 +253,7 @@ class ToolTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
+            // CREATE SECOND DEVICE
             handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(
                     mapper.writeValueAsString(
@@ -229,6 +273,23 @@ class ToolTest: CommonTest() {
                 assertEquals(2, deviceDto.id)
             }
 
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
+            }
+
+            // CREATE TOOL
             handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
@@ -238,7 +299,8 @@ class ToolTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf()
                         )
                     )
                 )
@@ -250,6 +312,8 @@ class ToolTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
+
+            // EDIT TOOL
             handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
                 setBody(
                     mapper.writeValueAsString(EditToolDto(
@@ -258,7 +322,8 @@ class ToolTest: CommonTest() {
                         1,
                         ToolType.KEEP,
                         ToolState.BAD,
-                        "http://newwikiurl"
+                        "http://newwikiurl",
+                        listOf(1)
                     ))
                 )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -279,10 +344,10 @@ class ToolTest: CommonTest() {
                 assertEquals(ToolType.KEEP, toolDto.toolType)
                 assertEquals(ToolState.BAD, toolDto.toolState)
                 assertEquals("http://newwikiurl", toolDto.wikiLink)
+                assertEquals(1, toolDto.qualifications.size)
+                assertEquals(1, toolDto.qualifications[0].id)
             }
-
         }
-
 
         Unit
     }

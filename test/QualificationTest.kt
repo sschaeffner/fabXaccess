@@ -19,9 +19,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @KtorExperimentalAPI
-class PermissionTest: CommonTest() {
+class QualificationTest: CommonTest() {
     @Test
-    fun testPermissions() = runBlocking {
+    fun testQualifications() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
@@ -42,6 +42,22 @@ class PermissionTest: CommonTest() {
 
                 val userDto = mapper.readValue<UserDto>(response.content!!)
                 assertEquals(1, userDto.id)
+            }
+
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
             }
 
             // CREATE DEVICE
@@ -72,7 +88,8 @@ class PermissionTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf(1)
                         )
                     )
                 )
@@ -84,11 +101,11 @@ class PermissionTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
-            // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/v1/user/1/permissions") {
+            // ADD QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/user/1/qualifications") {
                 setBody(
                     mapper.writeValueAsString(
-                        UserPermissionDto(
+                        UserQualificationDto(
                             1,
                             1
                         )
@@ -106,8 +123,8 @@ class PermissionTest: CommonTest() {
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
                 assertEquals(1, userDto.id)
-                assertEquals(1, userDto.permissions.size)
-                assertEquals(1, userDto.permissions[0].deviceId)
+                assertEquals(1, userDto.qualifications.size)
+                assertEquals(1, userDto.qualifications[0].id)
             }
         }
 
@@ -115,7 +132,7 @@ class PermissionTest: CommonTest() {
     }
 
     @Test
-    fun testDeletePermission() = runBlocking {
+    fun testDeleteQualification() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
@@ -136,6 +153,22 @@ class PermissionTest: CommonTest() {
 
                 val userDto = mapper.readValue<UserDto>(response.content!!)
                 assertEquals(1, userDto.id)
+            }
+
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
             }
 
             // CREATE DEVICE
@@ -166,7 +199,8 @@ class PermissionTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf(1)
                         )
                     )
                 )
@@ -178,11 +212,11 @@ class PermissionTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
-            // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/v1/user/1/permissions") {
+            // ADD QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/user/1/qualifications") {
                 setBody(
                     mapper.writeValueAsString(
-                        UserPermissionDto(
+                        UserQualificationDto(
                             1,
                             1
                         )
@@ -193,8 +227,8 @@ class PermissionTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            //REMOVE PERMISSION
-            handleRequest(HttpMethod.Delete, "/api/v1/user/1/permissions/1").apply {
+            //REMOVE QUALIFICATION
+            handleRequest(HttpMethod.Delete, "/api/v1/user/1/qualifications/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
@@ -205,7 +239,7 @@ class PermissionTest: CommonTest() {
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
                 assertEquals(1, userDto.id)
-                assertEquals(0, userDto.permissions.size)
+                assertEquals(0, userDto.qualifications.size)
             }
         }
 

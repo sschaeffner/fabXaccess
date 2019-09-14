@@ -44,6 +44,22 @@ class ClientApiTest: CommonTest() {
                 assertEquals(1, userDto.id)
             }
 
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
+            }
+
             // CREATE DEVICE
             handleRequest(HttpMethod.Post, "/api/v1/device") {
                 setBody(mapper.writeValueAsString(
@@ -72,7 +88,8 @@ class ClientApiTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf(1)
                         )
                     )
                 )
@@ -84,11 +101,11 @@ class ClientApiTest: CommonTest() {
                 assertEquals(1, toolDto.id)
             }
 
-            // ADD PERMISSION
-            handleRequest(HttpMethod.Post, "/api/v1/user/1/permissions") {
+            // ADD QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/user/1/qualifications") {
                 setBody(
                     mapper.writeValueAsString(
-                        UserPermissionDto(
+                        UserQualificationDto(
                             1,
                             1
                         )
@@ -135,6 +152,22 @@ class ClientApiTest: CommonTest() {
                 assertEquals(1, deviceDto.id)
             }
 
+            // CREATE QUALIFICATION
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification1"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
+            }
+
             // CREATE TOOL
             handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
@@ -145,7 +178,8 @@ class ClientApiTest: CommonTest() {
                             0,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl"
+                            "http://wikiurl",
+                            listOf(1)
                         )
                     )
                 )
@@ -167,7 +201,8 @@ class ClientApiTest: CommonTest() {
                             1,
                             ToolType.UNLOCK,
                             ToolState.GOOD,
-                            "http://wikiurl2"
+                            "http://wikiurl2",
+                            listOf(1)
                         )
                     )
                 )

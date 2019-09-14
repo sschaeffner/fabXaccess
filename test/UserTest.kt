@@ -58,11 +58,11 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
                 assertEquals("New User 1", userDto.name)
                 assertEquals("newUserWikiName", userDto.wikiName)
-                assertEquals("123456", userDto.phoneNumer)
+                assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason.isEmpty())
                 assertEquals("aabbccdd", userDto.cardId)
-                assertEquals(0, userDto.permissions.size)
+                assertEquals(0, userDto.qualifications.size)
             }
 
             handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
@@ -74,11 +74,11 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
                 assertEquals("New User 1", userDto.name)
                 assertEquals("newUserWikiName", userDto.wikiName)
-                assertEquals("123456", userDto.phoneNumer)
+                assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason.isEmpty())
                 assertEquals("aabbccdd", userDto.cardId)
-                assertEquals(0, userDto.permissions.size)
+                assertEquals(0, userDto.qualifications.size)
 
             }
         }
@@ -135,11 +135,11 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
                 assertEquals("Edit Username 1", userDto.name)
                 assertEquals("newUserWikiName", userDto.wikiName)
-                assertEquals("123456", userDto.phoneNumer)
+                assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason.isEmpty())
                 assertEquals("aabbccdd", userDto.cardId)
-                assertEquals(0, userDto.permissions.size)
+                assertEquals(0, userDto.qualifications.size)
 
             }
         }
@@ -195,11 +195,11 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
                 assertEquals("Edit Username 1", userDto.name)
                 assertEquals("editWikiName", userDto.wikiName)
-                assertEquals("54321", userDto.phoneNumer)
+                assertEquals("54321", userDto.phoneNumber)
                 assertEquals(true, userDto.locked)
                 assertEquals("edit locked reason", userDto.lockedReason)
                 assertEquals("bbaabbaa", userDto.cardId)
-                assertEquals(0, userDto.permissions.size)
+                assertEquals(0, userDto.qualifications.size)
 
             }
         }

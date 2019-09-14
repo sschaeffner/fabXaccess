@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.SizedCollection
 
 class UserService {
 
-    private val toolService = ToolService()
+    private val qualificationService = QualificationService()
 
     suspend fun getAllUsers(): List<UserDto> = dbQuery {
         User.all().map{ toUserDto(it) }.toCollection(ArrayList())
@@ -53,7 +53,7 @@ class UserService {
             user.locked,
             user.lockedReason,
             user.cardId,
-            user.permissions.map { toolService.toToolDto(it) }.toCollection(ArrayList())
+            user.qualifications.map { qualificationService.toQualificationDto(it) }.toCollection(ArrayList())
         )
     }
 }

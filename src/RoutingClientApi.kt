@@ -13,9 +13,9 @@ fun Route.clientApi() {
             val deviceMac = call.parameters["deviceMac"]!!
             val cardId = call.parameters["cardId"]!!
 
-            val toolsWithPermission = permissionService.getDevicePermissionsForCardId(deviceMac, cardId)
+            val qualifiedToolIds = qualificationService.getQualifiedToolsForCardId(deviceMac, cardId).map { it.id }
 
-            val permissionsString = toolsWithPermission.joinToString("\n")
+            val permissionsString = qualifiedToolIds.joinToString("\n")
 
             call.respond(permissionsString)
         }

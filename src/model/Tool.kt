@@ -29,4 +29,6 @@ class Tool(id: EntityID<Int>): IntEntity(id) {
     var wikiLink by Tools.wikiLink
 
     var device by Device referencedOn Tools.device
+
+    var qualifications by Qualification via ToolQualifications
 }

@@ -26,7 +26,7 @@ val adminService = AdminService()
 val userService = UserService()
 val deviceService =  DeviceService()
 val toolService = ToolService()
-val permissionService = PermissionService()
+val qualificationService = QualificationService()
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
@@ -126,6 +126,12 @@ fun addDemoContent() {
             wikiLink = ""
         }
 
-        user1.permissions = SizedCollection(listOf(tool1))
+        val qualification1 = Qualification.new {
+            name = "Qualification 1"
+            description = "Qualification for some tools"
+        }
+
+        user1.qualifications = SizedCollection(listOf(qualification1))
+        tool1.qualifications = SizedCollection(listOf(qualification1))
     }
 }

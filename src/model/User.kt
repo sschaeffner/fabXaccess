@@ -24,5 +24,5 @@ class User(id: EntityID<Int>): IntEntity(id) {
     var lockedReason by Users.lockedReason
     var cardId by Users.cardId
 
-    var permissions by Tool via UserPermissions
+    var qualifications by Qualification via UserQualifications
 }

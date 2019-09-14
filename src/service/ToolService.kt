@@ -5,7 +5,10 @@ import cloud.fabx.dto.EditToolDto
 import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
 import cloud.fabx.model.Device
+import cloud.fabx.model.Qualification
 import cloud.fabx.model.Tool
+import cloud.fabx.qualificationService
+import org.jetbrains.exposed.sql.SizedCollection
 
 class ToolService {
 
@@ -20,6 +23,13 @@ class ToolService {
     suspend fun createNewTool(tool: NewToolDto): ToolDto = dbQuery {
         val deviceInDb = Device.findById(tool.deviceId) ?: throw IllegalArgumentException("Could not find deviceId.")
 
+        val qualificationsInDb: List<Qualification> = tool.qualifications.map {
+            val qualification = Qualification.findById(it)
+            requireNotNull(qualification) { "Could not find qualification with id $it" }
+
+            qualification!!
+        }
+
         deviceInDb.let { deviceIt ->
             val newTool = Tool.new {
                 device = deviceIt
@@ -29,6 +39,8 @@ class ToolService {
                 toolState = tool.toolState
                 wikiLink = tool.wikiLink
             }
+
+            newTool.qualifications = SizedCollection(qualificationsInDb)
 
             toToolDto(newTool)
         }
@@ -47,6 +59,15 @@ class ToolService {
         editTool.toolType?.let { tool.toolType = it }
         editTool.toolState?.let { tool.toolState = it }
         editTool.wikiLink?.let { tool.wikiLink = it }
+        editTool.qualifications?.let { qualifications ->
+            val qualificationsInDb: List<Qualification> = qualifications.map {
+                val qualification = Qualification.findById(it)
+                requireNotNull(qualification) { "Could not find qualification with id $it" }
+
+                qualification!!
+            }
+            tool.qualifications = SizedCollection(qualificationsInDb)
+        }
     }
 
     fun toToolDto(tool: Tool): ToolDto {
@@ -57,7 +78,8 @@ class ToolService {
             tool.pin,
             tool.toolType,
             tool.toolState,
-            tool.wikiLink
+            tool.wikiLink,
+            tool.qualifications.map { qualificationService.toQualificationDto(it) }
         )
     }
 }

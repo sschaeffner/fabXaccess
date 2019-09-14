@@ -41,23 +41,59 @@ fun Route.api() {
                 }
             }
 
-            post("/{id}/permissions") {
-                val userPermission = call.receive<UserPermissionDto>()
-                permissionService.addUserPermission(userPermission.userId, userPermission.toolId)
+            post("/{id}/qualifications") {
+                val userQualification = call.receive<UserQualificationDto>()
+                qualificationService.addUserQualification(userQualification.userId, userQualification.qualificationId)
                 call.respond(HttpStatusCode.OK)
             }
 
-            delete("/{id}/permissions/{toolId}") {
+            delete("/{id}/qualifications/{qualificationId}") {
                 val userId = call.parameters["id"]!!.toInt()
-                val toolId = call.parameters["toolId"]!!.toInt()
+                val qualificationId = call.parameters["qualificationId"]!!.toInt()
 
-                permissionService.removeUserPermission(userId, toolId)
+                qualificationService.removeUserQualification(userId, qualificationId)
                 call.respond(HttpStatusCode.OK)
             }
 
             post("") {
                 val user = call.receive<NewUserDto>()
                 call.respond(userService.createNewUser(user))
+            }
+        }
+
+        route("/qualification") {
+            get("") {
+                call.respond(qualificationService.getAllQualifications())
+            }
+
+            get("/{id}") {
+                val qualification: QualificationDto? = call.parameters["id"]?.toInt()?.let {
+                    qualificationService.getQualificationById(it)
+                }
+                if (qualification != null) {
+                    call.respond(qualification)
+                } else {
+                    call.respond(HttpStatusCode.NotFound)
+                }
+            }
+
+            patch("/{id}") {
+                val qualification: QualificationDto? = call.parameters["id"]?.toInt()?.let {
+                    qualificationService.getQualificationById(it)
+                }
+
+                if (qualification == null) {
+                    call.respond(HttpStatusCode.NotFound)
+                } else {
+                    val editQualification = call.receive<EditQualificationDto>()
+                    qualificationService.editQualification(qualification.id, editQualification)
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
+
+            post("") {
+                val qualification = call.receive<NewQualificationDto>()
+                call.respond(qualificationService.createNewQualification(qualification))
             }
         }
 
