@@ -33,7 +33,14 @@ val qualificationService = QualificationService()
 @kotlin.jvm.JvmOverloads
 fun Application.module(demoContent: Boolean = true, apiAuthentication: Boolean = true, clientApiAuthentication: Boolean = true) {
 
-    if (demoContent) addDemoContent()
+    val demoContentEnabled = environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
+
+    if (demoContentEnabled) {
+        log.info("Demo Content Enabled")
+        addDemoContent()
+    } else {
+        log.info("Demo Content Disabled")
+    }
 
     install(ContentNegotiation) {
         jackson {}
