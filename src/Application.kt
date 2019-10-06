@@ -45,6 +45,29 @@ fun Application.module(demoContent: Boolean = true, apiAuthentication: Boolean =
     install(ContentNegotiation) {
         jackson {}
     }
+    install(CORS) {
+        method(HttpMethod.Options)
+        method(HttpMethod.Get)
+        method(HttpMethod.Post)
+        method(HttpMethod.Put)
+        method(HttpMethod.Delete)
+        method(HttpMethod.Patch)
+
+        header(HttpHeaders.Accept)
+        header(HttpHeaders.AccessControlRequestHeaders)
+        header(HttpHeaders.AccessControlRequestMethod)
+        header(HttpHeaders.XForwardedProto)
+        header(HttpHeaders.Origin)
+        header(HttpHeaders.Referrer)
+        header(HttpHeaders.UserAgent)
+        header(HttpHeaders.Authorization)
+
+        anyHost()
+        //host("localhost:4200")
+
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
+    }
     install(ForwardedHeaderSupport) // support for reverse proxies
     install(StatusPages) {
         exception<JsonProcessingException> { cause ->
