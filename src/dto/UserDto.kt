@@ -7,7 +7,7 @@ data class UserDto(
     val phoneNumber: String,
     val locked: Boolean,
     val lockedReason: String,
-    val cardId: String,
+    val cardId: String?,
 
     val qualifications: List<QualificationDto>
 )

@@ -32,8 +32,7 @@ class QualificationTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -143,8 +142,7 @@ class QualificationTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

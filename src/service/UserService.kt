@@ -27,7 +27,6 @@ class UserService {
             phoneNumber = user.phoneNumber
             locked = false
             lockedReason = ""
-            cardId = user.cardId
         }
 
         toUserDto(newUser)

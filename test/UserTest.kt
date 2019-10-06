@@ -44,8 +44,7 @@ class UserTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -61,7 +60,7 @@ class UserTest: CommonTest() {
                 assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason.isEmpty())
-                assertEquals("aabbccdd", userDto.cardId)
+                assertEquals(null, userDto.cardId)
                 assertEquals(0, userDto.qualifications.size)
             }
 
@@ -77,7 +76,7 @@ class UserTest: CommonTest() {
                 assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason.isEmpty())
-                assertEquals("aabbccdd", userDto.cardId)
+                assertEquals(null, userDto.cardId)
                 assertEquals(0, userDto.qualifications.size)
 
             }
@@ -97,8 +96,7 @@ class UserTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -138,7 +136,7 @@ class UserTest: CommonTest() {
                 assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
                 assertTrue(userDto.lockedReason.isEmpty())
-                assertEquals("aabbccdd", userDto.cardId)
+                assertEquals(null, userDto.cardId)
                 assertEquals(0, userDto.qualifications.size)
 
             }
@@ -158,8 +156,7 @@ class UserTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

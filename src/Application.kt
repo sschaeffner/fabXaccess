@@ -31,7 +31,7 @@ val qualificationService = QualificationService()
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(demoContent: Boolean = true, apiAuthentication: Boolean = true, clientApiAuthentication: Boolean = true) {
+fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean = true, clientApiAuthentication: Boolean = true) {
 
     val demoContentEnabled = environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
 

@@ -96,8 +96,7 @@ class ClientApiAuthTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -199,8 +198,7 @@ class ClientApiAuthTest: CommonTest() {
                     NewUserDto(
                         "New User 1",
                         "newUserWikiName",
-                        "123456",
-                        "aabbccdd"
+                        "123456"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -209,6 +207,23 @@ class ClientApiAuthTest: CommonTest() {
 
                 val userDto = mapper.readValue<UserDto>(response.content!!)
                 assertEquals(1, userDto.id)
+            }
+
+            // ADD CARD ID TO USER
+            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
+                setBody(mapper.writeValueAsString(
+                    EditUserDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "aabbccdd"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
             }
 
             // CREATE QUALIFICATION
