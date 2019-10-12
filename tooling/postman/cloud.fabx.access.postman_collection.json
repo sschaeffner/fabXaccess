@@ -10,6 +10,26 @@
 			"name": "User",
 			"item": [
 				{
+					"name": "Options",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "OPTIONS",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/user",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get User",
 					"request": {
 						"method": "GET",
@@ -58,7 +78,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"New User 1\",\n\t\"wikiName\": \"newUserWikiName\",\n\t\"phoneNumber\": \"123456789\",\n\t\"cardId\": \"42424242\"\n}"
+							"raw": "{\n\t\"name\": \"New User 1\",\n\t\"wikiName\": \"newUserWikiName\",\n\t\"phoneNumber\": \"123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{api_root}}/user",
@@ -102,9 +127,137 @@
 					"response": []
 				},
 				{
-					"name": "Add User Permission",
+					"name": "Add User Qualification",
 					"request": {
 						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userId\": 1,\n\t\"qualificationId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_root}}/user/1/qualifications",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"user",
+								"1",
+								"qualifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove User Qualification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/user/1/qualifications/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"user",
+								"1",
+								"qualifications",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Qualification",
+			"item": [
+				{
+					"name": "Get Qualification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/qualification/1",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"qualification",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Qualifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_root}}/qualification",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"qualification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Qualification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"New Qualification\",\n\t\"description\": \"Some Qualification Description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api_root}}/qualification",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"qualification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Qualification",
+					"request": {
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -115,43 +268,28 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"userId\": 1,\n\t\"toolId\": 1\n}"
+							"raw": "{\n\t\"description\": \"New Qualification Description\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "{{api_root}}/user/1/permissions",
+							"raw": "{{api_root}}/qualification/1",
 							"host": [
 								"{{api_root}}"
 							],
 							"path": [
-								"user",
-								"1",
-								"permissions"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Remove User Permission",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{api_root}}/user/1/permissions/1",
-							"host": [
-								"{{api_root}}"
-							],
-							"path": [
-								"user",
-								"1",
-								"permissions",
+								"qualification",
 								"1"
 							]
 						}
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Device",
@@ -302,7 +440,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"deviceId\": 1,\n\t\"name\": \"new Tool 1\",\n\t\"pin\": 1,\n\t\"toolType\": \"UNLOCK\",\n\t\"toolState\": \"GOOD\",\n\t\"wikiLink\": \"\"\n}"
+							"raw": "{\n\t\"deviceId\": 1,\n\t\"name\": \"new Tool 1\",\n\t\"pin\": 1,\n\t\"toolType\": \"UNLOCK\",\n\t\"toolState\": \"GOOD\",\n\t\"wikiLink\": \"\",\n\t\"qualifications\": [1]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{api_root}}/tool",
@@ -330,7 +473,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Edited Tool Name\",\n\t\"toolType\": \"KEEP\"\n}"
+							"raw": "{\n\t\"name\": \"Edited Tool Name\",\n\t\"toolType\": \"KEEP\",\n\t\"qualifications\": [1, 2]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{api_root}}/tool/1",
