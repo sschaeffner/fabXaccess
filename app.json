@@ -1,0 +1,6 @@
+{
+  "name": "fabX access",
+  "description": "fabX.cloud access system backend.",
+  "image": "heroku/java",
+  "addons": [ "heroku-postgresql" ]
+}
