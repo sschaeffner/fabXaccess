@@ -2,6 +2,8 @@ package cloud.fabx
 
 import cloud.fabx.dto.*
 import io.ktor.application.call
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authentication
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
@@ -171,6 +173,11 @@ fun Route.api() {
                 val tool = call.receive<NewToolDto>()
                 call.respond(toolService.createNewTool(tool))
             }
+        }
+
+        get("/info") {
+            val principal = call.authentication.principal<UserIdPrincipal>()
+            call.respond(InfoDto(principal!!.name))
         }
     }
 }
