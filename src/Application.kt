@@ -33,6 +33,25 @@ val qualificationService = QualificationService()
 @kotlin.jvm.JvmOverloads
 fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean = true, clientApiAuthentication: Boolean = true) {
 
+    val dbUrl = environment.config.propertyOrNull("heroku.dbUrl")
+
+    val jdbcUrl = environment.config.propertyOrNull("fabx.db.jdbcUrl")
+    val dbUser = environment.config.propertyOrNull("fabx.db.dbUser")
+    val dbPassword = environment.config.propertyOrNull("fabx.db.dbPassword")
+
+    if (dbUrl != null) {
+        log.info("configuring heroku DATABASE_URL")
+        DbHandler.configure(dbUrl.getString())
+    } else if (jdbcUrl != null && dbUser != null && dbPassword != null) {
+        log.info("configuring jdbc url")
+        DbHandler.configure(jdbcUrl.getString(), dbUser.getString(), dbPassword.getString())
+    } else {
+        log.info("using default database configuration (H2).")
+    }
+
+
+
+
     val demoContentEnabled = environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
 
     if (demoContentEnabled) {

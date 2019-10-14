@@ -40,7 +40,8 @@ dependencies {
     compile "io.ktor:ktor-server-core:$ktor_version"
     compile "io.ktor:ktor-auth:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"
-    compile 'org.jetbrains.exposed:exposed:0.16.1'
+    compile "org.jetbrains.exposed:exposed:0.16.1"
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
 }
 
