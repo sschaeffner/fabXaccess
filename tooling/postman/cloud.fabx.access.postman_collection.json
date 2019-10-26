@@ -10,26 +10,6 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "Options",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "OPTIONS",
-						"header": [],
-						"url": {
-							"raw": "{{api_root}}/user",
-							"host": [
-								"{{api_root}}"
-							],
-							"path": [
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get User",
 					"request": {
 						"method": "GET",
@@ -573,6 +553,23 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Get Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_root}}/info",
+					"host": [
+						"{{api_root}}"
+					],
+					"path": [
+						"info"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
@@ -580,12 +577,12 @@
 		"basic": [
 			{
 				"key": "password",
-				"value": "demopassword",
+				"value": "{{password}}",
 				"type": "string"
 			},
 			{
 				"key": "username",
-				"value": "admin1",
+				"value": "{{username}}",
 				"type": "string"
 			}
 		]
@@ -611,5 +608,6 @@
 				]
 			}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
