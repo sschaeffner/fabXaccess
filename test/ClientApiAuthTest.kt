@@ -180,7 +180,7 @@ class ClientApiAuthTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd").apply {
+            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF").apply {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
             }
 
@@ -221,7 +221,8 @@ class ClientApiAuthTest: CommonTest() {
                         null,
                         null,
                         null,
-                        "aabbccdd"
+                        "aabbccdd",
+                        "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -301,7 +302,7 @@ class ClientApiAuthTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd") {
+            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF") {
                 addBasicAuth("aaffeeaaffee", "newSecret")
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())

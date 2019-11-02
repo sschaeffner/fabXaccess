@@ -120,6 +120,7 @@ class UserTest: CommonTest() {
                         null,
                         null,
                         null,
+                        null,
                         null
                     )
                 ))
@@ -182,7 +183,8 @@ class UserTest: CommonTest() {
                         "54321",
                         true,
                         "edit locked reason",
-                        "bbaabbaa"
+                        "bbaabbaa",
+                        "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -204,8 +206,8 @@ class UserTest: CommonTest() {
                 assertEquals(true, userDto.locked)
                 assertEquals("edit locked reason", userDto.lockedReason)
                 assertEquals("bbaabbaa", userDto.cardId)
+                assertEquals("11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF", userDto.cardSecret)
                 assertEquals(0, userDto.qualifications.size)
-
             }
         }
 

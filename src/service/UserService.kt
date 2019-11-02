@@ -41,6 +41,7 @@ class UserService {
         editUser.locked?.let { user.locked = it }
         editUser.lockedReason?.let { user.lockedReason = it }
         editUser.cardId?.let { user.cardId = it }
+        editUser.cardSecret?.let { user.cardSecret = it }
     }
 
     private fun toUserDto(user: User): UserDto {
@@ -53,6 +54,7 @@ class UserService {
             user.locked,
             user.lockedReason,
             user.cardId,
+            user.cardSecret,
             user.qualifications.map { qualificationService.toQualificationDto(it) }.toCollection(ArrayList())
         )
     }

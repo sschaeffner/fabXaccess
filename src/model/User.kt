@@ -13,6 +13,7 @@ object Users: IntIdTable() {
     val locked = bool("locked")
     val lockedReason = varchar("lockedReason", 256)
     val cardId = varchar("cardId", 16).nullable().uniqueIndex("cardIdUniqueIndex")
+    val cardSecret = varchar("cardSecret", 128).nullable()
 }
 
 class User(id: EntityID<Int>): IntEntity(id) {
@@ -25,6 +26,7 @@ class User(id: EntityID<Int>): IntEntity(id) {
     var locked by Users.locked
     var lockedReason by Users.lockedReason
     var cardId by Users.cardId
+    var cardSecret by Users.cardSecret
 
     var qualifications by Qualification via UserQualifications
 }

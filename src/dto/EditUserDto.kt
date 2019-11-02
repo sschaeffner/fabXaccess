@@ -7,5 +7,6 @@ data class EditUserDto (
     val phoneNumber: String?,
     val locked: Boolean?,
     val lockedReason: String?,
-    val cardId: String?
+    val cardId: String?,
+    val cardSecret: String?
 )

@@ -9,11 +9,12 @@ import io.ktor.routing.route
 
 fun Route.clientApi() {
     route("/clientApi/v1") {
-        get("/{deviceMac}/permissions/{cardId}") {
+        get("/{deviceMac}/permissions/{cardId}/{cardSecret}") {
             val deviceMac = call.parameters["deviceMac"]!!
             val cardId = call.parameters["cardId"]!!
+            val cardSecret = call.parameters["cardSecret"]!!
 
-            val qualifiedToolIds = qualificationService.getQualifiedToolsForCardId(deviceMac, cardId).map { it.id }
+            val qualifiedToolIds = qualificationService.getQualifiedToolsForCardId(deviceMac, cardId, cardSecret).map { it.id }
 
             val permissionsString = qualifiedToolIds.joinToString("\n")
 
