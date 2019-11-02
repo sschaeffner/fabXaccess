@@ -1,7 +1,8 @@
 package cloud.fabx.dto
 
 data class EditUserDto (
-    val name: String?,
+    val firstName: String?,
+    val lastName: String?,
     val wikiName: String?,
     val phoneNumber: String?,
     val locked: Boolean?,

@@ -6,7 +6,8 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 
 object Users: IntIdTable() {
-    val name = varchar("name", 64)
+    val firstName = varchar("firstName", 64)
+    val lastName = varchar("lastName", 64)
     val wikiName = varchar("wikiName", 64)
     val phoneNumber = varchar("phoneNumber", 64).uniqueIndex("phoneNumberUniqueIndex")
     val locked = bool("locked")
@@ -17,7 +18,8 @@ object Users: IntIdTable() {
 class User(id: EntityID<Int>): IntEntity(id) {
     companion object : IntEntityClass<User>(Users)
 
-    var name by Users.name
+    var firstName by Users.firstName
+    var lastName by Users.lastName
     var wikiName by Users.wikiName
     var phoneNumber by Users.phoneNumber
     var locked by Users.locked

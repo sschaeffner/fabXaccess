@@ -2,7 +2,8 @@ package cloud.fabx.dto
 
 data class UserDto(
     val id: Int,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val wikiName: String,
     val phoneNumber: String,
     val locked: Boolean,

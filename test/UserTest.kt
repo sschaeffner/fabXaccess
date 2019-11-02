@@ -43,6 +43,7 @@ class UserTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
+                        "New User 1 LastName",
                         "newUserWikiName",
                         "123456"
                     )
@@ -55,7 +56,8 @@ class UserTest: CommonTest() {
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
                 assertEquals(1, userDto.id)
-                assertEquals("New User 1", userDto.name)
+                assertEquals("New User 1", userDto.firstName)
+                assertEquals("New User 1 LastName", userDto.lastName)
                 assertEquals("newUserWikiName", userDto.wikiName)
                 assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
@@ -71,7 +73,8 @@ class UserTest: CommonTest() {
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
                 assertEquals(1, userDto.id)
-                assertEquals("New User 1", userDto.name)
+                assertEquals("New User 1", userDto.firstName)
+                assertEquals("New User 1 LastName", userDto.lastName)
                 assertEquals("newUserWikiName", userDto.wikiName)
                 assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
@@ -95,6 +98,7 @@ class UserTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
+                        "New User 1 LastName",
                         "newUserWikiName",
                         "123456"
                     )
@@ -115,8 +119,8 @@ class UserTest: CommonTest() {
                         null,
                         null,
                         null,
+                        null,
                         null
-
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -131,7 +135,8 @@ class UserTest: CommonTest() {
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
                 assertEquals(1, userDto.id)
-                assertEquals("Edit Username 1", userDto.name)
+                assertEquals("Edit Username 1", userDto.firstName)
+                assertEquals("New User 1 LastName", userDto.lastName)
                 assertEquals("newUserWikiName", userDto.wikiName)
                 assertEquals("123456", userDto.phoneNumber)
                 assertEquals(false, userDto.locked)
@@ -155,6 +160,7 @@ class UserTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
+                        "New User 1 LastName",
                         "newUserWikiName",
                         "123456"
                     )
@@ -171,6 +177,7 @@ class UserTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     EditUserDto(
                         "Edit Username 1",
+                        "New User 1 LastName",
                         "editWikiName",
                         "54321",
                         true,
@@ -190,7 +197,8 @@ class UserTest: CommonTest() {
                 val userDto = mapper.readValue<UserDto>(response.content!!)
 
                 assertEquals(1, userDto.id)
-                assertEquals("Edit Username 1", userDto.name)
+                assertEquals("Edit Username 1", userDto.firstName)
+                assertEquals("New User 1 LastName", userDto.lastName)
                 assertEquals("editWikiName", userDto.wikiName)
                 assertEquals("54321", userDto.phoneNumber)
                 assertEquals(true, userDto.locked)

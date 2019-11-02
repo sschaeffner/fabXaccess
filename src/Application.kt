@@ -151,7 +151,8 @@ fun addDemoContent() {
         }
 
         val user1 = User.new {
-            name = "Tester 1"
+            firstName = "Nikola"
+            lastName = "Testler"
             wikiName = "wikiTester1"
             phoneNumber = "0049 123 456"
             locked = false
