@@ -31,6 +31,7 @@ class ClientApiTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
+                        "New User 1 LastName",
                         "newUserWikiName",
                         "123456"
                     )
@@ -47,6 +48,7 @@ class ClientApiTest: CommonTest() {
             handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
                 setBody(mapper.writeValueAsString(
                     EditUserDto(
+                        null,
                         null,
                         null,
                         null,

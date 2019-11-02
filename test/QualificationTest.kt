@@ -31,6 +31,7 @@ class QualificationTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
+                        "New User 1 LastName",
                         "newUserWikiName",
                         "123456"
                     )
@@ -141,6 +142,7 @@ class QualificationTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewUserDto(
                         "New User 1",
+                        "New User 1 LastName",
                         "newUserWikiName",
                         "123456"
                     )

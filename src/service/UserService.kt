@@ -4,9 +4,7 @@ import cloud.fabx.db.DbHandler.dbQuery
 import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
-import cloud.fabx.model.Tool
 import cloud.fabx.model.User
-import org.jetbrains.exposed.sql.SizedCollection
 
 class UserService {
 
@@ -22,7 +20,8 @@ class UserService {
 
     suspend fun createNewUser(user: NewUserDto): UserDto = dbQuery {
         val newUser = User.new {
-            name = user.name
+            firstName = user.firstName
+            lastName = user.lastName
             wikiName = user.wikiName
             phoneNumber = user.phoneNumber
             locked = false
@@ -35,7 +34,8 @@ class UserService {
     suspend fun editUser(id: Int, editUser: EditUserDto) = dbQuery {
         val user = User.findById(id) ?: throw IllegalArgumentException("User with id $id does not exist")
 
-        editUser.name?.let { user.name = it }
+        editUser.firstName?.let { user.firstName = it }
+        editUser.lastName?.let { user.lastName = it }
         editUser.wikiName?.let { user.wikiName = it }
         editUser.phoneNumber?.let { user.phoneNumber = it }
         editUser.locked?.let { user.locked = it }
@@ -46,7 +46,8 @@ class UserService {
     private fun toUserDto(user: User): UserDto {
         return UserDto(
             user.id.value,
-            user.name,
+            user.firstName,
+            user.lastName,
             user.wikiName,
             user.phoneNumber,
             user.locked,
