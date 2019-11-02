@@ -158,6 +158,7 @@ fun addDemoContent() {
             locked = false
             lockedReason = ""
             cardId = "11223344556677"
+            cardSecret = "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
         }
 
         val device1 = Device.new {

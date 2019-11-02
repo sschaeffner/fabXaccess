@@ -9,6 +9,7 @@ data class UserDto(
     val locked: Boolean,
     val lockedReason: String,
     val cardId: String?,
+    val cardSecret: String?,
 
     val qualifications: List<QualificationDto>
 )

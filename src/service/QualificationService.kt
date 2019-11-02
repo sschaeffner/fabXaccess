@@ -8,6 +8,7 @@ import cloud.fabx.dto.ToolDto
 import cloud.fabx.model.*
 import cloud.fabx.toolService
 import org.jetbrains.exposed.sql.SizedCollection
+import org.jetbrains.exposed.sql.and
 
 class QualificationService {
 
@@ -65,9 +66,9 @@ class QualificationService {
         user.qualifications = SizedCollection(newQualifications)
     }
 
-    suspend fun getQualifiedToolsForCardId(deviceMac: String, cardId: String): List<ToolDto> = dbQuery {
-        val user = User.find { Users.cardId eq cardId }.firstOrNull()
-        requireNotNull(user) { "User with cardId $cardId does not exist" }
+    suspend fun getQualifiedToolsForCardId(deviceMac: String, cardId: String, cardSecret: String): List<ToolDto> = dbQuery {
+        val user = User.find { (Users.cardId eq cardId) and (Users.cardSecret eq cardSecret) }.firstOrNull()
+        requireNotNull(user) { "User with cardId $cardId and cardSecret $cardSecret does not exist" }
 
         val device = Device.find { Devices.mac eq deviceMac }.firstOrNull()
         requireNotNull(device) { "Device with mac $deviceMac does not exist" }
