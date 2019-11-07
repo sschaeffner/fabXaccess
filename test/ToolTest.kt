@@ -63,7 +63,8 @@ class ToolTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewQualificationDto(
                         "New Qualification 1",
-                        "A Qualification"
+                        "A Qualification",
+                        "#000000"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -154,7 +155,8 @@ class ToolTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewQualificationDto(
                         "New Qualification 1",
-                        "A Qualification"
+                        "A Qualification",
+                        "#000000"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -278,7 +280,8 @@ class ToolTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewQualificationDto(
                         "New Qualification 1",
-                        "A Qualification"
+                        "A Qualification",
+                        "#000000"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

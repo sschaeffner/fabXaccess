@@ -178,7 +178,7 @@ fun addDemoContent() {
         val qualification1 = Qualification.new {
             name = "Qualification 1"
             description = "Qualification for some tools"
-            //colour = "#aabbcc"
+            colour = "#aabbcc"
         }
 
         user1.qualifications = SizedCollection(listOf(qualification1))
