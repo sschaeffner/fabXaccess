@@ -24,6 +24,7 @@ class QualificationService {
         val newQualification = Qualification.new {
             name = qualification.name
             description = qualification.description
+            colour = qualification.colour
         }
 
         toQualificationDto(newQualification)
@@ -36,6 +37,7 @@ class QualificationService {
 
         editQualification.name?.let { qualification.name = it }
         editQualification.description?.let { qualification.description = it }
+        editQualification.colour?.let { qualification.colour = it }
     }
 
     suspend fun addUserQualification(userId: Int, qualificationId: Int) = dbQuery {
@@ -82,7 +84,8 @@ class QualificationService {
         return QualificationDto(
             qualification.id.value,
             qualification.name,
-            qualification.description
+            qualification.description,
+            qualification.colour
         )
     }
 }
