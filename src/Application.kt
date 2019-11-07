@@ -50,8 +50,6 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
     }
 
 
-
-
     val demoContentEnabled = environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
 
     if (demoContentEnabled) {
@@ -180,6 +178,7 @@ fun addDemoContent() {
         val qualification1 = Qualification.new {
             name = "Qualification 1"
             description = "Qualification for some tools"
+            colour = "#aabbcc"
         }
 
         user1.qualifications = SizedCollection(listOf(qualification1))

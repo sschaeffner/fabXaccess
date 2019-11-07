@@ -44,13 +44,14 @@ object DbHandler {
         transaction {
             addLogger(StdOutSqlLogger)
 
-            SchemaUtils.create(Users)
-            SchemaUtils.create(Devices)
-            SchemaUtils.create(Tools)
-            SchemaUtils.create(Admins)
-            SchemaUtils.create(Qualifications)
-            SchemaUtils.create(UserQualifications)
-            SchemaUtils.create(ToolQualifications)
+            SchemaUtils.create(
+                Users,
+                Devices,
+                Tools,
+                Admins,
+                Qualifications,
+                UserQualifications,
+                ToolQualifications)
         }
 
         db

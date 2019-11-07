@@ -68,7 +68,8 @@ class ClientApiTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewQualificationDto(
                         "New Qualification 1",
-                        "A Qualification"
+                        "A Qualification",
+                        "#000000"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -176,7 +177,8 @@ class ClientApiTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     NewQualificationDto(
                         "New Qualification 1",
-                        "A Qualification1"
+                        "A Qualification1",
+                        "#000000"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

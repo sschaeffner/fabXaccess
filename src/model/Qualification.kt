@@ -8,6 +8,7 @@ import org.jetbrains.exposed.dao.IntIdTable
 object Qualifications: IntIdTable() {
     val name = varchar("name", 64)
     val description = varchar("description", 256)
+    val colour = varchar("colour", 8)
 }
 
 class Qualification(id: EntityID<Int>): IntEntity(id) {
@@ -15,4 +16,5 @@ class Qualification(id: EntityID<Int>): IntEntity(id) {
 
     var name by Qualifications.name
     var description by Qualifications.description
+    var colour by Qualifications.colour
 }
