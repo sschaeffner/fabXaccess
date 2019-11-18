@@ -43,6 +43,17 @@ fun Route.api() {
                 }
             }
 
+            delete("/{id}") {
+                call.parameters["id"]?.toInt()?.let {
+                    try {
+                        userService.deleteUser(it)
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: IllegalArgumentException) {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }
+            }
+
             post("/{id}/qualifications") {
                 val userQualification = call.receive<UserQualificationDto>()
                 qualificationService.addUserQualification(userQualification.userId, userQualification.qualificationId)

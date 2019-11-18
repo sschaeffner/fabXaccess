@@ -44,6 +44,11 @@ class UserService {
         editUser.cardSecret?.let { user.cardSecret = it }
     }
 
+    suspend fun deleteUser(id: Int) = dbQuery {
+        val user = User.findById(id) ?: throw IllegalArgumentException("User with id $id does not exist")
+        user.delete()
+    }
+
     private fun toUserDto(user: User): UserDto {
         return UserDto(
             user.id.value,
