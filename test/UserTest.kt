@@ -213,4 +213,67 @@ class UserTest: CommonTest() {
 
         Unit
     }
+
+    @Test
+    fun testDeleteUser() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+
+            val mapper = jacksonObjectMapper()
+
+            handleRequest(HttpMethod.Post, "/api/v1/user") {
+                setBody(mapper.writeValueAsString(
+                    NewUserDto(
+                        "New User 1",
+                        "New User 1 LastName",
+                        "newUserWikiName",
+                        "123456"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val userDto = mapper.readValue<UserDto>(response.content!!)
+                assertEquals(1, userDto.id)
+            }
+
+            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
+                setBody(mapper.writeValueAsString(
+                    EditUserDto(
+                        "Edit Username 1",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val userDto = mapper.readValue<UserDto>(response.content!!)
+
+                assertEquals(1, userDto.id)
+                assertEquals("Edit Username 1", userDto.firstName)
+                assertEquals("New User 1 LastName", userDto.lastName)
+                assertEquals("newUserWikiName", userDto.wikiName)
+                assertEquals("123456", userDto.phoneNumber)
+                assertEquals(false, userDto.locked)
+                assertTrue(userDto.lockedReason.isEmpty())
+                assertEquals(null, userDto.cardId)
+                assertEquals(0, userDto.qualifications.size)
+
+            }
+        }
+
+        Unit
+    }
 }
