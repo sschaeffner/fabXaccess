@@ -58,7 +58,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"New User 1\",\n\t\"wikiName\": \"newUserWikiName\",\n\t\"phoneNumber\": \"123456789\"\n}",
+							"raw": "{\n\t\"firstName\": \"Nikola\",\n\t\"lastName\": \"Testler\",\n\t\"wikiName\": \"newUserWikiName\",\n\t\"phoneNumber\": \"123456789\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -91,7 +91,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Tester Tester 1\"\n}"
+							"raw": "{\n\t\"firstName\": \"Tester Tester 1\"\n}"
 						},
 						"url": {
 							"raw": "{{api_root}}/user/1",
@@ -101,6 +101,31 @@
 							"path": [
 								"user",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{api_root}}/user/2",
+							"host": [
+								"{{api_root}}"
+							],
+							"path": [
+								"user",
+								"2"
 							]
 						}
 					},
@@ -215,7 +240,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"New Qualification\",\n\t\"description\": \"Some Qualification Description\"\n}",
+							"raw": "{\n\t\"name\": \"New Qualification 2\",\n\t\"description\": \"Some Qualification Description\",\n\t\"colour\": \"#000000\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -248,7 +273,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"description\": \"New Qualification Description\"\n}",
+							"raw": "{\n\t\"description\": \"New Qualification Description\",\n\t\"colour\": \"#4603AD\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -484,14 +509,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{clientapi_root}}/aaffeeaaffee/permissions/11223344556677",
+							"raw": "{{clientapi_root}}/aaffeeaaffee/permissions/11223344556677/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF",
 							"host": [
 								"{{clientapi_root}}"
 							],
 							"path": [
 								"aaffeeaaffee",
 								"permissions",
-								"11223344556677"
+								"11223344556677",
+								"11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
 							]
 						}
 					},
