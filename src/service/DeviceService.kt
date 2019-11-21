@@ -32,6 +32,7 @@ class DeviceService {
             mac = device.mac
             secret = device.secret
             bgImageUrl = device.bgImageUrl
+            backupBackendUrl = device.backupBackendUrl
         }
 
         toDeviceDto(newDevice)
@@ -44,6 +45,7 @@ class DeviceService {
         editDevice.mac?.let { device.mac = it }
         editDevice.secret?.let { device.secret = it }
         editDevice.bgImageUrl?.let { device.bgImageUrl = it }
+        editDevice.backupBackendUrl?.let { device.backupBackendUrl = it }
     }
 
     fun toDeviceDto(device: Device): DeviceDto {
@@ -53,6 +55,7 @@ class DeviceService {
             device.mac,
             device.secret,
             device.bgImageUrl,
+            device.backupBackendUrl,
             device.tools.map { toolService.toToolDto(it) }.toCollection(ArrayList())
         )
     }
@@ -70,6 +73,7 @@ class DeviceService {
                 this.mac = mac
                 this.secret = secret
                 this.bgImageUrl = ""
+                this.backupBackendUrl = ""
             }
 
             true

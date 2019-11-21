@@ -6,6 +6,7 @@ data class DeviceDto (
     val mac: String,
     val secret: String,
     val bgImageUrl: String,
+    val backupBackendUrl: String,
 
     val tools: List<ToolDto>
 )
