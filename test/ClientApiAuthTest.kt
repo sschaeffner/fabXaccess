@@ -33,7 +33,8 @@ class ClientApiAuthTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -63,7 +64,8 @@ class ClientApiAuthTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -132,7 +134,8 @@ class ClientApiAuthTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -255,7 +258,8 @@ class ClientApiAuthTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -327,7 +331,8 @@ class ClientApiAuthTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

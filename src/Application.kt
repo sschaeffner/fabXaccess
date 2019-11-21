@@ -164,6 +164,7 @@ fun addDemoContent() {
             mac = "aaffeeaaffee"
             secret = "someSecret"
             bgImageUrl = "http://bla"
+            backupBackendUrl = "http://fabx.backup"
         }
 
         val tool1 = Tool.new {

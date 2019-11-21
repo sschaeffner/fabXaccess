@@ -46,7 +46,8 @@ class ToolTest: CommonTest() {
                             "New Device 1",
                             "aaffeeaaffee",
                             "newSecret",
-                            "http://bgurl"
+                            "http://bgurl",
+                            "http://fabx.backup"
                         )
                     )
                 )
@@ -138,7 +139,8 @@ class ToolTest: CommonTest() {
                             "New Device 1",
                             "aaffeeaaffee",
                             "newSecret",
-                            "http://bgurl"
+                            "http://bgurl",
+                            "http://fabx.backup"
                         )
                     )
                 )
@@ -243,7 +245,8 @@ class ToolTest: CommonTest() {
                             "New Device 1",
                             "aaffeeaaffee",
                             "newSecret",
-                            "http://bgurl"
+                            "http://bgurl",
+                            "http://fabx.backup"
                         )
                     )
                 )
@@ -263,7 +266,8 @@ class ToolTest: CommonTest() {
                             "New Device 2",
                             "aaffeeaaffff",
                             "newSecret2",
-                            "http://bgurl2"
+                            "http://bgurl2",
+                            "http://fabx.backup"
                         )
                     )
                 )

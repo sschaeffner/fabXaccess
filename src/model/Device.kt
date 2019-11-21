@@ -10,6 +10,7 @@ object Devices: IntIdTable() {
     val mac = varchar("mac", 64).uniqueIndex("deviceMacUniqueIndex")
     val secret = varchar("secret", 64)
     val bgImageUrl = varchar("bgImageUrl", 256)
+    val backupBackendUrl = varchar("backupBackendUrl", 256)
 }
 
 class Device(id: EntityID<Int>): IntEntity(id) {
@@ -19,6 +20,7 @@ class Device(id: EntityID<Int>): IntEntity(id) {
     var mac by Devices.mac
     var secret by Devices.secret
     var bgImageUrl by Devices.bgImageUrl
+    var backupBackendUrl by Devices.backupBackendUrl
 
     val tools by Tool referrersOn Tools.device
 }

@@ -44,7 +44,8 @@ class DeviceTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -59,6 +60,7 @@ class DeviceTest: CommonTest() {
                 assertEquals("aaffeeaaffee", deviceDto.mac)
                 assertEquals("newSecret", deviceDto.secret)
                 assertEquals("http://bgurl", deviceDto.bgImageUrl)
+                assertEquals("http://fabx.backup", deviceDto.backupBackendUrl)
                 assertTrue(deviceDto.tools.isEmpty())
             }
 
@@ -73,6 +75,7 @@ class DeviceTest: CommonTest() {
                 assertEquals("aaffeeaaffee", deviceDto.mac )
                 assertEquals("newSecret", deviceDto.secret)
                 assertEquals("http://bgurl", deviceDto.bgImageUrl)
+                assertEquals("http://fabx.backup", deviceDto.backupBackendUrl)
                 assertTrue(deviceDto.tools.isEmpty())
             }
         }
@@ -91,7 +94,8 @@ class DeviceTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -103,6 +107,7 @@ class DeviceTest: CommonTest() {
                 setBody(mapper.writeValueAsString(
                     EditDeviceDto(
                         "Edited Devicename 1",
+                        null,
                         null,
                         null,
                         null
@@ -124,6 +129,7 @@ class DeviceTest: CommonTest() {
                 assertEquals("aaffeeaaffee", deviceDto.mac )
                 assertEquals("newSecret", deviceDto.secret)
                 assertEquals("http://bgurl", deviceDto.bgImageUrl)
+                assertEquals("http://fabx.backup", deviceDto.backupBackendUrl)
                 assertTrue(deviceDto.tools.isEmpty())
             }
         }
@@ -142,7 +148,8 @@ class DeviceTest: CommonTest() {
                         "New Device 1",
                         "aaffeeaaffee",
                         "newSecret",
-                        "http://bgurl"
+                        "http://bgurl",
+                        "http://fabx.backup"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -156,7 +163,8 @@ class DeviceTest: CommonTest() {
                         "Edited Devicename 1",
                         "aabbaabbaabb",
                         "editedSecret",
-                        "http://editedbgurl"
+                        "http://editedbgurl",
+                        "http://fabx.other"
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -175,6 +183,7 @@ class DeviceTest: CommonTest() {
                 assertEquals("aabbaabbaabb", deviceDto.mac )
                 assertEquals("editedSecret", deviceDto.secret)
                 assertEquals("http://editedbgurl", deviceDto.bgImageUrl)
+                assertEquals("http://fabx.other", deviceDto.backupBackendUrl)
                 assertTrue(deviceDto.tools.isEmpty())
             }
         }
