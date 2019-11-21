@@ -116,7 +116,8 @@ class ClientApiAuthTest: CommonTest() {
                     NewQualificationDto(
                         "New Qualification 1",
                         "A Qualification",
-                        "#000000"
+                        "#000000",
+                        1
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -240,7 +241,8 @@ class ClientApiAuthTest: CommonTest() {
                     NewQualificationDto(
                         "New Qualification 1",
                         "A Qualification",
-                        "#000000"
+                        "#000000",
+                        1
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
