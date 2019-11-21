@@ -20,8 +20,185 @@ import kotlin.test.assertTrue
 
 @KtorExperimentalAPI
 class QualificationTest: CommonTest() {
+
     @Test
-    fun testQualifications() = runBlocking {
+    fun testGetAllQualifications() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            handleRequest(HttpMethod.Get, "/api/v1/qualification").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals("[]", response.content)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testCreateAndGetQualification() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            val mapper = jacksonObjectMapper()
+
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification",
+                        "#000000",
+                        1
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+
+                assertEquals(1, qualificationDto.id)
+                assertEquals("New Qualification 1", qualificationDto.name)
+                assertEquals("A Qualification", qualificationDto.description)
+                assertEquals("#000000", qualificationDto.colour)
+                assertEquals(1, qualificationDto.orderNr)
+            }
+
+            handleRequest(HttpMethod.Get, "/api/v1/qualification/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+
+                assertEquals(1, qualificationDto.id)
+                assertEquals("New Qualification 1", qualificationDto.name)
+                assertEquals("A Qualification", qualificationDto.description)
+                assertEquals("#000000", qualificationDto.colour)
+                assertEquals(1, qualificationDto.orderNr)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testEditQualificationSingleParameter() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            val mapper = jacksonObjectMapper()
+
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification",
+                        "#000000",
+                        1
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+
+                assertEquals(1, qualificationDto.id)
+                assertEquals("New Qualification 1", qualificationDto.name)
+                assertEquals("A Qualification", qualificationDto.description)
+                assertEquals("#000000", qualificationDto.colour)
+                assertEquals(1, qualificationDto.orderNr)
+            }
+
+            handleRequest(HttpMethod.Patch, "/api/v1/qualification/1") {
+                setBody(mapper.writeValueAsString(
+                    EditQualificationDto(
+                        "Edited Qualification Name 1",
+                        null,
+                        null,
+                        null
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+            handleRequest(HttpMethod.Get, "/api/v1/qualification/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+
+                assertEquals(1, qualificationDto.id)
+                assertEquals("Edited Qualification Name 1", qualificationDto.name)
+                assertEquals("A Qualification", qualificationDto.description)
+                assertEquals("#000000", qualificationDto.colour)
+                assertEquals(1, qualificationDto.orderNr)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testEditQualificationAllParameters() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            val mapper = jacksonObjectMapper()
+
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification",
+                        "#000000",
+                        1
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+
+                assertEquals(1, qualificationDto.id)
+                assertEquals("New Qualification 1", qualificationDto.name)
+                assertEquals("A Qualification", qualificationDto.description)
+                assertEquals("#000000", qualificationDto.colour)
+                assertEquals(1, qualificationDto.orderNr)
+            }
+
+            handleRequest(HttpMethod.Patch, "/api/v1/qualification/1") {
+                setBody(mapper.writeValueAsString(
+                    EditQualificationDto(
+                        "Edited Qualification Name 1",
+                        "Edited Qualification Description",
+                        "#FFFFFF",
+                        42
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+            handleRequest(HttpMethod.Get, "/api/v1/qualification/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+
+                assertEquals(1, qualificationDto.id)
+                assertEquals("Edited Qualification Name 1", qualificationDto.name)
+                assertEquals("Edited Qualification Description", qualificationDto.description)
+                assertEquals("#FFFFFF", qualificationDto.colour)
+                assertEquals(42, qualificationDto.orderNr)
+            }
+        }
+
+        Unit
+    }
+
+
+    @Test
+    fun testAddQualificationForUser() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
@@ -50,7 +227,8 @@ class QualificationTest: CommonTest() {
                     NewQualificationDto(
                         "New Qualification 1",
                         "A Qualification",
-                        "#000000"
+                        "#000000",
+                        1
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -134,7 +312,7 @@ class QualificationTest: CommonTest() {
     }
 
     @Test
-    fun testDeleteQualification() = runBlocking {
+    fun testDeleteQualificationForUser() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
 
             val mapper = jacksonObjectMapper()
@@ -163,7 +341,8 @@ class QualificationTest: CommonTest() {
                     NewQualificationDto(
                         "New Qualification 1",
                         "A Qualification",
-                        "#000000"
+                        "#000000",
+                        1
                     )
                 ))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())

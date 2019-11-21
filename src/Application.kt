@@ -180,6 +180,7 @@ fun addDemoContent() {
             name = "Qualification 1"
             description = "Qualification for some tools"
             colour = "#aabbcc"
+            orderNr = 1
         }
 
         user1.qualifications = SizedCollection(listOf(qualification1))
