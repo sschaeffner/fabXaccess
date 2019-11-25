@@ -80,7 +80,7 @@ class ClientApiAuthTest: CommonTest() {
                 addBasicAuth("aaffeeaaffee", "newSecret")
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("New Device 1\n", response.content)
+                assertEquals("New Device 1\nhttp://bgurl\nhttp://fabx.backup\n", response.content)
             }
 
             Unit

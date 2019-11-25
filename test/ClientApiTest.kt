@@ -240,7 +240,7 @@ class ClientApiTest: CommonTest() {
             }
 
             handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config").apply {
-                assertEquals("New Device 1\n1,0,UNLOCK,New Tool 1\n2,1,UNLOCK,New Tool 2", response.content?.trim())
+                assertEquals("New Device 1\nhttp://bgurl\nhttp://fabx.backup\n1,0,UNLOCK,New Tool 1\n2,1,UNLOCK,New Tool 2", response.content?.trim())
             }
         }
 
