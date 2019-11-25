@@ -28,7 +28,7 @@ fun Route.clientApi() {
             if (device == null) {
                 call.respond(HttpStatusCode.NotFound)
             } else {
-                var configString = "${device.name}\n"
+                var configString = "${device.name}\n${device.bgImageUrl}\n${device.backupBackendUrl}\n"
 
                 device.tools.forEach {
                     configString += "${it.id},${it.pin},${it.toolType},${it.name}\n"
