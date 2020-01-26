@@ -361,4 +361,76 @@ class ToolTest: CommonTest() {
 
         Unit
     }
+
+    @Test
+    fun testDeleteTool() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            val mapper = jacksonObjectMapper()
+
+            // CREATE DEVICE
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
+                setBody(
+                    mapper.writeValueAsString(
+                        NewDeviceDto(
+                            "New Device 1",
+                            "aaffeeaaffee",
+                            "newSecret",
+                            "http://bgurl",
+                            "http://fabx.backup"
+                        )
+                    )
+                )
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
+                assertEquals(1, deviceDto.id)
+            }
+
+
+            // CREATE TOOL
+            handleRequest(HttpMethod.Post, "/api/v1/tool") {
+                setBody(
+                    mapper.writeValueAsString(
+                        NewToolDto(
+                            1,
+                            "New Tool 1",
+                            0,
+                            ToolType.UNLOCK,
+                            ToolState.GOOD,
+                            "http://wikiurl",
+                            listOf()
+                        )
+                    )
+                )
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(response.content!!.isNotEmpty())
+
+                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+
+                assertEquals(1, toolDto.id)
+                assertEquals(1, toolDto.deviceId)
+                assertEquals(0, toolDto.pin)
+                assertEquals("New Tool 1", toolDto.name)
+                assertEquals(ToolType.UNLOCK, toolDto.toolType)
+                assertEquals(ToolState.GOOD, toolDto.toolState)
+                assertEquals("http://wikiurl", toolDto.wikiLink)
+                assertEquals(0, toolDto.qualifications.size)
+            }
+
+            // DELETE TOOL
+            handleRequest(HttpMethod.Delete, "/api/v1/tool/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+            handleRequest(HttpMethod.Get,"/api/v1/tool/1").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+
+        Unit
+    }
 }

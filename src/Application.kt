@@ -110,7 +110,7 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
         }
         basic(name = "clientApiAuth") {
             realm = "fabX access client API"
-            validate {credentials ->
+            validate { credentials ->
                 if (deviceService.checkDeviceCredentials(credentials.name, credentials.password)) {
                     UserIdPrincipal(credentials.name)
                 } else {

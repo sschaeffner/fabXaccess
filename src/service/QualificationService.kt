@@ -9,6 +9,7 @@ import cloud.fabx.model.*
 import cloud.fabx.toolService
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.and
+import java.lang.IllegalArgumentException
 
 class QualificationService {
 
@@ -40,6 +41,11 @@ class QualificationService {
         editQualification.description?.let { qualification.description = it }
         editQualification.colour?.let { qualification.colour = it }
         editQualification.orderNr?.let { qualification.orderNr = it }
+    }
+
+    suspend fun deleteQualification(id: Int) = dbQuery {
+        val qualification = Qualification.findById(id) ?: throw IllegalArgumentException("Qualification with id $id does not exist")
+        qualification.delete()
     }
 
     suspend fun addUserQualification(userId: Int, qualificationId: Int) = dbQuery {

@@ -237,40 +237,12 @@ class UserTest: CommonTest() {
                 assertEquals(1, userDto.id)
             }
 
-            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
-                setBody(mapper.writeValueAsString(
-                    EditUserDto(
-                        "Edit Username 1",
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
+            handleRequest(HttpMethod.Delete, "/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
 
-            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, userDto.id)
-                assertEquals("Edit Username 1", userDto.firstName)
-                assertEquals("New User 1 LastName", userDto.lastName)
-                assertEquals("newUserWikiName", userDto.wikiName)
-                assertEquals("123456", userDto.phoneNumber)
-                assertEquals(false, userDto.locked)
-                assertTrue(userDto.lockedReason.isEmpty())
-                assertEquals(null, userDto.cardId)
-                assertEquals(0, userDto.qualifications.size)
-
+            handleRequest(HttpMethod.Get,"/api/v1/user/1").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
             }
         }
 

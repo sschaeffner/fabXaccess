@@ -190,4 +190,39 @@ class DeviceTest: CommonTest() {
 
         Unit
     }
+
+    @Test
+    fun testDeleteDevice() = runBlocking {
+        withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
+            val mapper = jacksonObjectMapper()
+
+            handleRequest(HttpMethod.Post, "/api/v1/device") {
+                setBody(mapper.writeValueAsString(
+                    NewDeviceDto(
+                        "New Device 1",
+                        "aaffeeaaffee",
+                        "newSecret",
+                        "http://bgurl",
+                        "http://fabx.backup"
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
+                assertEquals(1, deviceDto.id)
+            }
+
+            handleRequest(HttpMethod.Delete, "/api/v1/device/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+            handleRequest(HttpMethod.Get, "/api/v1/device/1").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+
+        Unit
+    }
 }
