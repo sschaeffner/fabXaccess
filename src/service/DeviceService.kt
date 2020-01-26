@@ -48,6 +48,11 @@ class DeviceService {
         editDevice.backupBackendUrl?.let { device.backupBackendUrl = it }
     }
 
+    suspend fun deleteDevice(id: Int) = dbQuery {
+        val device = Device.findById(id) ?: throw IllegalArgumentException("Device with id $id does not exist")
+        device.delete()
+    }
+
     fun toDeviceDto(device: Device): DeviceDto {
         return DeviceDto(
             device.id.value,

@@ -196,6 +196,40 @@ class QualificationTest: CommonTest() {
         Unit
     }
 
+    @Test
+    fun testDeleteQualification() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            val mapper = jacksonObjectMapper()
+
+            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
+                setBody(mapper.writeValueAsString(
+                    NewQualificationDto(
+                        "New Qualification 1",
+                        "A Qualification",
+                        "#000000",
+                        1
+                    )
+                ))
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
+                assertEquals(1, qualificationDto.id)
+            }
+
+            handleRequest(HttpMethod.Delete, "/api/v1/qualification/1").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+
+            handleRequest(HttpMethod.Get,"/api/v1/qualification/1").apply {
+                assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+
+        Unit
+    }
+
 
     @Test
     fun testAddQualificationForUser() = runBlocking {

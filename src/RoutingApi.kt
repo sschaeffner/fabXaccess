@@ -104,6 +104,17 @@ fun Route.api() {
                 }
             }
 
+            delete("/{id}") {
+                call.parameters["id"]?.toInt()?.let {
+                    try {
+                        qualificationService.deleteQualification(it)
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: IllegalArgumentException) {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }
+            }
+
             post("") {
                 val qualification = call.receive<NewQualificationDto>()
                 call.respond(qualificationService.createNewQualification(qualification))
@@ -142,6 +153,17 @@ fun Route.api() {
                 }
             }
 
+            delete("/{id}") {
+                call.parameters["id"]?.toInt()?.let {
+                    try {
+                        deviceService.deleteDevice(it)
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: IllegalArgumentException) {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                }
+            }
+
             post("") {
                 val device = call.receive<NewDeviceDto>()
                 call.respond(deviceService.createNewDevice(device))
@@ -177,6 +199,17 @@ fun Route.api() {
                     toolService.editTool(tool.id, editTool)
 
                     call.respond(HttpStatusCode.OK)
+                }
+            }
+
+            delete("/{id}") {
+                call.parameters["id"]?.toInt()?.let {
+                    try {
+                        toolService.deleteTool(it)
+                        call.respond(HttpStatusCode.OK)
+                    } catch (e: IllegalArgumentException) {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
                 }
             }
 

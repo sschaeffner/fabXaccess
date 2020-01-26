@@ -70,6 +70,11 @@ class ToolService {
         }
     }
 
+    suspend fun deleteTool(id: Int) = dbQuery {
+        val tool = Tool.findById(id) ?: throw java.lang.IllegalArgumentException("Tool with id $id does not exist")
+        tool.delete()
+    }
+
     fun toToolDto(tool: Tool): ToolDto {
         return ToolDto(
             tool.id.value,
