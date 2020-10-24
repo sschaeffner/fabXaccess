@@ -27,7 +27,7 @@ class ToolService {
             val qualification = Qualification.findById(it)
             requireNotNull(qualification) { "Could not find qualification with id $it" }
 
-            qualification!!
+            qualification
         }
 
         deviceInDb.let { deviceIt ->
@@ -64,7 +64,7 @@ class ToolService {
                 val qualification = Qualification.findById(it)
                 requireNotNull(qualification) { "Could not find qualification with id $it" }
 
-                qualification!!
+                qualification
             }
             tool.qualifications = SizedCollection(qualificationsInDb)
         }

@@ -17,21 +17,8 @@ open class CommonTest {
     fun before() = transaction(DbHandler.db) {
         println("BeforeEach")
 
-        SchemaUtils.drop(Devices)
-        SchemaUtils.drop(Tools)
-        SchemaUtils.drop(Users)
-        SchemaUtils.drop(Admins)
-        SchemaUtils.drop(Qualifications)
-        SchemaUtils.drop(UserQualifications)
-        SchemaUtils.drop(ToolQualifications)
-
-        SchemaUtils.create(Devices)
-        SchemaUtils.create(Tools)
-        SchemaUtils.create(Users)
-        SchemaUtils.create(Admins)
-        SchemaUtils.create(Qualifications)
-        SchemaUtils.create(UserQualifications)
-        SchemaUtils.create(ToolQualifications)
+        SchemaUtils.drop(Devices, Tools, Users, Admins, Qualifications, UserQualifications, ToolQualifications)
+        SchemaUtils.create(Devices, Tools, Users, Admins, Qualifications, UserQualifications, ToolQualifications)
 
         Unit
     }
