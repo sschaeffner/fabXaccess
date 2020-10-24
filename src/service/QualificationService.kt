@@ -5,11 +5,14 @@ import cloud.fabx.dto.EditQualificationDto
 import cloud.fabx.dto.NewQualificationDto
 import cloud.fabx.dto.QualificationDto
 import cloud.fabx.dto.ToolDto
-import cloud.fabx.model.*
+import cloud.fabx.model.Device
+import cloud.fabx.model.Devices
+import cloud.fabx.model.Qualification
+import cloud.fabx.model.User
+import cloud.fabx.model.Users
 import cloud.fabx.toolService
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.and
-import java.lang.IllegalArgumentException
 
 class QualificationService {
 

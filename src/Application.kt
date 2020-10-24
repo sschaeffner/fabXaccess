@@ -1,23 +1,43 @@
 package cloud.fabx
 
 import cloud.fabx.db.DbHandler
-import cloud.fabx.model.*
-import cloud.fabx.service.*
+import cloud.fabx.model.Admin
+import cloud.fabx.model.Device
+import cloud.fabx.model.Qualification
+import cloud.fabx.model.Tool
+import cloud.fabx.model.ToolState
+import cloud.fabx.model.ToolType
+import cloud.fabx.model.User
+import cloud.fabx.service.AdminService
+import cloud.fabx.service.DeviceService
+import cloud.fabx.service.QualificationService
+import cloud.fabx.service.ToolService
+import cloud.fabx.service.UserService
 import com.fasterxml.jackson.core.JsonProcessingException
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.features.*
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.application.log
+import io.ktor.auth.Authentication
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authenticate
+import io.ktor.auth.basic
+import io.ktor.features.CORS
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.ForwardedHeaderSupport
+import io.ktor.features.StatusPages
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
+import io.ktor.response.respond
+import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.lang.IllegalArgumentException
 
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 

@@ -5,8 +5,8 @@ import cloud.fabx.model.Admin
 import cloud.fabx.model.Admins
 import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.getDigestFunction
+import java.util.Base64
 import org.jetbrains.exposed.sql.and
-import java.util.*
 
 @KtorExperimentalAPI
 class AdminService {

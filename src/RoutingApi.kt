@@ -1,13 +1,31 @@
 package cloud.fabx
 
-import cloud.fabx.dto.*
+import cloud.fabx.dto.DeviceDto
+import cloud.fabx.dto.EditDeviceDto
+import cloud.fabx.dto.EditQualificationDto
+import cloud.fabx.dto.EditToolDto
+import cloud.fabx.dto.EditUserDto
+import cloud.fabx.dto.InfoDto
+import cloud.fabx.dto.NewDeviceDto
+import cloud.fabx.dto.NewQualificationDto
+import cloud.fabx.dto.NewToolDto
+import cloud.fabx.dto.NewUserDto
+import cloud.fabx.dto.QualificationDto
+import cloud.fabx.dto.ToolDto
+import cloud.fabx.dto.UserDto
+import cloud.fabx.dto.UserQualificationDto
 import io.ktor.application.call
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authentication
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.routing.Route
+import io.ktor.routing.delete
+import io.ktor.routing.get
+import io.ktor.routing.patch
+import io.ktor.routing.post
+import io.ktor.routing.route
 
 fun Route.api() {
     route("/api/v1") {
