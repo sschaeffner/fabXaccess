@@ -88,7 +88,7 @@ class QualificationService {
         }.map { toolService.toToolDto(it) }
     }
 
-    public fun toQualificationDto(qualification: Qualification): QualificationDto {
+    fun toQualificationDto(qualification: Qualification): QualificationDto {
         return QualificationDto(
             qualification.id.value,
             qualification.name,

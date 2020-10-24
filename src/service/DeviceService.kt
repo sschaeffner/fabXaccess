@@ -6,9 +6,6 @@ import cloud.fabx.dto.EditDeviceDto
 import cloud.fabx.dto.NewDeviceDto
 import cloud.fabx.model.Device
 import cloud.fabx.model.Devices
-import cloud.fabx.model.User
-import org.jetbrains.exposed.sql.and
-import java.lang.IllegalArgumentException
 
 class DeviceService {
 
@@ -53,7 +50,7 @@ class DeviceService {
         device.delete()
     }
 
-    fun toDeviceDto(device: Device): DeviceDto {
+    private fun toDeviceDto(device: Device): DeviceDto {
         return DeviceDto(
             device.id.value,
             device.name,

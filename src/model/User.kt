@@ -1,11 +1,10 @@
 package cloud.fabx.model
 
-import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.id.EntityID
 
-object Users: IntIdTable() {
+object Users: org.jetbrains.exposed.dao.id.IntIdTable() {
     val firstName = varchar("firstName", 64)
     val lastName = varchar("lastName", 64)
     val wikiName = varchar("wikiName", 64)

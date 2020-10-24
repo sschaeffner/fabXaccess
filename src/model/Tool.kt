@@ -1,11 +1,10 @@
 package cloud.fabx.model
 
-import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.id.EntityID
 
-object Tools: IntIdTable() {
+object Tools: org.jetbrains.exposed.dao.id.IntIdTable() {
     val name = varchar("name", 64)
     val pin = integer("pin")
     val toolType = enumeration("toolType", ToolType::class)
