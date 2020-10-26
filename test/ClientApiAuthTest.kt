@@ -23,27 +23,11 @@ import kotlin.test.assertEquals
 class ClientApiAuthTest: CommonTest() {
 
     @Test
-    fun getConfigWithoutAuthenticationThenUnauthorized() = runBlocking {
+    fun givenNoAuthenticationWhenGetConfigThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-            val mapper = jacksonObjectMapper()
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(mapper.writeValueAsString(
-                    NewDeviceDto(
-                        "New Device 1",
-                        "aaffeeaaffee",
-                        "newSecret",
-                        "http://bgurl",
-                        "http://fabx.backup"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
+            val deviceDto = givenDevice(mac ="aaffeeaaffee")
+            assertEquals(1, deviceDto.id)
 
             handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config").apply {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
@@ -54,27 +38,14 @@ class ClientApiAuthTest: CommonTest() {
     }
 
     @Test
-    fun getConfigWithAuthentication() = runBlocking {
+    fun givenAuthenticationWhenGetConfigThenOk() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-            val mapper = jacksonObjectMapper()
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(mapper.writeValueAsString(
-                    NewDeviceDto(
-                        "New Device 1",
-                        "aaffeeaaffee",
-                        "newSecret",
-                        "http://bgurl",
-                        "http://fabx.backup"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
+            val deviceDto = givenDevice(
+                mac = "aaffeeaaffee",
+                secret = "newSecret"
+            )
+            assertEquals(1, deviceDto.id)
 
             handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config"){
                 addBasicAuth("aaffeeaaffee", "newSecret")
@@ -88,102 +59,22 @@ class ClientApiAuthTest: CommonTest() {
     }
 
     @Test
-    fun getPermissionsWithoutAuthentication() = runBlocking {
+    fun givenNoAuthenticationWhenGetPermissionsThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-            val mapper = jacksonObjectMapper()
 
-            // CREATE USER
-            handleRequest(HttpMethod.Post, "/api/v1/user") {
-                setBody(mapper.writeValueAsString(
-                    NewUserDto(
-                        "New User 1",
-                        "New User 1 LastName",
-                        "newUserWikiName",
-                        "123456"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val userDto = givenUser()
+            assertEquals(1, userDto.id)
 
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-                assertEquals(1, userDto.id)
-            }
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
 
-            // CREATE QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
-                setBody(mapper.writeValueAsString(
-                    NewQualificationDto(
-                        "New Qualification 1",
-                        "A Qualification",
-                        "#000000",
-                        1
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val deviceDto = givenDevice()
+            assertEquals(1, deviceDto.id)
 
-                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
-                assertEquals(1, qualificationDto.id)
-            }
+            val toolDto = givenTool(1)
+            assertEquals(1, toolDto.id)
 
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(mapper.writeValueAsString(
-                    NewDeviceDto(
-                        "New Device 1",
-                        "aaffeeaaffee",
-                        "newSecret",
-                        "http://bgurl",
-                        "http://fabx.backup"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
-
-            // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/v1/tool") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewToolDto(
-                            1,
-                            "New Tool 1",
-                            0,
-                            ToolType.UNLOCK,
-                            ToolState.GOOD,
-                            "http://wikiurl",
-                            listOf(1)
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
-                assertEquals(1, toolDto.id)
-            }
-
-            // ADD QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/user/1/qualifications") {
-                setBody(
-                    mapper.writeValueAsString(
-                        UserQualificationDto(
-                            1,
-                            1
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
+            givenUserHasQualification(1, 1)
 
             handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF").apply {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
@@ -194,121 +85,30 @@ class ClientApiAuthTest: CommonTest() {
     }
 
     @Test
-    fun getPermissionsWithAuthentication() = runBlocking {
+    fun givenAuthenticationWhenGetPermissionsThenOk() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-            val mapper = jacksonObjectMapper()
 
-            // CREATE USER
-            handleRequest(HttpMethod.Post, "/api/v1/user") {
-                setBody(mapper.writeValueAsString(
-                    NewUserDto(
-                        "New User 1",
-                        "New User 1 Last Name",
-                        "newUserWikiName",
-                        "123456"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val userDto = givenUser()
+            assertEquals(1, userDto.id)
 
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-                assertEquals(1, userDto.id)
-            }
+            givenCardForUser(1,
+                "aabbccdd",
+                "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF")
 
-            // ADD CARD ID TO USER
-            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
-                setBody(mapper.writeValueAsString(
-                    EditUserDto(
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "aabbccdd",
-                        "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-
-            // CREATE QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
-                setBody(mapper.writeValueAsString(
-                    NewQualificationDto(
-                        "New Qualification 1",
-                        "A Qualification",
-                        "#000000",
-                        1
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
-                assertEquals(1, qualificationDto.id)
-            }
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
 
             // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(mapper.writeValueAsString(
-                    NewDeviceDto(
-                        "New Device 1",
-                        "aaffeeaaffee",
-                        "newSecret",
-                        "http://bgurl",
-                        "http://fabx.backup"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val deviceDto = givenDevice(
+                mac = "aaffeeaaffee",
+                secret = "newSecret"
+            )
+            assertEquals(1, deviceDto.id)
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
+            val toolDto = givenTool(1)
+            assertEquals(1, toolDto.id)
 
-            // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/v1/tool") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewToolDto(
-                            1,
-                            "New Tool 1",
-                            0,
-                            ToolType.UNLOCK,
-                            ToolState.GOOD,
-                            "http://wikiurl",
-                            listOf(1)
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
-                assertEquals(1, toolDto.id)
-            }
-
-            // ADD QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/user/1/qualifications") {
-                setBody(
-                    mapper.writeValueAsString(
-                        UserQualificationDto(
-                            1,
-                            1
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
+            givenUserHasQualification(1, 1)
 
             handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF") {
                 addBasicAuth("aaffeeaaffee", "newSecret")
@@ -322,28 +122,13 @@ class ClientApiAuthTest: CommonTest() {
     }
 
     @Test
-    fun authenticateWithNewDevice() = runBlocking {
+    fun whenAuthenticatingWithWrongSecretThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-            val mapper = jacksonObjectMapper()
 
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(mapper.writeValueAsString(
-                    NewDeviceDto(
-                        "New Device 1",
-                        "aaffeeaaffee",
-                        "newSecret",
-                        "http://bgurl",
-                        "http://fabx.backup"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
+            givenDevice(
+                mac = "aaffeeaaffee",
+                secret = "newSecret"
+            )
 
             handleRequest(HttpMethod.Get, "/clientApi/v1/aabbccaabbcc/config") {
                 addBasicAuth("aaffeeaaffee", "someothersecret")
