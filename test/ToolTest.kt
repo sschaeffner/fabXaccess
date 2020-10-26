@@ -22,7 +22,7 @@ import kotlin.test.assertTrue
 class ToolTest: CommonTest() {
 
     @Test
-    fun testGetAllTools() = runBlocking {
+    fun givenNoToolsWhenGetToolsThenReturnsEmptyList() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
             handleRequest(HttpMethod.Get, "/api/v1/tool").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
@@ -34,50 +34,14 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun testCreateAndGetTool() = runBlocking {
+    fun whenCreateToolThenToolIsCreated() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            val mapper = jacksonObjectMapper()
+            val deviceDto = givenDevice()
+            assertEquals(1, deviceDto.id)
 
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewDeviceDto(
-                            "New Device 1",
-                            "aaffeeaaffee",
-                            "newSecret",
-                            "http://bgurl",
-                            "http://fabx.backup"
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
-
-            // CREATE QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
-                setBody(mapper.writeValueAsString(
-                    NewQualificationDto(
-                        "New Qualification 1",
-                        "A Qualification",
-                        "#000000",
-                        1
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
-                assertEquals(1, qualificationDto.id)
-            }
-
-            // CREATE TOOL
             handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
@@ -108,19 +72,35 @@ class ToolTest: CommonTest() {
                 assertEquals("http://wikiurl", toolDto.wikiLink)
                 assertEquals(1, toolDto.qualifications.size)
             }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun givenToolExistsWhenGetToolThenOk() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            val deviceDto = givenDevice()
+            assertEquals(1, deviceDto.id)
+
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
+
+            val toolDto = givenTool(1)
+            assertEquals(1, toolDto.id)
 
             handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+                val dto = mapper.readValue<ToolDto>(response.content!!)
 
-                assertEquals(1, toolDto.id)
-                assertEquals(1, toolDto.deviceId)
-                assertEquals(0, toolDto.pin)
-                assertEquals(ToolType.UNLOCK, toolDto.toolType)
-                assertEquals(ToolState.GOOD, toolDto.toolState)
-                assertEquals("http://wikiurl", toolDto.wikiLink)
+                assertEquals(1, dto.id)
+                assertEquals(1, dto.deviceId)
+                assertEquals(0, dto.pin)
+                assertEquals(ToolType.UNLOCK, dto.toolType)
+                assertEquals(ToolState.GOOD, dto.toolState)
+                assertEquals("http://wikiurl", dto.wikiLink)
             }
         }
 
@@ -128,71 +108,17 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun testEditToolSingleParameter() = runBlocking {
+    fun givenToolWhenEditSingleParameterThenParameterIsChanged() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            val mapper = jacksonObjectMapper()
 
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewDeviceDto(
-                            "New Device 1",
-                            "aaffeeaaffee",
-                            "newSecret",
-                            "http://bgurl",
-                            "http://fabx.backup"
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val deviceDto = givenDevice()
+            assertEquals(1, deviceDto.id)
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
 
-            // CREATE QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
-                setBody(mapper.writeValueAsString(
-                    NewQualificationDto(
-                        "New Qualification 1",
-                        "A Qualification",
-                        "#000000",
-                        1
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
-                assertEquals(1, qualificationDto.id)
-            }
-
-            // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/v1/tool") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewToolDto(
-                            1,
-                            "New Tool 1",
-                            0,
-                            ToolType.UNLOCK,
-                            ToolState.GOOD,
-                            "http://wikiurl",
-                            listOf(1)
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
-                assertEquals(1, toolDto.id)
-            }
+            val toolDto = givenTool(1)
+            assertEquals(1, toolDto.id)
 
             handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
                 setBody(
@@ -215,17 +141,17 @@ class ToolTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+                val dto = mapper.readValue<ToolDto>(response.content!!)
 
-                assertEquals(1, toolDto.id)
-                assertEquals(1, toolDto.deviceId)
-                assertEquals(0, toolDto.pin)
-                assertEquals("Edited Tool Name", toolDto.name)
-                assertEquals(ToolType.UNLOCK, toolDto.toolType)
-                assertEquals(ToolState.GOOD, toolDto.toolState)
-                assertEquals("http://wikiurl", toolDto.wikiLink)
-                assertEquals(1, toolDto.qualifications.size)
-                assertEquals(1, toolDto.qualifications[0].id)
+                assertEquals(1, dto.id)
+                assertEquals(1, dto.deviceId)
+                assertEquals(0, dto.pin)
+                assertEquals("Edited Tool Name", dto.name)
+                assertEquals(ToolType.UNLOCK, dto.toolType)
+                assertEquals(ToolState.GOOD, dto.toolState)
+                assertEquals("http://wikiurl", dto.wikiLink)
+                assertEquals(1, dto.qualifications.size)
+                assertEquals(1, dto.qualifications[0].id)
             }
 
         }
@@ -235,95 +161,24 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun testEditToolAllParameters() = runBlocking {
+    fun givenToolWhenEditAllParametersThenParametersAreChanged() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            val mapper = jacksonObjectMapper()
 
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewDeviceDto(
-                            "New Device 1",
-                            "aaffeeaaffee",
-                            "newSecret",
-                            "http://bgurl",
-                            "http://fabx.backup"
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val deviceDto = givenDevice()
+            assertEquals(1, deviceDto.id)
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
+            val deviceDto2 = givenDevice(
+                mac = "aaffeeaaffff",
+                secret = "newSecret2"
+            )
+            assertEquals(2, deviceDto2.id)
 
-            // CREATE SECOND DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewDeviceDto(
-                            "New Device 2",
-                            "aaffeeaaffff",
-                            "newSecret2",
-                            "http://bgurl2",
-                            "http://fabx.backup"
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(2, deviceDto.id)
-            }
+            val toolDto = givenTool(1)
+            assertEquals(1, toolDto.id)
 
-            // CREATE QUALIFICATION
-            handleRequest(HttpMethod.Post, "/api/v1/qualification") {
-                setBody(mapper.writeValueAsString(
-                    NewQualificationDto(
-                        "New Qualification 1",
-                        "A Qualification",
-                        "#000000",
-                        1
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val qualificationDto = mapper.readValue<QualificationDto>(response.content!!)
-                assertEquals(1, qualificationDto.id)
-            }
-
-            // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/v1/tool") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewToolDto(
-                            1,
-                            "New Tool 1",
-                            0,
-                            ToolType.UNLOCK,
-                            ToolState.GOOD,
-                            "http://wikiurl",
-                            listOf()
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
-                assertEquals(1, toolDto.id)
-            }
-
-
-            // EDIT TOOL
             handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
                 setBody(
                     mapper.writeValueAsString(EditToolDto(
@@ -345,17 +200,17 @@ class ToolTest: CommonTest() {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(response.content!!.isNotEmpty())
 
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
+                val dto = mapper.readValue<ToolDto>(response.content!!)
 
-                assertEquals(1, toolDto.id)
-                assertEquals(2, toolDto.deviceId)
-                assertEquals(1, toolDto.pin)
-                assertEquals("Edited Tool Name", toolDto.name)
-                assertEquals(ToolType.KEEP, toolDto.toolType)
-                assertEquals(ToolState.BAD, toolDto.toolState)
-                assertEquals("http://newwikiurl", toolDto.wikiLink)
-                assertEquals(1, toolDto.qualifications.size)
-                assertEquals(1, toolDto.qualifications[0].id)
+                assertEquals(1, dto.id)
+                assertEquals(2, dto.deviceId)
+                assertEquals(1, dto.pin)
+                assertEquals("Edited Tool Name", dto.name)
+                assertEquals(ToolType.KEEP, dto.toolType)
+                assertEquals(ToolState.BAD, dto.toolState)
+                assertEquals("http://newwikiurl", dto.wikiLink)
+                assertEquals(1, dto.qualifications.size)
+                assertEquals(1, dto.qualifications[0].id)
             }
         }
 
@@ -363,63 +218,14 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun testDeleteTool() = runBlocking {
+    fun givenToolWhenDeleteToolThenToolNoLongerExists() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            val mapper = jacksonObjectMapper()
 
-            // CREATE DEVICE
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewDeviceDto(
-                            "New Device 1",
-                            "aaffeeaaffee",
-                            "newSecret",
-                            "http://bgurl",
-                            "http://fabx.backup"
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            val deviceDto = givenDevice()
+            assertEquals(1, deviceDto.id)
 
-                val deviceDto = mapper.readValue<DeviceDto>(response.content!!)
-                assertEquals(1, deviceDto.id)
-            }
-
-
-            // CREATE TOOL
-            handleRequest(HttpMethod.Post, "/api/v1/tool") {
-                setBody(
-                    mapper.writeValueAsString(
-                        NewToolDto(
-                            1,
-                            "New Tool 1",
-                            0,
-                            ToolType.UNLOCK,
-                            ToolState.GOOD,
-                            "http://wikiurl",
-                            listOf()
-                        )
-                    )
-                )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
-
-                assertEquals(1, toolDto.id)
-                assertEquals(1, toolDto.deviceId)
-                assertEquals(0, toolDto.pin)
-                assertEquals("New Tool 1", toolDto.name)
-                assertEquals(ToolType.UNLOCK, toolDto.toolType)
-                assertEquals(ToolState.GOOD, toolDto.toolState)
-                assertEquals("http://wikiurl", toolDto.wikiLink)
-                assertEquals(0, toolDto.qualifications.size)
-            }
+            val toolDto = givenTool(1, qualifications = listOf())
+            assertEquals(1, toolDto.id)
 
             // DELETE TOOL
             handleRequest(HttpMethod.Delete, "/api/v1/tool/1").apply {

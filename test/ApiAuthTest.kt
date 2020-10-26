@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 class ApiAuthTest: CommonTest() {
 
     @Test
-    fun getAllUsersWithoutAuthenticationThenUnauthorized() = runBlocking {
+    fun givenNoAuthenticationWhenGetAllUsersThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = true) }) {
             handleRequest(HttpMethod.Get, "/api/v1/user").apply {
                 assertEquals("Basic realm=\"fabX access API\", charset=UTF-8", response.headers[HttpHeaders.WWWAuthenticate])
@@ -24,7 +24,7 @@ class ApiAuthTest: CommonTest() {
 
     @InternalAPI
     @Test
-    fun getAllUsersWithAuthentication() = runBlocking {
+    fun givenValidAuthenticationWhenGetAllUsersThenOk() = runBlocking {
         withTestApplication({ module(demoContent = true, apiAuthentication = true) }) {
             handleRequest(HttpMethod.Get, "/api/v1/user") {
                 addBasicAuth("admin1", "demopassword")
@@ -38,7 +38,7 @@ class ApiAuthTest: CommonTest() {
 
     @InternalAPI
     @Test
-    fun getAllUsersWithInvalidAuthenticationThenUnauthorized() = runBlocking {
+    fun givenInvalidAuthenticationWhenGetAllUsersThenUnauthorized() = runBlocking {
         withTestApplication({ module(demoContent = true, apiAuthentication = true) }) {
             handleRequest(HttpMethod.Get, "/api/v1/user") {
                 addBasicAuth("admin1", "blub")
