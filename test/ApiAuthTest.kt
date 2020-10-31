@@ -1,11 +1,15 @@
 package cloud.fabx
 
-import io.ktor.http.*
-import io.ktor.server.testing.*
-import io.ktor.util.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.withTestApplication
+import io.ktor.util.InternalAPI
+import io.ktor.util.KtorExperimentalAPI
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import kotlin.test.assertEquals
 
 @KtorExperimentalAPI
 class ApiAuthTest: CommonTest() {

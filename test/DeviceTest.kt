@@ -3,7 +3,6 @@ package cloud.fabx
 import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.EditDeviceDto
 import cloud.fabx.dto.NewDeviceDto
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -13,10 +12,10 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
-import kotlinx.coroutines.runBlocking
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
 
 @KtorExperimentalAPI
 class DeviceTest: CommonTest() {

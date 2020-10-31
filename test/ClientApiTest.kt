@@ -1,6 +1,5 @@
 package cloud.fabx
 
-import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
