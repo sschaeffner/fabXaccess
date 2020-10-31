@@ -1,6 +1,10 @@
 package cloud.fabx
 
-import cloud.fabx.dto.*
+import cloud.fabx.dto.EditQualificationDto
+import cloud.fabx.dto.NewQualificationDto
+import cloud.fabx.dto.QualificationDto
+import cloud.fabx.dto.UserDto
+import cloud.fabx.dto.UserQualificationDto
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -10,10 +14,10 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
-import kotlinx.coroutines.runBlocking
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
 
 @KtorExperimentalAPI
 class QualificationTest: CommonTest() {
