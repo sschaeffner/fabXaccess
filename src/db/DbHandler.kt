@@ -48,8 +48,6 @@ object DbHandler {
             }
 
         transaction {
-            addLogger(StdOutSqlLogger)
-
             SchemaUtils.create(
                 Users,
                 Devices,
