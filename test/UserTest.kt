@@ -3,7 +3,6 @@ package cloud.fabx
 import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
