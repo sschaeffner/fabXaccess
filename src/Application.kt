@@ -35,8 +35,6 @@ import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SizedCollection
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
@@ -159,7 +157,6 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
 
 fun addDemoContent() {
     transaction(DbHandler.db) {
-        addLogger(StdOutSqlLogger)
 
         Admin.new {
             name = "admin1"
