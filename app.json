@@ -2,5 +2,12 @@
   "name": "fabX access",
   "description": "fabX.cloud access system backend.",
   "image": "heroku/java",
-  "addons": [ "heroku-postgresql" ]
+  "addons": [
+    {
+      "plan": "heroku-postgresql",
+      "options": {
+        "version": "12"
+      }
+    }
+  ]
 }
