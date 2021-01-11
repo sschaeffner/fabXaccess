@@ -77,6 +77,9 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
         log.info("Demo Content Disabled")
     }
 
+    log.info("connecting to database...")
+    DbHandler.db
+
     install(ContentNegotiation) {
         jackson {}
     }
