@@ -1,5 +1,8 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isNotNull
 import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.EditDeviceDto
 import cloud.fabx.dto.NewDeviceDto
@@ -12,6 +15,7 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
+import isNotSuccess
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
@@ -191,6 +195,29 @@ class DeviceTest: CommonTest() {
 
             handleRequest(HttpMethod.Get, "/api/v1/device/1").apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun givenDeviceWithToolWhenDeleteDeviceThenErrorMessage() = runBlocking {
+        withTestApplication ({ module(demoContent = false, apiAuthentication = false) }){
+            // given
+            val qualificationDto = givenQualification()
+            val deviceDto = givenDevice()
+            givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/device/${deviceDto.id}").apply {
+                // then
+                assertThat(response.status())
+                    .isNotNull()
+                    .isNotSuccess()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("FK_TOOLS_DEVICE_ID")
             }
         }
 
