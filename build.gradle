@@ -47,6 +47,7 @@ dependencies {
     implementation "org.jetbrains.exposed:exposed-dao:$exposed_version"
     implementation "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
+    testCompile 'com.willowtreeapps.assertk:assertk-jvm:0.23.1'
 }
 
 shadowJar {

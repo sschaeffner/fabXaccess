@@ -1,5 +1,8 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
 import cloud.fabx.dto.EditToolDto
 import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
@@ -235,6 +238,30 @@ class ToolTest: CommonTest() {
 
             handleRequest(HttpMethod.Get,"/api/v1/tool/1").apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun givenToolWithQualificationWhenDeleteToolThenErrorMessage() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+
+            // given
+            val qualificationDto = givenQualification()
+            assertThat(qualificationDto.id).isEqualTo(1)
+
+            val deviceDto = givenDevice()
+            assertThat(deviceDto.id).isEqualTo(1)
+
+            val toolDto = givenTool(1, qualifications = listOf(qualificationDto.id))
+            assertThat(toolDto.id).isEqualTo(1)
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/tool/1").apply {
+                // then
+                assertThat(response.content!!).contains("FK_TOOLQUALIFICATIONS_TOOL_ID")
             }
         }
 
