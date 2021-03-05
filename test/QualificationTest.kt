@@ -1,5 +1,8 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
 import cloud.fabx.dto.EditQualificationDto
 import cloud.fabx.dto.NewQualificationDto
 import cloud.fabx.dto.QualificationDto
@@ -274,6 +277,42 @@ class QualificationTest: CommonTest() {
 
                 assertEquals(1, dto.id)
                 assertEquals(0, dto.qualifications.size)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun givenQualificationForToolWhenDeleteQualificationThenErrorMessage() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val qualificationDto = givenQualification()
+            val deviceDto = givenDevice()
+            givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/qualification/${qualificationDto.id}").apply {
+                // then
+                assertThat(response.content!!).contains("FK_TOOLQUALIFICATIONS_QUALIFICATION_ID")
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun givenQualificationForUserWhenDeleteQualificationThenErrorMessage() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val qualificationDto = givenQualification()
+            val userDto = givenUser()
+            givenUserHasQualification(userDto.id, qualificationDto.id)
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/qualification/${qualificationDto.id}").apply {
+                // then
+                assertThat(response.content!!).contains("FK_USERQUALIFICATIONS_QUALIFICATION_ID")
             }
         }
 
