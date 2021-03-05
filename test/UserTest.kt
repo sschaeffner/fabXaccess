@@ -4,10 +4,7 @@ import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
@@ -15,6 +12,7 @@ import io.ktor.util.KtorExperimentalAPI
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertFalse
 import org.junit.Test
 
 @KtorExperimentalAPI
@@ -216,6 +214,29 @@ class UserTest: CommonTest() {
 
             handleRequest(HttpMethod.Get,"/api/v1/user/1").apply {
                 assertEquals(HttpStatusCode.NotFound, response.status())
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun givenUserWithQualificationWhenDeleteUserThenErrorMessage() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val userDto = givenUser()
+            assertEquals(1, userDto.id)
+
+            val qualificationDto = givenQualification()
+            assertEquals(1, qualificationDto.id)
+
+            givenUserHasQualification(1, 1)
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/user/1").apply {
+                // then
+                assertTrue(response.content!!.contains("FK_USERQUALIFICATIONS_USER_ID", ignoreCase = true))
+                assertFalse(response.status()!!.isSuccess())
             }
         }
 
