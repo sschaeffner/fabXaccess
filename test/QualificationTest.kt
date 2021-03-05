@@ -1,22 +1,20 @@
 package cloud.fabx
 
 import assertk.assertThat
-import assertk.assertions.contains
-import assertk.assertions.isEqualTo
+import assertk.assertions.*
 import cloud.fabx.dto.EditQualificationDto
 import cloud.fabx.dto.NewQualificationDto
 import cloud.fabx.dto.QualificationDto
 import cloud.fabx.dto.UserDto
 import cloud.fabx.dto.UserQualificationDto
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
+import isNotSuccess
+import isSuccess
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
@@ -294,7 +292,12 @@ class QualificationTest: CommonTest() {
             // when
             handleRequest(HttpMethod.Delete, "/api/v1/qualification/${qualificationDto.id}").apply {
                 // then
-                assertThat(response.content!!).contains("FK_TOOLQUALIFICATIONS_QUALIFICATION_ID")
+                assertThat(response.status())
+                    .isNotNull()
+                    .isNotSuccess()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("FK_TOOLQUALIFICATIONS_QUALIFICATION_ID")
             }
         }
 
@@ -312,7 +315,12 @@ class QualificationTest: CommonTest() {
             // when
             handleRequest(HttpMethod.Delete, "/api/v1/qualification/${qualificationDto.id}").apply {
                 // then
-                assertThat(response.content!!).contains("FK_USERQUALIFICATIONS_QUALIFICATION_ID")
+                assertThat(response.status())
+                    .isNotNull()
+                    .isNotSuccess()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("FK_USERQUALIFICATIONS_QUALIFICATION_ID")
             }
         }
 

@@ -3,6 +3,7 @@ package cloud.fabx
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import cloud.fabx.dto.EditToolDto
 import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
@@ -17,6 +18,7 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
+import isNotSuccess
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
@@ -261,7 +263,12 @@ class ToolTest: CommonTest() {
             // when
             handleRequest(HttpMethod.Delete, "/api/v1/tool/1").apply {
                 // then
-                assertThat(response.content!!).contains("FK_TOOLQUALIFICATIONS_TOOL_ID")
+                assertThat(response.status())
+                    .isNotNull()
+                    .isNotSuccess()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("FK_TOOLQUALIFICATIONS_TOOL_ID")
             }
         }
 

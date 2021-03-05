@@ -1,5 +1,8 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isNotNull
 import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
@@ -9,6 +12,7 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
+import isNotSuccess
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
@@ -235,8 +239,12 @@ class UserTest: CommonTest() {
             // when
             handleRequest(HttpMethod.Delete, "/api/v1/user/1").apply {
                 // then
-                assertTrue(response.content!!.contains("FK_USERQUALIFICATIONS_USER_ID", ignoreCase = true))
-                assertFalse(response.status()!!.isSuccess())
+                assertThat(response.status())
+                    .isNotNull()
+                    .isNotSuccess()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("FK_USERQUALIFICATIONS_USER_ID")
             }
         }
 
