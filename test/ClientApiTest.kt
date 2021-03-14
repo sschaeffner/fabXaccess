@@ -1,45 +1,59 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import cloud.fabx.model.ToolType
 import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
-import kotlin.test.assertEquals
+import isOK
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 @KtorExperimentalAPI
-class ClientApiTest: CommonTest() {
+class ClientApiTest : CommonTest() {
 
     @Test
-    fun givenUserHasQualificationThenReturnsToolId() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = false) }) {
-
+    fun `given user has qualification when getting permissions then return toolId`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = false
+            )
+        }) {
+            // given
             val userDto = givenUser()
-            assertEquals(1, userDto.id)
 
-            givenCardForUser(1,
-                "aabbccdd",
-                "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
+            val cardId = "aabbccdd"
+            val cardSecret = "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
+            givenCardForUser(
+                userDto.id,
+                cardId,
+                cardSecret
             )
 
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
 
-            val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
+            val mac = "aaffeeaaffee"
+            val deviceDto = givenDevice(
+                mac = mac
+            )
 
-            val toolDto = givenTool(1)
-            assertEquals(1, toolDto.id)
+            val toolDto = givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
 
-            givenUserHasQualification(1, 1)
+            givenUserHasQualification(userDto.id, qualificationDto.id)
 
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                assertEquals("1", response.content?.trim())
+            // when
+            handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/permissions/${cardId}/${cardSecret}").apply {
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("${toolDto.id}")
             }
         }
 
@@ -47,36 +61,50 @@ class ClientApiTest: CommonTest() {
     }
 
     @Test
-    fun givenAuthenticationWhenGetClientConfigThenReturnsConfig() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = false) }) {
-
-            val deviceDto = givenDevice(
-                mac = "aaffeeaaffee",
-                secret = "newSecret"
+    fun `given authentication when getting client config then return config`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = false
             )
-            assertEquals(1, deviceDto.id)
+        }) {
+            // given
+            val mac = "aaffeeaaffee"
+            val secret = "newSecret"
+            val deviceDto = givenDevice(
+                mac = mac,
+                secret = secret
+            )
 
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
 
             val toolDto1 = givenTool(
-                1,
+                deviceDto.id,
                 "New Tool 1",
                 0,
-                ToolType.UNLOCK
+                ToolType.UNLOCK,
+                qualifications = listOf(qualificationDto.id)
             )
-            assertEquals(1, toolDto1.id)
 
             val toolDto2 = givenTool(
-                1,
+                deviceDto.id,
                 "New Tool 2",
                 1,
-                ToolType.UNLOCK
+                ToolType.UNLOCK,
+                qualifications = listOf(qualificationDto.id)
             )
-            assertEquals(2, toolDto2.id)
 
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config").apply {
-                assertEquals("New Device 1\nhttp://bgurl\nhttp://fabx.backup\n1,0,UNLOCK,New Tool 1\n2,1,UNLOCK,New Tool 2", response.content?.trim())
+            // when
+            handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config").apply {
+                // then
+                assertThat(response.content)
+                    .isNotNull()
+                    .isEqualTo(
+                        "New Device 1\nhttp://bgurl\nhttp://fabx.backup\n"
+                                + "${toolDto1.id},0,UNLOCK,New Tool 1\n"
+                                + "${toolDto2.id},1,UNLOCK,New Tool 2\n"
+                    )
             }
         }
 

@@ -1,5 +1,7 @@
 package cloud.fabx
 
+import assertk.Assert
+import assertk.assertThat
 import cloud.fabx.db.DbHandler
 import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.EditUserDto
@@ -25,7 +27,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.TestApplicationRequest
 import io.ktor.server.testing.handleRequest
@@ -33,7 +34,7 @@ import io.ktor.server.testing.setBody
 import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.encodeBase64
-import kotlin.test.assertEquals
+import isOK
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Before
@@ -48,8 +49,6 @@ open class CommonTest {
 
         SchemaUtils.drop(Devices, Tools, Users, Admins, Qualifications, UserQualifications, ToolQualifications)
         SchemaUtils.create(Devices, Tools, Users, Admins, Qualifications, UserQualifications, ToolQualifications)
-
-        Unit
     }
 
     @InternalAPI
@@ -58,80 +57,102 @@ open class CommonTest {
         addHeader(HttpHeaders.Authorization, "Basic $encoded")
     }
 
-    protected fun TestApplicationEngine.givenUser(firstName: String = "New User 1",
-                                                  lastName: String = "New User 1 LastName",
-                                                  wikiName: String = "newUserWikiName",
-                                                  phoneNumber: String = "123456"): UserDto {
+    protected inline fun <reified T> Assert<String>.readValue(): Assert<T> =
+        transform { mapper.readValue(it) }
+
+    protected fun TestApplicationEngine.givenUser(
+        firstName: String = "New User 1",
+        lastName: String = "New User 1 LastName",
+        wikiName: String = "newUserWikiName",
+        phoneNumber: String = "123456"
+    ): UserDto {
         handleRequest(HttpMethod.Post, "/api/v1/user") {
-            setBody(mapper.writeValueAsString(
-                NewUserDto(firstName, lastName, wikiName, phoneNumber)))
-            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-        }.apply {
-            assertEquals(HttpStatusCode.OK, response.status())
-            return mapper.readValue(response.content!!)
-        }
-    }
-
-    protected fun TestApplicationEngine.givenCardForUser(userId: Int,
-                                                         cardId: String,
-                                                         cardSecret: String) {
-        handleRequest(HttpMethod.Patch, "/api/v1/user/$userId") {
-            setBody(mapper.writeValueAsString(
-                EditUserDto(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    cardId,
-                    cardSecret
+            setBody(
+                mapper.writeValueAsString(
+                    NewUserDto(firstName, lastName, wikiName, phoneNumber)
                 )
-            ))
+            )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }.apply {
-            assertEquals(HttpStatusCode.OK, response.status())
+            assertThat(response.status()).isOK()
+            return mapper.readValue(response.content!!)
         }
     }
 
-    protected fun TestApplicationEngine.givenQualification(name: String = "New Qualification 1",
-                                                           description: String = "A Qualification",
-                                                           colour: String = "#000000",
-                                                           orderNr: Int = 1): QualificationDto {
+    protected fun TestApplicationEngine.givenCardForUser(
+        userId: Int,
+        cardId: String,
+        cardSecret: String
+    ) {
+        handleRequest(HttpMethod.Patch, "/api/v1/user/$userId") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditUserDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        cardId,
+                        cardSecret
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            assertThat(response.status()).isOK()
+        }
+    }
+
+    protected fun TestApplicationEngine.givenQualification(
+        name: String = "New Qualification 1",
+        description: String = "A Qualification",
+        colour: String = "#000000",
+        orderNr: Int = 1
+    ): QualificationDto {
         handleRequest(HttpMethod.Post, "/api/v1/qualification") {
-            setBody(mapper.writeValueAsString(
-                NewQualificationDto(name, description, colour, orderNr)
-            ))
+            setBody(
+                mapper.writeValueAsString(
+                    NewQualificationDto(name, description, colour, orderNr)
+                )
+            )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }.apply {
-            assertEquals(HttpStatusCode.OK, response.status())
+            assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
         }
     }
 
-    protected fun TestApplicationEngine.givenDevice(name: String = "New Device 1",
-                                                    mac: String = "aaffeeaaffee",
-                                                    secret: String = "newSecret",
-                                                    bgImageUrl: String = "http://bgurl",
-                                                    backupBackendUrl: String = "http://fabx.backup"): DeviceDto {
+    protected fun TestApplicationEngine.givenDevice(
+        name: String = "New Device 1",
+        mac: String = "aaffeeaaffee",
+        secret: String = "newSecret",
+        bgImageUrl: String = "http://bgurl",
+        backupBackendUrl: String = "http://fabx.backup"
+    ): DeviceDto {
         handleRequest(HttpMethod.Post, "/api/v1/device") {
-            setBody(mapper.writeValueAsString(
-                NewDeviceDto(name, mac, secret, bgImageUrl, backupBackendUrl)
-            ))
+            setBody(
+                mapper.writeValueAsString(
+                    NewDeviceDto(name, mac, secret, bgImageUrl, backupBackendUrl)
+                )
+            )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }.apply {
-            assertEquals(HttpStatusCode.OK, response.status())
+            assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
         }
     }
 
-    protected fun TestApplicationEngine.givenTool(deviceId: Int,
-                                                  name: String = "New Tool 1",
-                                                  pin: Int = 0,
-                                                  type: ToolType = ToolType.UNLOCK,
-                                                  state: ToolState = ToolState.GOOD,
-                                                  wikiLink: String = "http://wikiurl",
-                                                  qualifications: List<Int> = listOf(1)): ToolDto {
+    protected fun TestApplicationEngine.givenTool(
+        deviceId: Int,
+        name: String = "New Tool 1",
+        pin: Int = 0,
+        type: ToolType = ToolType.UNLOCK,
+        state: ToolState = ToolState.GOOD,
+        wikiLink: String = "http://wikiurl",
+        qualifications: List<Int> = listOf(1)
+    ): ToolDto {
         handleRequest(HttpMethod.Post, "/api/v1/tool") {
             setBody(
                 mapper.writeValueAsString(
@@ -148,13 +169,15 @@ open class CommonTest {
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }.apply {
-            assertEquals(HttpStatusCode.OK, response.status())
+            assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
         }
     }
 
-    protected fun TestApplicationEngine.givenUserHasQualification(userId: Int,
-                                                                  qualificationId: Int) {
+    protected fun TestApplicationEngine.givenUserHasQualification(
+        userId: Int,
+        qualificationId: Int
+    ) {
         handleRequest(HttpMethod.Post, "/api/v1/user/$userId/qualifications") {
             setBody(
                 mapper.writeValueAsString(
@@ -166,7 +189,7 @@ open class CommonTest {
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }.apply {
-            assertEquals(HttpStatusCode.OK, response.status())
+            assertThat(response.status()).isOK()
         }
     }
 }

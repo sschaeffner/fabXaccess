@@ -1,9 +1,12 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -12,20 +15,22 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import isNotSuccess
+import isOK
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 @KtorExperimentalAPI
-class UserTest: CommonTest() {
+class UserTest : CommonTest() {
 
     @Test
-    fun givenNoUsersWhenGetUsersThenReturnsEmptyList() = runBlocking {
+    fun `given no users when getting users then returns empty list`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // when
             handleRequest(HttpMethod.Get, "/api/v1/user").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("[]", response.content)
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content).isEqualTo("[]")
             }
         }
 
@@ -33,33 +38,47 @@ class UserTest: CommonTest() {
     }
 
     @Test
-    fun whenCreateUserThenUserIsCreated() = runBlocking {
+    fun `when creating user then user is created`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val firstName = "New User 1"
+            val lastName = "New User 1 LastName"
+            val wikiName = "newUserWikiName"
+            val phoneNumber = "123456"
+
+            // when
             handleRequest(HttpMethod.Post, "/api/v1/user") {
-                setBody(mapper.writeValueAsString(
-                    NewUserDto(
-                        "New User 1",
-                        "New User 1 LastName",
-                        "newUserWikiName",
-                        "123456"
+                setBody(
+                    mapper.writeValueAsString(
+                        NewUserDto(
+                            firstName,
+                            lastName,
+                            wikiName,
+                            phoneNumber
+                        )
                     )
-                ))
+                )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val userDto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, userDto.id)
-                assertEquals("New User 1", userDto.firstName)
-                assertEquals("New User 1 LastName", userDto.lastName)
-                assertEquals("newUserWikiName", userDto.wikiName)
-                assertEquals("123456", userDto.phoneNumber)
-                assertEquals(false, userDto.locked)
-                assertTrue(userDto.lockedReason.isEmpty())
-                assertEquals(null, userDto.cardId)
-                assertEquals(0, userDto.qualifications.size)
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .readValue<UserDto>()
+                    .isEqualTo(
+                        UserDto(
+                            1,
+                            firstName,
+                            lastName,
+                            wikiName,
+                            phoneNumber,
+                            false,
+                            "",
+                            null,
+                            null,
+                            listOf()
+                        )
+                    )
             }
         }
 
@@ -67,32 +86,87 @@ class UserTest: CommonTest() {
     }
 
     @Test
-    fun givenUserExistsWhenGetUserThenOk() = runBlocking {
+    fun `given existing user when getting user then ok`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val firstName = "New User 1"
+            val lastName = "New User 1 LastName"
+            val wikiName = "newUserWikiName"
+            val phoneNumber = "123456"
+            val userDto = givenUser(
+                firstName,
+                lastName,
+                wikiName,
+                phoneNumber
+            )
+
+            // when
+            handleRequest(HttpMethod.Get, "/api/v1/user/${userDto.id}").apply {
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .readValue<UserDto>()
+                    .isEqualTo(
+                        UserDto(
+                            1,
+                            firstName,
+                            lastName,
+                            wikiName,
+                            phoneNumber,
+                            false,
+                            "",
+                            null,
+                            null,
+                            listOf()
+                        )
+                    )
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun `given user when editing single parameter then parameter is changed`() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
             val userDto = givenUser(
                 "New User 1",
                 "New User 1 LastName",
                 "newUserWikiName",
                 "123456"
             )
-            assertEquals(1, userDto.id)
+            val newFirstName = "Edit Username 1"
 
-            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
+            // when
+            handleRequest(HttpMethod.Patch, "/api/v1/user/${userDto.id}") {
+                setBody(
+                    mapper.writeValueAsString(
+                        EditUserDto(
+                            newFirstName,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                    )
+                )
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertThat(response.status()).isOK()
+            }
 
-                val dto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, dto.id)
-                assertEquals("New User 1", dto.firstName)
-                assertEquals("New User 1 LastName", dto.lastName)
-                assertEquals("newUserWikiName", dto.wikiName)
-                assertEquals("123456", dto.phoneNumber)
-                assertEquals(false, dto.locked)
-                assertTrue(dto.lockedReason.isEmpty())
-                assertEquals(null, dto.cardId)
-                assertEquals(0, dto.qualifications.size)
-
+            // then
+            handleRequest(HttpMethod.Get, "/api/v1/user/${userDto.id}").apply {
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .readValue<UserDto>()
+                    .isEqualTo(userDto.copy(firstName = newFirstName))
             }
         }
 
@@ -100,51 +174,66 @@ class UserTest: CommonTest() {
     }
 
     @Test
-    fun givenUserWhenEditSingleParameterThenParameterIsChanged() = runBlocking {
+    fun `given user when editing all parameters then parameters are changed`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
+            // given
             val userDto = givenUser(
                 "New User 1",
                 "New User 1 LastName",
                 "newUserWikiName",
                 "123456"
             )
-            assertEquals(1, userDto.id)
 
-            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
-                setBody(mapper.writeValueAsString(
-                    EditUserDto(
-                        "Edit Username 1",
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
+            val newFirstName = "Edit Username 1"
+            val newLastName = "New User 1 LastName"
+            val newWikiName = "editWikiName"
+            val newPhoneNumber = "54321"
+            val newLocked = true
+            val newLockedReason = "edit locked reason"
+            val newCardId = "bbaabbaa"
+            val newCardSecret = "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
+
+            // when
+            handleRequest(HttpMethod.Patch, "/api/v1/user/${userDto.id}") {
+                setBody(
+                    mapper.writeValueAsString(
+                        EditUserDto(
+                            newFirstName,
+                            newLastName,
+                            newWikiName,
+                            newPhoneNumber,
+                            newLocked,
+                            newLockedReason,
+                            newCardId,
+                            newCardSecret
+                        )
                     )
-                ))
+                )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+                assertThat(response.status()).isOK()
             }
 
-            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val dto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, dto.id)
-                assertEquals("Edit Username 1", dto.firstName)
-                assertEquals("New User 1 LastName", dto.lastName)
-                assertEquals("newUserWikiName", dto.wikiName)
-                assertEquals("123456", dto.phoneNumber)
-                assertEquals(false, dto.locked)
-                assertTrue(dto.lockedReason.isEmpty())
-                assertEquals(null, dto.cardId)
-                assertEquals(0, dto.qualifications.size)
-
+            // then
+            handleRequest(HttpMethod.Get, "/api/v1/user/${userDto.id}").apply {
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .readValue<UserDto>()
+                    .isEqualTo(
+                        UserDto(
+                            userDto.id,
+                            newFirstName,
+                            newLastName,
+                            newWikiName,
+                            newPhoneNumber,
+                            newLocked,
+                            newLockedReason,
+                            newCardId,
+                            newCardSecret,
+                            listOf()
+                        )
+                    )
             }
         }
 
@@ -152,70 +241,44 @@ class UserTest: CommonTest() {
     }
 
     @Test
-    fun givenUserWhenEditAllParametersThenParametersAreChanged() = runBlocking {
+    fun `given user when deleting user then user no longer exists`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
-            val userDto = givenUser(
-                "New User 1",
-                "New User 1 LastName",
-                "newUserWikiName",
-                "123456"
-            )
-            assertEquals(1, userDto.id)
-
-            handleRequest(HttpMethod.Patch, "/api/v1/user/1") {
-                setBody(mapper.writeValueAsString(
-                    EditUserDto(
-                        "Edit Username 1",
-                        "New User 1 LastName",
-                        "editWikiName",
-                        "54321",
-                        true,
-                        "edit locked reason",
-                        "bbaabbaa",
-                        "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
-                    )
-                ))
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-
-            handleRequest(HttpMethod.Get, "/api/v1/user/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val dto = mapper.readValue<UserDto>(response.content!!)
-
-                assertEquals(1, dto.id)
-                assertEquals("Edit Username 1", dto.firstName)
-                assertEquals("New User 1 LastName", dto.lastName)
-                assertEquals("editWikiName", dto.wikiName)
-                assertEquals("54321", dto.phoneNumber)
-                assertEquals(true, dto.locked)
-                assertEquals("edit locked reason", dto.lockedReason)
-                assertEquals("bbaabbaa", dto.cardId)
-                assertEquals("11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF", dto.cardSecret)
-                assertEquals(0, dto.qualifications.size)
-            }
-        }
-
-        Unit
-    }
-
-    @Test
-    fun givenUserWhenDeleteUserThenUserNoLongerExists() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
+            // given
             val userDto = givenUser()
-            assertEquals(1, userDto.id)
 
-            handleRequest(HttpMethod.Delete, "/api/v1/user/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/user/${userDto.id}").apply {
+                assertThat(response.status()).isOK()
             }
 
-            handleRequest(HttpMethod.Get,"/api/v1/user/1").apply {
-                assertEquals(HttpStatusCode.NotFound, response.status())
+            // then
+            handleRequest(HttpMethod.Get, "/api/v1/user/${userDto.id}").apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun `given user with qualification when deleting user then error message`() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val userDto = givenUser()
+
+            val qualificationDto = givenQualification()
+
+            givenUserHasQualification(userDto.id, qualificationDto.id)
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/user/${userDto.id}").apply {
+                // then
+                assertThat(response.status())
+                    .isNotNull()
+                    .isNotSuccess()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("FK_USERQUALIFICATIONS_USER_ID")
             }
         }
 

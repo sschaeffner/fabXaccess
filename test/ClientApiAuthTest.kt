@@ -1,121 +1,164 @@
 package cloud.fabx
 
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
+import isOK
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 @InternalAPI
 @KtorExperimentalAPI
-class ClientApiAuthTest: CommonTest() {
+class ClientApiAuthTest : CommonTest() {
 
     @Test
-    fun givenNoAuthenticationWhenGetConfigThenUnauthorized() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-
-            val deviceDto = givenDevice(mac ="aaffeeaaffee")
-            assertEquals(1, deviceDto.id)
-
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config").apply {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
-            }
-
-            Unit
-        }
-    }
-
-    @Test
-    fun givenAuthenticationWhenGetConfigThenOk() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-
-            val deviceDto = givenDevice(
-                mac = "aaffeeaaffee",
-                secret = "newSecret"
+    fun `given no authentication when getting config then unauthorized`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = true
             )
-            assertEquals(1, deviceDto.id)
+        }) {
+            // given
+            val mac = "aaffeeaaffee"
+            givenDevice(mac = mac)
 
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/config"){
-                addBasicAuth("aaffeeaaffee", "newSecret")
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("New Device 1\nhttp://bgurl\nhttp://fabx.backup\n", response.content)
+            // when
+            handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config").apply {
+                // then
+                assertThat(response.status())
+                    .isEqualTo(HttpStatusCode.Unauthorized)
             }
-
-            Unit
         }
+
+        Unit
     }
 
     @Test
-    fun givenNoAuthenticationWhenGetPermissionsThenUnauthorized() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
+    fun `given valid authentication when getting config then OK`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = true
+            )
+        }) {
+            // given
+            val mac = "aaffeeaaffee"
+            val secret = "newSecret"
+            givenDevice(mac = mac, secret = secret)
 
+            // when
+            handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config") {
+                addBasicAuth(mac, secret)
+            }.apply {
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isEqualTo("New Device 1\nhttp://bgurl\nhttp://fabx.backup\n")
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun `given no authentication when getting permissions then Unauthorized`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = true
+            )
+        }) {
+            // given
+            val mac = "aaffeeaaffee"
             val userDto = givenUser()
-            assertEquals(1, userDto.id)
+            val qualificationDto = givenQualification()
+            val deviceDto = givenDevice(mac = mac)
+            givenTool(deviceDto.id)
+            givenUserHasQualification(userDto.id, qualificationDto.id)
+
+            val invalidCardUid = "aabbccdd"
+            val invalidCardSecret = "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
+
+            // when
+            handleRequest(
+                HttpMethod.Get,
+                "/clientApi/v1/${mac}/permissions/${invalidCardUid}/${invalidCardSecret}"
+            ).apply {
+                // then
+                assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun `given authentication when getting permissions then OK`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = true
+            )
+        }) {
+            // given
+            val userDto = givenUser()
+
+            val cardId = "aabbccdd"
+            val cardSecret = "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
+            givenCardForUser(
+                userDto.id,
+                cardId,
+                cardSecret
+            )
 
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
 
-            val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
-
-            val toolDto = givenTool(1)
-            assertEquals(1, toolDto.id)
-
-            givenUserHasQualification(1, 1)
-
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF").apply {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
-            }
-
-            Unit
-        }
-    }
-
-    @Test
-    fun givenAuthenticationWhenGetPermissionsThenOk() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
-
-            val userDto = givenUser()
-            assertEquals(1, userDto.id)
-
-            givenCardForUser(1,
-                "aabbccdd",
-                "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF")
-
-            val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
-
-            // CREATE DEVICE
+            val mac = "aaffeeaaffee"
+            val secret = "newSecret"
             val deviceDto = givenDevice(
-                mac = "aaffeeaaffee",
-                secret = "newSecret"
+                mac = mac,
+                secret = secret
             )
-            assertEquals(1, deviceDto.id)
 
-            val toolDto = givenTool(1)
-            assertEquals(1, toolDto.id)
+            val toolDto = givenTool(deviceDto.id)
 
-            givenUserHasQualification(1, 1)
+            givenUserHasQualification(userDto.id, qualificationDto.id)
 
-            handleRequest(HttpMethod.Get, "/clientApi/v1/aaffeeaaffee/permissions/aabbccdd/11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF") {
-                addBasicAuth("aaffeeaaffee", "newSecret")
+            handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/permissions/${cardId}/${cardSecret}") {
+                addBasicAuth(mac, secret)
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("1", response.content?.trim())
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .contains("${toolDto.id}")
             }
-
-            Unit
         }
+
+        Unit
     }
 
     @Test
-    fun whenAuthenticatingWithWrongSecretThenUnauthorized() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false, clientApiAuthentication = true) }) {
+    fun `given invalid authentication when getting config then Unauthorized`() = runBlocking {
+        withTestApplication({
+            module(
+                demoContent = false,
+                apiAuthentication = false,
+                clientApiAuthentication = true
+            )
+        }) {
 
             givenDevice(
                 mac = "aaffeeaaffee",
