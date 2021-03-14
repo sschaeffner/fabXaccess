@@ -13,7 +13,6 @@ import cloud.fabx.dto.NewQualificationDto
 import cloud.fabx.dto.QualificationDto
 import cloud.fabx.dto.UserDto
 import cloud.fabx.dto.UserQualificationDto
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -75,7 +74,7 @@ class QualificationTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<QualificationDto>(it) }
+                    .readValue<QualificationDto>()
                     .isEqualTo(
                         QualificationDto(
                             1,
@@ -113,7 +112,7 @@ class QualificationTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<QualificationDto>(it) }
+                    .readValue<QualificationDto>()
                     .isEqualTo(
                         QualificationDto(
                             qualificationDto.id,
@@ -164,7 +163,7 @@ class QualificationTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<QualificationDto>(it) }
+                    .readValue<QualificationDto>()
                     .isEqualTo(qualificationDto.copy(name = newName))
             }
         }
@@ -210,7 +209,7 @@ class QualificationTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<QualificationDto>(it) }
+                    .readValue<QualificationDto>()
                     .isEqualTo(QualificationDto(
                         createdQualificationDto.id,
                         newName,
@@ -272,7 +271,7 @@ class QualificationTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<UserDto>(it) }
+                    .readValue<UserDto>()
                     .all {
                         transform { it.id }.isEqualTo(userDto.id)
                         transform { it.qualifications }.extracting { it.id }.containsExactly(qualificationDto.id)
@@ -301,7 +300,7 @@ class QualificationTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<UserDto>(it) }
+                    .readValue<UserDto>()
                     .all {
                         transform { it.id }.isEqualTo(userDto.id)
                         transform { it.qualifications }.isEmpty()

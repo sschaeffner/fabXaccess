@@ -7,7 +7,6 @@ import assertk.assertions.isNotNull
 import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -18,8 +17,6 @@ import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
 import isNotSuccess
 import isOK
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
@@ -67,7 +64,7 @@ class UserTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<UserDto>(it) }
+                    .readValue<UserDto>()
                     .isEqualTo(
                         UserDto(
                             1,
@@ -109,7 +106,7 @@ class UserTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<UserDto>(it) }
+                    .readValue<UserDto>()
                     .isEqualTo(
                         UserDto(
                             1,
@@ -168,7 +165,7 @@ class UserTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<UserDto>(it) }
+                    .readValue<UserDto>()
                     .isEqualTo(userDto.copy(firstName = newFirstName))
             }
         }
@@ -222,7 +219,7 @@ class UserTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<UserDto>(it) }
+                    .readValue<UserDto>()
                     .isEqualTo(
                         UserDto(
                             userDto.id,

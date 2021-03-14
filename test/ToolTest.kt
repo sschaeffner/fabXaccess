@@ -12,7 +12,6 @@ import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -77,7 +76,7 @@ class ToolTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<ToolDto>(it) }
+                    .readValue<ToolDto>()
                     .isEqualTo(
                         ToolDto(
                             1,
@@ -110,7 +109,7 @@ class ToolTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<ToolDto>(it) }
+                    .readValue<ToolDto>()
                     .all {
                         transform { it.deviceId }.isEqualTo(deviceDto.id)
                         transform { it.qualifications }.extracting { it.id }.containsExactly(qualificationDto.id)
@@ -156,7 +155,7 @@ class ToolTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<ToolDto>(it) }
+                    .readValue<ToolDto>()
                     .isEqualTo(toolDto.copy(name = newName))
             }
         }
@@ -212,7 +211,7 @@ class ToolTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<ToolDto>(it) }
+                    .readValue<ToolDto>()
                     .isEqualTo(
                         ToolDto(
                             toolDto.id,

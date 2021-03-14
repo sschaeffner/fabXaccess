@@ -1,5 +1,6 @@
 package cloud.fabx
 
+import assertk.Assert
 import assertk.assertThat
 import cloud.fabx.db.DbHandler
 import cloud.fabx.dto.DeviceDto
@@ -55,6 +56,9 @@ open class CommonTest {
         val encoded = "$user:$password".toByteArray(Charsets.UTF_8).encodeBase64()
         addHeader(HttpHeaders.Authorization, "Basic $encoded")
     }
+
+    protected inline fun <reified T> Assert<String>.readValue(): Assert<T> =
+        transform { mapper.readValue(it) }
 
     protected fun TestApplicationEngine.givenUser(
         firstName: String = "New User 1",

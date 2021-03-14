@@ -7,7 +7,6 @@ import assertk.assertions.isNotNull
 import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.EditDeviceDto
 import cloud.fabx.dto.NewDeviceDto
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -69,7 +68,7 @@ class DeviceTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<DeviceDto>(it) }
+                    .readValue<DeviceDto>()
                     .isEqualTo(
                         DeviceDto(
                             1,
@@ -99,7 +98,7 @@ class DeviceTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<DeviceDto>(it) }
+                    .readValue<DeviceDto>()
                     .isEqualTo(deviceDto)
             }
         }
@@ -144,7 +143,7 @@ class DeviceTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<DeviceDto>(it) }
+                    .readValue<DeviceDto>()
                     .isEqualTo(deviceDto.copy(name = newName))
             }
         }
@@ -187,7 +186,7 @@ class DeviceTest : CommonTest() {
                 assertThat(response.status()).isOK()
                 assertThat(response.content)
                     .isNotNull()
-                    .transform { mapper.readValue<DeviceDto>(it) }
+                    .readValue<DeviceDto>()
                     .isEqualTo(
                         DeviceDto(
                             deviceDto.id,
