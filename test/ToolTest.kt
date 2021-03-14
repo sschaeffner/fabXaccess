@@ -1,7 +1,10 @@
 package cloud.fabx
 
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import cloud.fabx.dto.EditToolDto
@@ -19,20 +22,21 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
 import isNotSuccess
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import isOK
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 @KtorExperimentalAPI
-class ToolTest: CommonTest() {
+class ToolTest : CommonTest() {
 
     @Test
-    fun givenNoToolsWhenGetToolsThenReturnsEmptyList() = runBlocking {
+    fun `given no tools when getting tools then returns empty list`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // when
             handleRequest(HttpMethod.Get, "/api/v1/tool").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("[]", response.content)
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content).isEqualTo("[]")
             }
         }
 
@@ -40,43 +44,52 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun whenCreateToolThenToolIsCreated() = runBlocking {
+    fun `when create tool then tool is created`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
             val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
-
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
 
+            val name = "New Tool 1"
+            val pin = 0
+            val wikiLink = "http://wikiurl"
+            val toolType = ToolType.UNLOCK
+            val toolState = ToolState.GOOD
+
+            // when
             handleRequest(HttpMethod.Post, "/api/v1/tool") {
                 setBody(
                     mapper.writeValueAsString(
                         NewToolDto(
-                            1,
-                            "New Tool 1",
-                            0,
-                            ToolType.UNLOCK,
-                            ToolState.GOOD,
-                            "http://wikiurl",
-                            listOf(1)
+                            deviceDto.id,
+                            name,
+                            pin,
+                            toolType,
+                            toolState,
+                            wikiLink,
+                            listOf(qualificationDto.id)
                         )
                     )
                 )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val toolDto = mapper.readValue<ToolDto>(response.content!!)
-
-                assertEquals(1, toolDto.id)
-                assertEquals(1, toolDto.deviceId)
-                assertEquals(0, toolDto.pin)
-                assertEquals("New Tool 1", toolDto.name)
-                assertEquals(ToolType.UNLOCK, toolDto.toolType)
-                assertEquals(ToolState.GOOD, toolDto.toolState)
-                assertEquals("http://wikiurl", toolDto.wikiLink)
-                assertEquals(1, toolDto.qualifications.size)
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .transform { mapper.readValue<ToolDto>(it) }
+                    .isEqualTo(
+                        ToolDto(
+                            1,
+                            deviceDto.id,
+                            name,
+                            pin,
+                            toolType,
+                            toolState,
+                            wikiLink,
+                            listOf(qualificationDto)
+                        )
+                    )
             }
         }
 
@@ -84,29 +97,24 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun givenToolExistsWhenGetToolThenOk() = runBlocking {
+    fun `given tool exists when getting tool then ok`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
             val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
-
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
+            val toolDto = givenTool(deviceDto.id)
 
-            val toolDto = givenTool(1)
-            assertEquals(1, toolDto.id)
-
-            handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val dto = mapper.readValue<ToolDto>(response.content!!)
-
-                assertEquals(1, dto.id)
-                assertEquals(1, dto.deviceId)
-                assertEquals(0, dto.pin)
-                assertEquals(ToolType.UNLOCK, dto.toolType)
-                assertEquals(ToolState.GOOD, dto.toolState)
-                assertEquals("http://wikiurl", dto.wikiLink)
+            // when
+            handleRequest(HttpMethod.Get, "/api/v1/tool/${toolDto.id}").apply {
+                // then
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .transform { mapper.readValue<ToolDto>(it) }
+                    .all {
+                        transform { it.deviceId }.isEqualTo(deviceDto.id)
+                        transform { it.qualifications }.extracting { it.id }.containsExactly(qualificationDto.id)
+                    }
             }
         }
 
@@ -114,132 +122,109 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun givenToolWhenEditSingleParameterThenParameterIsChanged() = runBlocking {
+    fun `given tool when editing single parameter then parameter is changed`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
+            // given
             val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
-
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
+            val toolDto = givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
 
-            val toolDto = givenTool(1)
-            assertEquals(1, toolDto.id)
+            val newName = "Edited Tool Name"
 
-            handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
+            // when
+            handleRequest(HttpMethod.Patch, "/api/v1/tool/${toolDto.id}") {
                 setBody(
-                    mapper.writeValueAsString(EditToolDto(
-                        null,
-                        "Edited Tool Name",
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                    ))
+                    mapper.writeValueAsString(
+                        EditToolDto(
+                            null,
+                            newName,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+                    )
                 )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+                assertThat(response.status()).isOK()
             }
 
-            handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val dto = mapper.readValue<ToolDto>(response.content!!)
-
-                assertEquals(1, dto.id)
-                assertEquals(1, dto.deviceId)
-                assertEquals(0, dto.pin)
-                assertEquals("Edited Tool Name", dto.name)
-                assertEquals(ToolType.UNLOCK, dto.toolType)
-                assertEquals(ToolState.GOOD, dto.toolState)
-                assertEquals("http://wikiurl", dto.wikiLink)
-                assertEquals(1, dto.qualifications.size)
-                assertEquals(1, dto.qualifications[0].id)
+            // then
+            handleRequest(HttpMethod.Get, "/api/v1/tool/${toolDto.id}").apply {
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .transform { mapper.readValue<ToolDto>(it) }
+                    .isEqualTo(toolDto.copy(name = newName))
             }
-
         }
-
 
         Unit
     }
 
     @Test
-    fun givenToolWhenEditAllParametersThenParametersAreChanged() = runBlocking {
+    fun `given tool when editing all parameters then parameters are changed`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
+            // given
             val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
 
             val deviceDto2 = givenDevice(
                 mac = "aaffeeaaffff",
                 secret = "newSecret2"
             )
-            assertEquals(2, deviceDto2.id)
 
             val qualificationDto = givenQualification()
-            assertEquals(1, qualificationDto.id)
 
-            val toolDto = givenTool(1)
-            assertEquals(1, toolDto.id)
+            val toolDto = givenTool(deviceDto.id)
 
-            handleRequest(HttpMethod.Patch, "/api/v1/tool/1") {
+            val newDeviceId = deviceDto2.id
+            val newName = "Edited Tool Name"
+            val newPin = 1
+            val newToolType = ToolType.KEEP
+            val newToolState = ToolState.BAD
+            val newWikiLink = "http://newwikiurl"
+            val newQualifications = listOf(qualificationDto.id)
+
+            // when
+            handleRequest(HttpMethod.Patch, "/api/v1/tool/${toolDto.id}") {
                 setBody(
-                    mapper.writeValueAsString(EditToolDto(
-                        2,
-                        "Edited Tool Name",
-                        1,
-                        ToolType.KEEP,
-                        ToolState.BAD,
-                        "http://newwikiurl",
-                        listOf(1)
-                    ))
+                    mapper.writeValueAsString(
+                        EditToolDto(
+                            newDeviceId,
+                            newName,
+                            newPin,
+                            newToolType,
+                            newToolState,
+                            newWikiLink,
+                            newQualifications
+                        )
+                    )
                 )
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+                assertThat(response.status()).isOK()
             }
 
-            handleRequest(HttpMethod.Get, "/api/v1/tool/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertTrue(response.content!!.isNotEmpty())
-
-                val dto = mapper.readValue<ToolDto>(response.content!!)
-
-                assertEquals(1, dto.id)
-                assertEquals(2, dto.deviceId)
-                assertEquals(1, dto.pin)
-                assertEquals("Edited Tool Name", dto.name)
-                assertEquals(ToolType.KEEP, dto.toolType)
-                assertEquals(ToolState.BAD, dto.toolState)
-                assertEquals("http://newwikiurl", dto.wikiLink)
-                assertEquals(1, dto.qualifications.size)
-                assertEquals(1, dto.qualifications[0].id)
-            }
-        }
-
-        Unit
-    }
-
-    @Test
-    fun givenToolWhenDeleteToolThenToolNoLongerExists() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
-            val deviceDto = givenDevice()
-            assertEquals(1, deviceDto.id)
-
-            val toolDto = givenTool(1, qualifications = listOf())
-            assertEquals(1, toolDto.id)
-
-            // DELETE TOOL
-            handleRequest(HttpMethod.Delete, "/api/v1/tool/1").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-
-            handleRequest(HttpMethod.Get,"/api/v1/tool/1").apply {
-                assertEquals(HttpStatusCode.NotFound, response.status())
+            // then
+            handleRequest(HttpMethod.Get, "/api/v1/tool/${toolDto.id}").apply {
+                assertThat(response.status()).isOK()
+                assertThat(response.content)
+                    .isNotNull()
+                    .transform { mapper.readValue<ToolDto>(it) }
+                    .isEqualTo(
+                        ToolDto(
+                            toolDto.id,
+                            deviceDto2.id,
+                            newName,
+                            newPin,
+                            newToolType,
+                            newToolState,
+                            newWikiLink,
+                            listOf(qualificationDto)
+                        )
+                    )
             }
         }
 
@@ -247,21 +232,36 @@ class ToolTest: CommonTest() {
     }
 
     @Test
-    fun givenToolWithQualificationWhenDeleteToolThenErrorMessage() = runBlocking {
+    fun `given tool when deleting tool then tool no longer exists`() = runBlocking {
         withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-
             // given
-            val qualificationDto = givenQualification()
-            assertThat(qualificationDto.id).isEqualTo(1)
-
             val deviceDto = givenDevice()
-            assertThat(deviceDto.id).isEqualTo(1)
-
-            val toolDto = givenTool(1, qualifications = listOf(qualificationDto.id))
-            assertThat(toolDto.id).isEqualTo(1)
+            val toolDto = givenTool(deviceDto.id, qualifications = listOf())
 
             // when
-            handleRequest(HttpMethod.Delete, "/api/v1/tool/1").apply {
+            handleRequest(HttpMethod.Delete, "/api/v1/tool/${toolDto.id}").apply {
+                assertThat(response.status()).isOK()
+            }
+
+            // then
+            handleRequest(HttpMethod.Get, "/api/v1/tool/${toolDto.id}").apply {
+                assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            }
+        }
+
+        Unit
+    }
+
+    @Test
+    fun `given tool with qualification when deleting tool then error message`() = runBlocking {
+        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
+            // given
+            val qualificationDto = givenQualification()
+            val deviceDto = givenDevice()
+            val toolDto = givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+
+            // when
+            handleRequest(HttpMethod.Delete, "/api/v1/tool/${toolDto.id}").apply {
                 // then
                 assertThat(response.status())
                     .isNotNull()
