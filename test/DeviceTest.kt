@@ -11,239 +11,210 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withTestApplication
+import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
 import isNotSuccess
 import isOK
-import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
+@InternalAPI
 @KtorExperimentalAPI
 class DeviceTest : CommonTest() {
 
     @Test
-    fun `given no devices when getting all devices then return empty list`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // when
-            handleRequest(HttpMethod.Get, "/api/v1/device").apply {
-                // then
-                assertThat(response.status()).isOK()
-                assertThat(response.content).isNotNull().isEqualTo("[]")
-            }
+    fun `given no devices when getting all devices then return empty list`() = testApp {
+        // when
+        handleRequestAsAdmin(HttpMethod.Get, "/api/v1/device").apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content).isNotNull().isEqualTo("[]")
         }
-
-        Unit
     }
 
     @Test
-    fun `given valid data when creating device then OK`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // given
-            val name = "New Device 1"
-            val mac = "aaffeeaaffee"
-            val secret = "newSecret"
-            val bgImageUrl = "http://bgurl"
-            val backupBackendUrl = "http://fabx.backup"
+    fun `given valid data when creating device then OK`() = testApp {
+        // given
+        val name = "New Device 1"
+        val mac = "aaffeeaaffee"
+        val secret = "newSecret"
+        val bgImageUrl = "http://bgurl"
+        val backupBackendUrl = "http://fabx.backup"
 
-            val newDeviceDto = NewDeviceDto(
-                name,
-                mac,
-                secret,
-                bgImageUrl,
-                backupBackendUrl
+        val newDeviceDto = NewDeviceDto(
+            name,
+            mac,
+            secret,
+            bgImageUrl,
+            backupBackendUrl
+        )
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Post, "/api/v1/device") {
+            setBody(
+                mapper.writeValueAsString(
+                    newDeviceDto
+                )
             )
-
-            // when
-            handleRequest(HttpMethod.Post, "/api/v1/device") {
-                setBody(
-                    mapper.writeValueAsString(
-                        newDeviceDto
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .readValue<DeviceDto>()
+                .isEqualTo(
+                    DeviceDto(
+                        1,
+                        name,
+                        mac,
+                        secret,
+                        bgImageUrl,
+                        backupBackendUrl,
+                        listOf()
                     )
                 )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                // then
-                assertThat(response.status()).isOK()
-                assertThat(response.content)
-                    .isNotNull()
-                    .readValue<DeviceDto>()
-                    .isEqualTo(
-                        DeviceDto(
-                            1,
-                            name,
-                            mac,
-                            secret,
-                            bgImageUrl,
-                            backupBackendUrl,
-                            listOf()
-                        )
+        }
+    }
+
+    @Test
+    fun `given device when getting device then return device`() = testApp {
+        // given
+        val deviceDto = givenDevice()
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .readValue<DeviceDto>()
+                .isEqualTo(deviceDto)
+        }
+    }
+
+    @Test
+    fun `when editing single parameter of device then device is changed`() = testApp {
+        // given
+        val deviceDto = givenDevice(
+            "New Device 1",
+            "aaffeeaaffee",
+            "newSecret",
+            "http://bgurl",
+            "http://fabx.backup"
+        )
+
+        val newName = "Edited Devicename 1"
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/device/${deviceDto.id}") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditDeviceDto(
+                        newName,
+                        null,
+                        null,
+                        null,
+                        null
                     )
-            }
-        }
-
-        Unit
-    }
-
-    @Test
-    fun `given device when getting device then return device`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // given
-            val deviceDto = givenDevice()
-
-            // when
-            handleRequest(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
-                // then
-                assertThat(response.status()).isOK()
-                assertThat(response.content)
-                    .isNotNull()
-                    .readValue<DeviceDto>()
-                    .isEqualTo(deviceDto)
-            }
-        }
-
-        Unit
-    }
-
-    @Test
-    fun `when editing single parameter of device then device is changed`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // given
-            val deviceDto = givenDevice(
-                "New Device 1",
-                "aaffeeaaffee",
-                "newSecret",
-                "http://bgurl",
-                "http://fabx.backup"
+                )
             )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            assertThat(response.status()).isOK()
+        }
 
-            val newName = "Edited Devicename 1"
+        // then
+        handleRequestAsAdmin(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .readValue<DeviceDto>()
+                .isEqualTo(deviceDto.copy(name = newName))
+        }
+    }
 
-            // when
-            handleRequest(HttpMethod.Patch, "/api/v1/device/${deviceDto.id}") {
-                setBody(
-                    mapper.writeValueAsString(
-                        EditDeviceDto(
-                            newName,
-                            null,
-                            null,
-                            null,
-                            null
-                        )
+    @Test
+    fun `when editing all parameters of device then device is changed`() = testApp {
+        // given
+        val deviceDto = givenDevice()
+
+        val newName = "Edited Devicename 1"
+        val newMac = "aabbaabbaabb"
+        val newSecret = "editedSecret"
+        val newBgImageUrl = "http://editedbgurl"
+        val newBackupBackendUrl = "http://fabx.other"
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/device/${deviceDto.id}") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditDeviceDto(
+                        newName,
+                        newMac,
+                        newSecret,
+                        newBgImageUrl,
+                        newBackupBackendUrl
                     )
                 )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertThat(response.status()).isOK()
-            }
-
-            // then
-            handleRequest(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
-                assertThat(response.status()).isOK()
-                assertThat(response.content)
-                    .isNotNull()
-                    .readValue<DeviceDto>()
-                    .isEqualTo(deviceDto.copy(name = newName))
-            }
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            assertThat(response.status()).isOK()
         }
 
-        Unit
-    }
-
-    @Test
-    fun `when editing all parameters of device then device is changed`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // given
-            val deviceDto = givenDevice()
-
-            val newName = "Edited Devicename 1"
-            val newMac = "aabbaabbaabb"
-            val newSecret = "editedSecret"
-            val newBgImageUrl = "http://editedbgurl"
-            val newBackupBackendUrl = "http://fabx.other"
-
-            // when
-            handleRequest(HttpMethod.Patch, "/api/v1/device/${deviceDto.id}") {
-                setBody(
-                    mapper.writeValueAsString(
-                        EditDeviceDto(
-                            newName,
-                            newMac,
-                            newSecret,
-                            newBgImageUrl,
-                            newBackupBackendUrl
-                        )
+        // then
+        handleRequestAsAdmin(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .readValue<DeviceDto>()
+                .isEqualTo(
+                    DeviceDto(
+                        deviceDto.id,
+                        newName,
+                        newMac,
+                        newSecret,
+                        newBgImageUrl,
+                        newBackupBackendUrl,
+                        listOf()
                     )
                 )
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertThat(response.status()).isOK()
-            }
-
-            // then
-            handleRequest(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
-                assertThat(response.status()).isOK()
-                assertThat(response.content)
-                    .isNotNull()
-                    .readValue<DeviceDto>()
-                    .isEqualTo(
-                        DeviceDto(
-                            deviceDto.id,
-                            newName,
-                            newMac,
-                            newSecret,
-                            newBgImageUrl,
-                            newBackupBackendUrl,
-                            listOf()
-                        )
-                    )
-            }
         }
-
-        Unit
     }
 
     @Test
-    fun `when deleting device then device no longer exists`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // given
-            val deviceDto = givenDevice()
+    fun `when deleting device then device no longer exists`() = testApp {
+        // given
+        val deviceDto = givenDevice()
 
-            // when
-            handleRequest(HttpMethod.Delete, "/api/v1/device/${deviceDto.id}").apply {
-                assertThat(response.status()).isOK()
-            }
-
-            // then
-            handleRequest(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
-                assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
-            }
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/device/${deviceDto.id}").apply {
+            assertThat(response.status()).isOK()
         }
 
-        Unit
+        // then
+        handleRequestAsAdmin(HttpMethod.Get, "/api/v1/device/${deviceDto.id}").apply {
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+        }
     }
 
     @Test
-    fun `given device with tool when deleting device then error message`() = runBlocking {
-        withTestApplication({ module(demoContent = false, apiAuthentication = false) }) {
-            // given
-            val qualificationDto = givenQualification()
-            val deviceDto = givenDevice()
-            givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+    fun `given device with tool when deleting device then error message`() = testApp {
+        // given
+        val qualificationDto = givenQualification()
+        val deviceDto = givenDevice()
+        givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
 
-            // when
-            handleRequest(HttpMethod.Delete, "/api/v1/device/${deviceDto.id}").apply {
-                // then
-                assertThat(response.status())
-                    .isNotNull()
-                    .isNotSuccess()
-                assertThat(response.content)
-                    .isNotNull()
-                    .contains("FK_TOOLS_DEVICE_ID")
-            }
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/device/${deviceDto.id}").apply {
+            // then
+            assertThat(response.status())
+                .isNotNull()
+                .isNotSuccess()
+            assertThat(response.content)
+                .isNotNull()
+                .contains("FK_TOOLS_DEVICE_ID")
         }
-
-        Unit
     }
 }

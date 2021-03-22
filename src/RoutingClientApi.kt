@@ -1,11 +1,15 @@
 package cloud.fabx
 
+import cloud.fabx.application.DevicePrincipal
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
+import io.ktor.auth.authentication
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
+import io.ktor.util.pipeline.PipelineContext
 
 fun Route.clientApi() {
     route("/clientApi/v1") {
@@ -14,7 +18,11 @@ fun Route.clientApi() {
             val cardId = call.parameters["cardId"]!!
             val cardSecret = call.parameters["cardSecret"]!!
 
-            val qualifiedToolIds = qualificationService.getQualifiedToolsForCardId(deviceMac, cardId, cardSecret).map { it.id }
+            val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
+                return@get
+            }
+
+            val qualifiedToolIds = qualificationService.getQualifiedToolsForCardId(cardId, cardSecret, devicePrincipal).map { it.id }
 
             val permissionsString = qualifiedToolIds.joinToString("\n")
 
@@ -23,7 +31,12 @@ fun Route.clientApi() {
 
         get("/{deviceMac}/config") {
             val deviceMac = call.parameters["deviceMac"]!!
-            val device = deviceService.getDeviceByMac(deviceMac)
+
+            val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
+                return@get
+            }
+
+            val device = deviceService.getDeviceByMac(devicePrincipal.mac, principal = devicePrincipal)
 
             if (device == null) {
                 call.respond(HttpStatusCode.NotFound)
@@ -38,4 +51,19 @@ fun Route.clientApi() {
             }
         }
     }
+}
+
+private suspend inline fun PipelineContext<Unit, ApplicationCall>.requireDevicePrincipalWithMacOrElse(
+    mac: String, onFailure: () -> Unit
+): DevicePrincipal {
+    val devicePrincipal = call.authentication.principal<DevicePrincipal>()
+    if (devicePrincipal == null) {
+        call.respond(HttpStatusCode.Forbidden, "Need to authenticate as device")
+        onFailure()
+    }
+    if (devicePrincipal?.mac != mac) {
+        call.respond(HttpStatusCode.Forbidden, "Given mac has to match authentication")
+        onFailure()
+    }
+    return devicePrincipal!!
 }

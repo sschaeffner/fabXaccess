@@ -1,5 +1,6 @@
 package cloud.fabx
 
+import cloud.fabx.application.AuthorizationException
 import cloud.fabx.db.DbHandler
 import cloud.fabx.model.Admin
 import cloud.fabx.model.Device
@@ -8,7 +9,7 @@ import cloud.fabx.model.Tool
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import cloud.fabx.model.User
-import cloud.fabx.service.AdminService
+import cloud.fabx.service.AuthenticationService
 import cloud.fabx.service.DeviceService
 import cloud.fabx.service.QualificationService
 import cloud.fabx.service.ToolService
@@ -19,7 +20,6 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
-import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authenticate
 import io.ktor.auth.basic
 import io.ktor.features.CORS
@@ -40,16 +40,16 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
 @KtorExperimentalAPI
-val adminService = AdminService()
+val authenticationService = AuthenticationService()
 val userService = UserService()
-val deviceService =  DeviceService()
+val deviceService = DeviceService()
 val toolService = ToolService()
 val qualificationService = QualificationService()
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean = true, clientApiAuthentication: Boolean = true) {
+fun Application.module(demoContent: Boolean = false, testAdmin: Boolean = false) {
 
     val dbUrl = environment.config.propertyOrNull("heroku.dbUrl")
 
@@ -68,13 +68,21 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
     }
 
 
-    val demoContentEnabled = environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
+    val demoContentEnabled =
+        environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
 
     if (demoContentEnabled) {
         log.info("Demo Content Enabled")
         addDemoContent()
     } else {
         log.info("Demo Content Disabled")
+    }
+
+    if (testAdmin) {
+        log.warn("Test Admin Enabled. This should never be the case on production systems.")
+        addTestAdmin()
+    } else {
+        log.info("Test Admin Disabled. This is the safe configuration for production systems.")
     }
 
     log.info("connecting to database...")
@@ -101,7 +109,6 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
         header(HttpHeaders.Authorization)
 
         anyHost()
-        //host("localhost:4200")
 
         allowCredentials = true
         allowNonSimpleContentTypes = true
@@ -117,42 +124,29 @@ fun Application.module(demoContent: Boolean = false, apiAuthentication: Boolean 
         exception<IllegalArgumentException> { cause ->
             call.respond(HttpStatusCode.BadRequest, cause.localizedMessage)
         }
+        exception<AuthorizationException> { cause ->
+            call.respond(HttpStatusCode.Forbidden, cause.localizedMessage)
+        }
     }
     install(Authentication) {
         basic(name = "apiAuth") {
             realm = "fabX access API"
             validate { credentials ->
-                if (adminService.checkAdminCredentials(credentials.name, credentials.password)) {
-                    UserIdPrincipal(credentials.name)
-                } else {
-                    null
-                }
+                authenticationService.checkAdminCredentials(credentials.name, credentials.password)
             }
         }
         basic(name = "clientApiAuth") {
             realm = "fabX access client API"
             validate { credentials ->
-                if (deviceService.checkDeviceCredentials(credentials.name, credentials.password)) {
-                    UserIdPrincipal(credentials.name)
-                } else {
-                    null
-                }
+                deviceService.checkDeviceCredentials(credentials.name, credentials.password)
             }
         }
     }
     install(Routing) {
-        if (apiAuthentication) {
-            authenticate("apiAuth") {
-                api()
-            }
-        } else {
+        authenticate("apiAuth") {
             api()
         }
-        if (clientApiAuthentication) {
-            authenticate("clientApiAuth") {
-                clientApi()
-            }
-        } else {
+        authenticate("clientApiAuth") {
             clientApi()
         }
     }
@@ -205,5 +199,16 @@ fun addDemoContent() {
 
         user1.qualifications = SizedCollection(listOf(qualification1))
         tool1.qualifications = SizedCollection(listOf(qualification1))
+    }
+}
+
+fun addTestAdmin() {
+    transaction(DbHandler.db) {
+        Admin.new {
+            name = "admin"
+            // password: password
+            // echo -n fabXfabXfabX8password | openssl dgst -binary -sha256 | openssl base64
+            passwordHash = "2o0iqAqKf1UEB2IrsWfSb3aaSL0gwyEQatwW+o6/Qf4="
+        }
     }
 }
