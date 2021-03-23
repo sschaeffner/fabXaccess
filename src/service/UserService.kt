@@ -8,23 +8,22 @@ import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewUserDto
 import cloud.fabx.dto.UserDto
 import cloud.fabx.logger
+import cloud.fabx.model.Mapper
 import cloud.fabx.model.User
 import net.logstash.logback.argument.StructuredArguments
 
-class UserService {
+class UserService(private val mapper: Mapper) {
 
     private val log = logger()
 
-    private val qualificationService = QualificationService()
-
     suspend fun getAllUsers(principal: XPrincipal): List<UserDto> = dbQuery {
         principal.requirePermission("get all users", XPrincipal::allowedToGetAllUsers)
-        User.all().map{ toUserDto(it) }.toCollection(ArrayList())
+        User.all().map{ mapper.toUserDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getUserById(id: Int, principal: XPrincipal): UserDto? = dbQuery {
         principal.requirePermission("get user by id", XPrincipal::allowedToGetUser)
-        User.findById(id)?.let { toUserDto(it) }
+        User.findById(id)?.let { mapper.toUserDto(it) }
     }
 
     suspend fun createNewUser(user: NewUserDto, principal: XPrincipal): UserDto = dbQuery {
@@ -39,7 +38,7 @@ class UserService {
             lockedReason = ""
         }
 
-        val userDto = toUserDto(newUser)
+        val userDto = mapper.toUserDto(newUser)
         log.domainEvent(
             "new user: {} by {}",
             StructuredArguments.keyValue("userDto", userDto),
@@ -64,7 +63,7 @@ class UserService {
 
         log.domainEvent(
             "edit user: {} by {}",
-            StructuredArguments.keyValue("userDto", toUserDto(user)),
+            StructuredArguments.keyValue("userDto", mapper.toUserDto(user)),
             StructuredArguments.keyValue("principal", principal)
         )
     }
@@ -74,25 +73,10 @@ class UserService {
         val user = User.findById(id) ?: throw IllegalArgumentException("User with id $id does not exist")
         log.domainEvent(
             "delete user: {} by {}",
-            StructuredArguments.keyValue("userDto", toUserDto(user)),
+            StructuredArguments.keyValue("userDto", mapper.toUserDto(user)),
             StructuredArguments.keyValue("principal", principal)
         )
         user.delete()
-    }
-
-    private fun toUserDto(user: User): UserDto {
-        return UserDto(
-            user.id.value,
-            user.firstName,
-            user.lastName,
-            user.wikiName,
-            user.phoneNumber,
-            user.locked,
-            user.lockedReason,
-            user.cardId,
-            user.cardSecret,
-            user.qualifications.map { qualificationService.toQualificationDto(it) }.toCollection(ArrayList())
-        )
     }
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {

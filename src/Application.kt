@@ -4,6 +4,7 @@ import cloud.fabx.application.AuthorizationException
 import cloud.fabx.db.DbHandler
 import cloud.fabx.model.Admin
 import cloud.fabx.model.Device
+import cloud.fabx.model.Mapper
 import cloud.fabx.model.Qualification
 import cloud.fabx.model.Tool
 import cloud.fabx.model.ToolState
@@ -41,10 +42,11 @@ fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
 @KtorExperimentalAPI
 val authenticationService = AuthenticationService()
-val userService = UserService()
-val deviceService = DeviceService()
-val toolService = ToolService()
-val qualificationService = QualificationService()
+val mapper = Mapper()
+val qualificationService = QualificationService(mapper)
+val userService = UserService(mapper)
+val toolService = ToolService(mapper)
+val deviceService = DeviceService(mapper)
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf

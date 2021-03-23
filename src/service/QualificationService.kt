@@ -12,26 +12,26 @@ import cloud.fabx.dto.ToolDto
 import cloud.fabx.logger
 import cloud.fabx.model.Device
 import cloud.fabx.model.Devices
+import cloud.fabx.model.Mapper
 import cloud.fabx.model.Qualification
 import cloud.fabx.model.User
 import cloud.fabx.model.Users
-import cloud.fabx.toolService
 import net.logstash.logback.argument.StructuredArguments
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.and
 
-class QualificationService {
+class QualificationService(private val mapper: Mapper) {
 
     private val log = logger()
 
     suspend fun getAllQualifications(principal: XPrincipal): List<QualificationDto> = dbQuery {
         principal.requirePermission("get all qualifications", XPrincipal::allowedToGetAllQualifications)
-        Qualification.all().map { toQualificationDto(it) }.toCollection(ArrayList())
+        Qualification.all().map { mapper.toQualificationDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getQualificationById(id: Int, principal: XPrincipal): QualificationDto? = dbQuery {
         principal.requirePermission("get qualification by id", XPrincipal::allowedToGetQualification)
-        Qualification.findById(id)?.let { toQualificationDto(it) }
+        Qualification.findById(id)?.let { mapper.toQualificationDto(it) }
     }
 
     suspend fun createNewQualification(qualification: NewQualificationDto, principal: XPrincipal) = dbQuery {
@@ -44,7 +44,7 @@ class QualificationService {
             orderNr = qualification.orderNr
         }
 
-        val qualificationDto = toQualificationDto(newQualification)
+        val qualificationDto = mapper.toQualificationDto(newQualification)
         log.domainEvent(
             "new qualification: {} by {}",
             StructuredArguments.keyValue("qualificationDto", qualificationDto),
@@ -66,7 +66,7 @@ class QualificationService {
 
         log.domainEvent(
             "edit qualification: {} by {}",
-            StructuredArguments.keyValue("qualificationDto", toQualificationDto(qualification)),
+            StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
             StructuredArguments.keyValue("principal", principal)
         )
     }
@@ -77,7 +77,7 @@ class QualificationService {
 
         log.domainEvent(
             "delete qualification: {} by {}",
-            StructuredArguments.keyValue("qualificationDto", toQualificationDto(qualification)),
+            StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
             StructuredArguments.keyValue("principal", principal)
         )
         qualification.delete()
@@ -98,7 +98,7 @@ class QualificationService {
         user.qualifications = SizedCollection(newQualifications)
         log.domainEvent(
             "add qualification {} to user {} by {}",
-            StructuredArguments.keyValue("qualificationDto", toQualificationDto(qualification)),
+            StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
             StructuredArguments.keyValue("userId", user.id.value),
             StructuredArguments.keyValue("principal", principal)
         )
@@ -121,7 +121,7 @@ class QualificationService {
         user.qualifications = SizedCollection(newQualifications)
         log.domainEvent(
             "remove qualification {} from user {} by {}",
-            StructuredArguments.keyValue("qualificationDto", toQualificationDto(qualification)),
+            StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
             StructuredArguments.keyValue("userId", user.id.value),
             StructuredArguments.keyValue("principal", principal)
         )
@@ -136,17 +136,7 @@ class QualificationService {
 
         device.tools.filter { tool ->
             tool.qualifications.all { user.qualifications.contains(it) }
-        }.map { toolService.toToolDto(it) }
-    }
-
-    fun toQualificationDto(qualification: Qualification): QualificationDto {
-        return QualificationDto(
-            qualification.id.value,
-            qualification.name,
-            qualification.description,
-            qualification.colour,
-            qualification.orderNr
-        )
+        }.map { mapper.toToolDto(it) }
     }
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {

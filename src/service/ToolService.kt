@@ -9,24 +9,24 @@ import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
 import cloud.fabx.logger
 import cloud.fabx.model.Device
+import cloud.fabx.model.Mapper
 import cloud.fabx.model.Qualification
 import cloud.fabx.model.Tool
-import cloud.fabx.qualificationService
 import net.logstash.logback.argument.StructuredArguments
 import org.jetbrains.exposed.sql.SizedCollection
 
-class ToolService {
+class ToolService(private val mapper: Mapper) {
 
     private val log = logger()
 
     suspend fun getAllTools(principal: XPrincipal): List<ToolDto> = dbQuery {
         principal.requirePermission("get all tools", XPrincipal::allowedToGetAllTools)
-        Tool.all().map{ toToolDto(it) }.toCollection(ArrayList())
+        Tool.all().map{ mapper.toToolDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getToolById(id: Int, principal: XPrincipal): ToolDto? = dbQuery {
         principal.requirePermission("get tool by id", XPrincipal::allowedToGetTool)
-        Tool.findById(id)?.let { toToolDto(it) }
+        Tool.findById(id)?.let { mapper.toToolDto(it) }
     }
 
     suspend fun createNewTool(tool: NewToolDto, principal: XPrincipal): ToolDto = dbQuery {
@@ -53,7 +53,7 @@ class ToolService {
 
             newTool.qualifications = SizedCollection(qualificationsInDb)
 
-            val toolDto = toToolDto(newTool)
+            val toolDto = mapper.toToolDto(newTool)
             log.domainEvent(
                 "new tool: {} by {}",
                 StructuredArguments.keyValue("toolDto", toolDto),
@@ -89,7 +89,7 @@ class ToolService {
         }
         log.domainEvent(
             "edit tool: {} by {}",
-            StructuredArguments.keyValue("toolDto", toToolDto(tool)),
+            StructuredArguments.keyValue("toolDto", mapper.toToolDto(tool)),
             StructuredArguments.keyValue("principal", principal)
         )
     }
@@ -99,23 +99,10 @@ class ToolService {
         val tool = Tool.findById(id) ?: throw IllegalArgumentException("Tool with id $id does not exist")
         log.domainEvent(
             "delete tool: {} by {}",
-            StructuredArguments.keyValue("toolDto", toToolDto(tool)),
+            StructuredArguments.keyValue("toolDto", mapper.toToolDto(tool)),
             StructuredArguments.keyValue("principal", principal)
         )
         tool.delete()
-    }
-
-    fun toToolDto(tool: Tool): ToolDto {
-        return ToolDto(
-            tool.id.value,
-            tool.device.id.value,
-            tool.name,
-            tool.pin,
-            tool.toolType,
-            tool.toolState,
-            tool.wikiLink,
-            tool.qualifications.map { qualificationService.toQualificationDto(it) }
-        )
     }
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {

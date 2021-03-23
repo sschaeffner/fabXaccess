@@ -12,27 +12,26 @@ import cloud.fabx.dto.NewDeviceDto
 import cloud.fabx.logger
 import cloud.fabx.model.Device
 import cloud.fabx.model.Devices
+import cloud.fabx.model.Mapper
 import net.logstash.logback.argument.StructuredArguments.keyValue
 
-class DeviceService {
+class DeviceService(private val mapper: Mapper) {
 
     private val log = logger()
 
-    private val toolService = ToolService()
-
     suspend fun getAllDevices(principal: XPrincipal): List<DeviceDto> = dbQuery {
         principal.requirePermission("get all devices", XPrincipal::allowedToGetAllDevices)
-        Device.all().map{ toDeviceDto(it) }.toCollection(ArrayList())
+        Device.all().map{ mapper.toDeviceDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getDeviceById(id: Int, principal: XPrincipal): DeviceDto? = dbQuery {
         principal.requirePermission("get device by id", XPrincipal::allowedToGetDevice)
-        Device.findById(id)?.let { toDeviceDto(it) }
+        Device.findById(id)?.let { mapper.toDeviceDto(it) }
     }
 
     suspend fun getDeviceByMac(mac: String, principal: XPrincipal): DeviceDto? = dbQuery {
         principal.requirePermission("get device by mac", XPrincipal::allowedToGetDevice)
-        Device.find { Devices.mac eq mac }.firstOrNull()?.let { toDeviceDto(it) }
+        Device.find { Devices.mac eq mac }.firstOrNull()?.let { mapper.toDeviceDto(it) }
     }
 
     suspend fun createNewDevice(device: NewDeviceDto, principal: XPrincipal): DeviceDto = dbQuery {
@@ -46,7 +45,7 @@ class DeviceService {
             backupBackendUrl = device.backupBackendUrl
         }
 
-        val deviceDto = toDeviceDto(newDevice)
+        val deviceDto = mapper.toDeviceDto(newDevice)
 
         log.domainEvent(
             "new device: {} by {}",
@@ -69,7 +68,7 @@ class DeviceService {
 
         log.domainEvent(
             "edit device: {} by {}",
-            keyValue("deviceDto", toDeviceDto(device)),
+            keyValue("deviceDto", mapper.toDeviceDto(device)),
             keyValue("principal", principal)
         )
     }
@@ -79,22 +78,10 @@ class DeviceService {
         val device = Device.findById(id) ?: throw IllegalArgumentException("Device with id $id does not exist")
         log.domainEvent(
             "delete device: {} by {}",
-            keyValue("deviceDto", toDeviceDto(device)),
+            keyValue("deviceDto", mapper.toDeviceDto(device)),
             keyValue("principal", principal)
         )
         device.delete()
-    }
-
-    private fun toDeviceDto(device: Device): DeviceDto {
-        return DeviceDto(
-            device.id.value,
-            device.name,
-            device.mac,
-            device.secret,
-            device.bgImageUrl,
-            device.backupBackendUrl,
-            device.tools.map { toolService.toToolDto(it) }.toCollection(ArrayList())
-        )
     }
 
     suspend fun checkDeviceCredentials(mac: String, secret: String): DevicePrincipal? {
