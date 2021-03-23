@@ -40,13 +40,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 
-@KtorExperimentalAPI
-val authenticationService = AuthenticationService()
 val mapper = Mapper()
 val qualificationService = QualificationService(mapper)
 val userService = UserService(mapper)
 val toolService = ToolService(mapper)
 val deviceService = DeviceService(mapper)
+@KtorExperimentalAPI
+val authenticationService = AuthenticationService(deviceService)
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
@@ -140,7 +140,7 @@ fun Application.module(testAdmin: Boolean = false) {
         basic(name = "clientApiAuth") {
             realm = "fabX access client API"
             validate { credentials ->
-                deviceService.checkDeviceCredentials(credentials.name, credentials.password)
+                authenticationService.checkDeviceCredentials(credentials.name, credentials.password)
             }
         }
     }

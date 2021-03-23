@@ -1,8 +1,6 @@
 package cloud.fabx.service
 
 import cloud.fabx.application.AuthorizationException
-import cloud.fabx.application.DevicePrincipal
-import cloud.fabx.application.NewDevicePrincipal
 import cloud.fabx.application.XPrincipal
 import cloud.fabx.db.DbHandler.dbQuery
 import cloud.fabx.domainEvent
@@ -82,37 +80,6 @@ class DeviceService(private val mapper: Mapper) {
             keyValue("principal", principal)
         )
         device.delete()
-    }
-
-    suspend fun checkDeviceCredentials(mac: String, secret: String): DevicePrincipal? {
-        val device = findDevice(mac)
-
-        return if (device != null) {
-            if (device.secret == secret) {
-                DevicePrincipal(mac)
-            } else {
-                null
-            }
-        } else {
-            val newDeviceDto = createNewDevice(
-                NewDeviceDto(
-                    "new device $mac",
-                    mac,
-                    secret,
-                    "",
-                    ""
-                ),
-                NewDevicePrincipal(mac)
-            )
-
-            DevicePrincipal(newDeviceDto.mac)
-        }
-    }
-
-    private suspend fun findDevice(mac: String): Device? = dbQuery {
-        Device.find {
-            Devices.mac eq mac
-        }.firstOrNull()
     }
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {
