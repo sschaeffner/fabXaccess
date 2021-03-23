@@ -84,7 +84,7 @@ class DeviceService(private val mapper: Mapper) {
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {
         if (!this.permission()) {
-            log.info("$$name tried to $description")
+            log.info("$name tried to $description")
             throw AuthorizationException("$name not allowed to $description.")
         }
     }
