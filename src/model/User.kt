@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object Users: IntIdTable() {
+object Users : IntIdTable() {
     val firstName = varchar("firstName", 64)
     val lastName = varchar("lastName", 64)
     val wikiName = varchar("wikiName", 64)
@@ -16,7 +16,7 @@ object Users: IntIdTable() {
     val cardSecret = varchar("cardSecret", 128).nullable()
 }
 
-class User(id: EntityID<Int>): IntEntity(id) {
+class User(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<User>(Users)
 
     var firstName by Users.firstName

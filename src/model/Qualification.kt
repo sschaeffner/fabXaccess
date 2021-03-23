@@ -5,14 +5,14 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object Qualifications: IntIdTable() {
+object Qualifications : IntIdTable() {
     val name = varchar("name", 64)
     val description = varchar("description", 256)
     val colour = varchar("colour", 8)
     val orderNr = integer("orderNr")
 }
 
-class Qualification(id: EntityID<Int>): IntEntity(id) {
+class Qualification(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Qualification>(Qualifications)
 
     var name by Qualifications.name

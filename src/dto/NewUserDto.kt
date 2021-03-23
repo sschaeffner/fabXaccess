@@ -1,6 +1,6 @@
 package cloud.fabx.dto
 
-data class NewUserDto (
+data class NewUserDto(
     val firstName: String,
     val lastName: String,
     val wikiName: String,

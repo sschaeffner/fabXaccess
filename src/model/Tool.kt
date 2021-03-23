@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object Tools: IntIdTable() {
+object Tools : IntIdTable() {
     val name = varchar("name", 64)
     val pin = integer("pin")
     val toolType = enumeration("toolType", ToolType::class)
@@ -19,7 +19,7 @@ object Tools: IntIdTable() {
     }
 }
 
-class Tool(id: EntityID<Int>): IntEntity(id) {
+class Tool(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Tool>(Tools)
 
     var name by Tools.name

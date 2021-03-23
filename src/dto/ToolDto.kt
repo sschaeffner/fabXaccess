@@ -3,7 +3,7 @@ package cloud.fabx.dto
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 
-data class ToolDto (
+data class ToolDto(
     val id: Int,
     val deviceId: Int,
     val name: String,

@@ -27,10 +27,12 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.server.testing.TestApplicationCall
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.TestApplicationRequest
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import io.ktor.server.testing.withTestApplication
 import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.encodeBase64
@@ -39,6 +41,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Before
 
+@InternalAPI
 @KtorExperimentalAPI
 open class CommonTest {
     protected val mapper = jacksonObjectMapper()
@@ -57,6 +60,25 @@ open class CommonTest {
         addHeader(HttpHeaders.Authorization, "Basic $encoded")
     }
 
+    protected fun TestApplicationRequest.addTestAdminAuth() = addBasicAuth("admin", "password")
+
+    protected fun testApp(test: TestApplicationEngine.() -> Unit) {
+        return withTestApplication({ module(testAdmin = true) }) {
+            test()
+        }
+    }
+
+    protected fun TestApplicationEngine.handleRequestAsAdmin(
+        method: HttpMethod,
+        uri: String,
+        setup: TestApplicationRequest.() -> Unit = {}
+    ): TestApplicationCall {
+        return handleRequest(method, uri) {
+            addTestAdminAuth()
+            setup()
+        }
+    }
+
     protected inline fun <reified T> Assert<String>.readValue(): Assert<T> =
         transform { mapper.readValue(it) }
 
@@ -73,6 +95,7 @@ open class CommonTest {
                 )
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
         }.apply {
             assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
@@ -100,6 +123,7 @@ open class CommonTest {
                 )
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
         }.apply {
             assertThat(response.status()).isOK()
         }
@@ -118,6 +142,7 @@ open class CommonTest {
                 )
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
         }.apply {
             assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
@@ -138,6 +163,7 @@ open class CommonTest {
                 )
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
         }.apply {
             assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
@@ -168,6 +194,7 @@ open class CommonTest {
                 )
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
         }.apply {
             assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
@@ -188,6 +215,7 @@ open class CommonTest {
                 )
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
         }.apply {
             assertThat(response.status()).isOK()
         }
