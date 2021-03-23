@@ -221,6 +221,35 @@ class UserTest : CommonTest() {
     }
 
     @Test
+    fun `given invalid user id when editing user then NotFound`() = testApp {
+        // given
+        val invalidUserId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/user/$invalidUserId") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditUserDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            assertThat(response.content).isEqualTo("User does not exist")
+        }
+    }
+
+    @Test
     fun `given user when deleting user then user no longer exists`() = testApp {
         // given
         val userDto = givenUser()
@@ -254,6 +283,19 @@ class UserTest : CommonTest() {
             assertThat(response.content)
                 .isNotNull()
                 .contains("FK_USERQUALIFICATIONS_USER_ID")
+        }
+    }
+
+    @Test
+    fun `given invalid user id when deleting user then NotFound`() = testApp {
+        // given
+        val invalidUserId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/user/$invalidUserId").apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            assertThat(response.content).isEqualTo("User does not exist")
         }
     }
 }

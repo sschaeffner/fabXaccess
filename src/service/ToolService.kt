@@ -32,41 +32,41 @@ class ToolService(private val mapper: Mapper) {
     suspend fun createNewTool(tool: NewToolDto, principal: XPrincipal): ToolDto = dbQuery {
         principal.requirePermission("create new tool", XPrincipal::allowedToCreateTool)
 
-        val deviceInDb = Device.findById(tool.deviceId) ?: throw IllegalArgumentException("Could not find deviceId.")
+        val deviceInDb = Device.findById(tool.deviceId)
+        requireNotNull(deviceInDb) { "Device with id ${tool.deviceId} does not exist" }
 
         val qualificationsInDb: List<Qualification> = tool.qualifications.map {
             val qualification = Qualification.findById(it)
-            requireNotNull(qualification) { "Could not find qualification with id $it" }
+            requireNotNull(qualification) { "Qualification with id $it does not exist" }
 
             qualification
         }
 
-        deviceInDb.let { deviceIt ->
-            val newTool = Tool.new {
-                device = deviceIt
-                name = tool.name
-                pin = tool.pin
-                toolType = tool.toolType
-                toolState = tool.toolState
-                wikiLink = tool.wikiLink
-            }
-
-            newTool.qualifications = SizedCollection(qualificationsInDb)
-
-            val toolDto = mapper.toToolDto(newTool)
-            log.domainEvent(
-                "new tool: {} by {}",
-                StructuredArguments.keyValue("toolDto", toolDto),
-                StructuredArguments.keyValue("principal", principal)
-            )
-            toolDto
+        val newTool = Tool.new {
+            device = deviceInDb
+            name = tool.name
+            pin = tool.pin
+            toolType = tool.toolType
+            toolState = tool.toolState
+            wikiLink = tool.wikiLink
         }
+
+        newTool.qualifications = SizedCollection(qualificationsInDb)
+
+        val toolDto = mapper.toToolDto(newTool)
+        log.domainEvent(
+            "new tool: {} by {}",
+            StructuredArguments.keyValue("toolDto", toolDto),
+            StructuredArguments.keyValue("principal", principal)
+        )
+        toolDto
     }
 
     suspend fun editTool(id: Int, editTool: EditToolDto, principal: XPrincipal) = dbQuery {
         principal.requirePermission("edit tool", XPrincipal::allowedToEditTool)
 
-        val tool = Tool.findById(id) ?: throw IllegalArgumentException("Tool with id $id does not exist")
+        val tool = Tool.findById(id)
+        requireNotNull(tool) { "Tool with id $id does not exist" }
 
         editTool.deviceId?.let {deviceId ->
             Device.findById(deviceId)?.let {device ->
@@ -96,7 +96,10 @@ class ToolService(private val mapper: Mapper) {
 
     suspend fun deleteTool(id: Int, principal: XPrincipal) = dbQuery {
         principal.requirePermission("delete tool", XPrincipal::allowedToDeleteTool)
-        val tool = Tool.findById(id) ?: throw IllegalArgumentException("Tool with id $id does not exist")
+
+        val tool = Tool.findById(id)
+        requireNotNull(tool) { "Tool with id $id does not exist" }
+
         log.domainEvent(
             "delete tool: {} by {}",
             StructuredArguments.keyValue("toolDto", mapper.toToolDto(tool)),

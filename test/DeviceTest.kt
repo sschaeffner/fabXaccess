@@ -184,6 +184,31 @@ class DeviceTest : CommonTest() {
     }
 
     @Test
+    fun `given invalid device id when editing device then NotFound`() = testApp {
+        // given
+        val invalidDeviceId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/device/$invalidDeviceId") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditDeviceDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            assertThat(response.content).isEqualTo("Device does not exist")
+        }
+    }
+
+    @Test
     fun `when deleting device then device no longer exists`() = testApp {
         // given
         val deviceDto = givenDevice()
@@ -215,6 +240,19 @@ class DeviceTest : CommonTest() {
             assertThat(response.content)
                 .isNotNull()
                 .contains("FK_TOOLS_DEVICE_ID")
+        }
+    }
+
+    @Test
+    fun `given invalid device id when deleting device then NotFound`() = testApp {
+        // given
+        val invalidDeviceId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/device/$invalidDeviceId").apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            assertThat(response.content).isEqualTo("Device does not exist")
         }
     }
 }

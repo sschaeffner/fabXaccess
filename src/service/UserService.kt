@@ -50,7 +50,8 @@ class UserService(private val mapper: Mapper) {
     suspend fun editUser(id: Int, editUser: EditUserDto, principal: XPrincipal) = dbQuery {
         principal.requirePermission("edit user", XPrincipal::allowedToEditUser)
 
-        val user = User.findById(id) ?: throw IllegalArgumentException("User with id $id does not exist")
+        val user = User.findById(id)
+        requireNotNull(user) { "User with id $id does not exist" }
 
         editUser.firstName?.let { user.firstName = it }
         editUser.lastName?.let { user.lastName = it }
@@ -70,7 +71,10 @@ class UserService(private val mapper: Mapper) {
 
     suspend fun deleteUser(id: Int, principal: XPrincipal) = dbQuery {
         principal.requirePermission("delete user", XPrincipal::allowedToDeleteUser)
-        val user = User.findById(id) ?: throw IllegalArgumentException("User with id $id does not exist")
+
+        val user = User.findById(id)
+        requireNotNull(user) { "User with id $id does not exist" }
+
         log.domainEvent(
             "delete user: {} by {}",
             StructuredArguments.keyValue("userDto", mapper.toUserDto(user)),

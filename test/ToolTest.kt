@@ -38,7 +38,7 @@ class ToolTest : CommonTest() {
     }
 
     @Test
-    fun `when create tool then tool is created`() = testApp {
+    fun `when creating tool then tool is created`() = testApp {
         // given
         val deviceDto = givenDevice()
         val qualificationDto = givenQualification()
@@ -83,6 +83,35 @@ class ToolTest : CommonTest() {
                         listOf(qualificationDto)
                     )
                 )
+        }
+    }
+
+    @Test
+    fun `given invalid device id when creating tool then BadRequest`() = testApp {
+        // given
+        val qualificationDto = givenQualification()
+        val invalidDeviceId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Post, "/api/v1/tool") {
+            setBody(
+                mapper.writeValueAsString(
+                    NewToolDto(
+                        invalidDeviceId,
+                        "New Tool 1",
+                        0,
+                        ToolType.UNLOCK,
+                        ToolState.GOOD,
+                        "http://wikiurl",
+                        listOf(qualificationDto.id)
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
+            assertThat(response.content).isEqualTo("Device with id 42 does not exist")
         }
     }
 
@@ -210,6 +239,35 @@ class ToolTest : CommonTest() {
     }
 
     @Test
+    fun `given invalid tool id when editing tool then NotFound`() = testApp {
+        // given
+        val invalidToolId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/tool/$invalidToolId") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditToolDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            assertThat(response.content).isEqualTo("Tool does not exist")
+        }
+
+    }
+
+    @Test
     fun `given tool when deleting tool then tool no longer exists`() = testApp {
         // given
         val deviceDto = givenDevice()
@@ -242,6 +300,19 @@ class ToolTest : CommonTest() {
             assertThat(response.content)
                 .isNotNull()
                 .contains("FK_TOOLQUALIFICATIONS_TOOL_ID")
+        }
+    }
+
+    @Test
+    fun `given invalid tool id when deleting tool then NotFound`() = testApp {
+        // given
+        val invalidToolId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/tool/$invalidToolId").apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.NotFound)
+            assertThat(response.content).isEqualTo("Tool does not exist")
         }
     }
 }

@@ -1,7 +1,6 @@
 package cloud.fabx
 
 import cloud.fabx.application.AdminPrincipal
-import cloud.fabx.application.XPrincipal
 import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.EditDeviceDto
 import cloud.fabx.dto.EditQualificationDto
@@ -18,7 +17,6 @@ import cloud.fabx.dto.UserDto
 import cloud.fabx.dto.UserQualificationDto
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
-import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.authentication
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -52,7 +50,7 @@ fun Route.api() {
                 if (user != null) {
                     call.respond(user)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.NotFound, "User does not exist")
                 }
             }
 
@@ -64,13 +62,12 @@ fun Route.api() {
                     userService.getUserById(it, principal = admin)
                 }
 
-                if (user == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
+                if (user != null) {
                     val editUser = call.receive<EditUserDto>()
                     userService.editUser(user.id, editUser, principal = admin)
-
                     call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "User does not exist")
                 }
             }
 
@@ -78,13 +75,14 @@ fun Route.api() {
                 val admin = requireAdminPrincipalOrElse {
                     return@delete
                 }
-                call.parameters["id"]?.toInt()?.let {
-                    try {
-                        userService.deleteUser(it, principal = admin)
-                        call.respond(HttpStatusCode.OK)
-                    } catch (e: IllegalArgumentException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
+                val user: UserDto? = call.parameters["id"]?.toInt()?.let {
+                    userService.getUserById(it, principal = admin)
+                }
+                if (user != null) {
+                    userService.deleteUser(user.id, principal = admin)
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "User does not exist")
                 }
             }
 
@@ -93,7 +91,11 @@ fun Route.api() {
                     return@post
                 }
                 val userQualification = call.receive<UserQualificationDto>()
-                qualificationService.addUserQualification(userQualification.userId, userQualification.qualificationId, principal = admin)
+                qualificationService.addUserQualification(
+                    userQualification.userId,
+                    userQualification.qualificationId,
+                    principal = admin
+                )
                 call.respond(HttpStatusCode.OK)
             }
 
@@ -136,7 +138,7 @@ fun Route.api() {
                 if (qualification != null) {
                     call.respond(qualification)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.NotFound, "Qualification does not exist")
                 }
             }
 
@@ -148,12 +150,12 @@ fun Route.api() {
                     qualificationService.getQualificationById(it, principal = admin)
                 }
 
-                if (qualification == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
+                if (qualification != null) {
                     val editQualification = call.receive<EditQualificationDto>()
                     qualificationService.editQualification(qualification.id, editQualification, principal = admin)
                     call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Qualification does not exist")
                 }
             }
 
@@ -162,13 +164,15 @@ fun Route.api() {
                     return@delete
                 }
 
-                call.parameters["id"]?.toInt()?.let {
-                    try {
-                        qualificationService.deleteQualification(it, principal = admin)
-                        call.respond(HttpStatusCode.OK)
-                    } catch (e: IllegalArgumentException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
+                val qualification: QualificationDto? = call.parameters["id"]?.toInt()?.let {
+                    qualificationService.getQualificationById(it, principal = admin)
+                }
+
+                if (qualification != null) {
+                    qualificationService.deleteQualification(qualification.id, principal = admin)
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Qualification does not exist")
                 }
             }
 
@@ -200,7 +204,7 @@ fun Route.api() {
                 if (device != null) {
                     call.respond(device)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.NotFound, "Device does not exist")
                 }
             }
 
@@ -212,13 +216,12 @@ fun Route.api() {
                     deviceService.getDeviceById(it, principal = admin)
                 }
 
-                if (device == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
+                if (device != null) {
                     val editDevice = call.receive<EditDeviceDto>()
                     deviceService.editDevice(device.id, editDevice, principal = admin)
-
                     call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Device does not exist")
                 }
             }
 
@@ -226,13 +229,14 @@ fun Route.api() {
                 val admin = requireAdminPrincipalOrElse {
                     return@delete
                 }
-                call.parameters["id"]?.toInt()?.let {
-                    try {
-                        deviceService.deleteDevice(it, principal = admin)
-                        call.respond(HttpStatusCode.OK)
-                    } catch (e: IllegalArgumentException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
+                val device: DeviceDto? = call.parameters["id"]?.toInt()?.let {
+                    deviceService.getDeviceById(it, principal = admin)
+                }
+                if (device != null) {
+                    deviceService.deleteDevice(device.id, principal = admin)
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Device does not exist")
                 }
             }
 
@@ -265,7 +269,7 @@ fun Route.api() {
                 if (tool != null) {
                     call.respond(tool)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.NotFound, "Tool does not exist")
                 }
             }
 
@@ -278,13 +282,12 @@ fun Route.api() {
                     toolService.getToolById(it, principal = admin)
                 }
 
-                if (tool == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                } else {
+                if (tool != null) {
                     val editTool = call.receive<EditToolDto>()
                     toolService.editTool(tool.id, editTool, principal = admin)
-
                     call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Tool does not exist")
                 }
             }
 
@@ -292,14 +295,14 @@ fun Route.api() {
                 val admin = requireAdminPrincipalOrElse {
                     return@delete
                 }
-
-                call.parameters["id"]?.toInt()?.let {
-                    try {
-                        toolService.deleteTool(it, principal = admin)
-                        call.respond(HttpStatusCode.OK)
-                    } catch (e: IllegalArgumentException) {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
+                val tool: ToolDto? = call.parameters["id"]?.toInt()?.let {
+                    toolService.getToolById(it, principal = admin)
+                }
+                if (tool != null) {
+                    toolService.deleteTool(tool.id, principal = admin)
+                    call.respond(HttpStatusCode.OK)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Tool does not exist")
                 }
             }
 

@@ -56,7 +56,8 @@ class DeviceService(private val mapper: Mapper) {
     suspend fun editDevice(id: Int, editDevice: EditDeviceDto, principal: XPrincipal) = dbQuery {
         principal.requirePermission("edit device", XPrincipal::allowedToEditDevice)
 
-        val device = Device.findById(id) ?: throw IllegalArgumentException("Device with id $id does not exist")
+        val device = Device.findById(id)
+        requireNotNull(device) { "Device with id $id does not exist" }
 
         editDevice.name?.let { device.name = it }
         editDevice.mac?.let { device.mac = it }
@@ -73,7 +74,10 @@ class DeviceService(private val mapper: Mapper) {
 
     suspend fun deleteDevice(id: Int, principal: XPrincipal) = dbQuery {
         principal.requirePermission("delete device", XPrincipal::allowedToDeleteDevice)
-        val device = Device.findById(id) ?: throw IllegalArgumentException("Device with id $id does not exist")
+
+        val device = Device.findById(id)
+        requireNotNull(device) { "Device with id $id does not exist" }
+
         log.domainEvent(
             "delete device: {} by {}",
             keyValue("deviceDto", mapper.toDeviceDto(device)),

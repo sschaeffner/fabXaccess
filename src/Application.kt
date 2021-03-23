@@ -31,9 +31,11 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
+import io.ktor.request.ContentTransformationException
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
+import java.lang.NumberFormatException
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -118,13 +120,19 @@ fun Application.module(testAdmin: Boolean = false) {
     install(ForwardedHeaderSupport) // support for reverse proxies
     install(StatusPages) {
         exception<JsonProcessingException> { cause ->
-            call.respond(HttpStatusCode.BadRequest, cause.originalMessage)
-        }
-        exception<ExposedSQLException> { cause ->
-            call.respond(HttpStatusCode.InternalServerError, cause.localizedMessage)
+            call.respond(HttpStatusCode.BadRequest, cause.localizedMessage)
         }
         exception<IllegalArgumentException> { cause ->
             call.respond(HttpStatusCode.BadRequest, cause.localizedMessage)
+        }
+        exception<NumberFormatException> { cause ->
+            call.respond(HttpStatusCode.BadRequest, cause.localizedMessage)
+        }
+        exception<ContentTransformationException> { cause ->
+            call.respond(HttpStatusCode.BadRequest, cause.localizedMessage)
+        }
+        exception<ExposedSQLException> { cause ->
+            call.respond(HttpStatusCode.InternalServerError, cause.localizedMessage)
         }
         exception<AuthorizationException> { cause ->
             call.respond(HttpStatusCode.Forbidden, cause.localizedMessage)

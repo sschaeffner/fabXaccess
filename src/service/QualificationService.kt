@@ -73,7 +73,9 @@ class QualificationService(private val mapper: Mapper) {
 
     suspend fun deleteQualification(id: Int, principal: XPrincipal) = dbQuery {
         principal.requirePermission("delete qualification", XPrincipal::allowedToDeleteQualification)
-        val qualification = Qualification.findById(id) ?: throw IllegalArgumentException("Qualification with id $id does not exist")
+
+        val qualification = Qualification.findById(id)
+        requireNotNull(qualification) { "Qualification with id $id does not exist" }
 
         log.domainEvent(
             "delete qualification: {} by {}",
