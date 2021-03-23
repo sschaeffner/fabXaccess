@@ -49,7 +49,7 @@ val qualificationService = QualificationService()
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
-fun Application.module(demoContent: Boolean = false, testAdmin: Boolean = false) {
+fun Application.module(testAdmin: Boolean = false) {
 
     val dbUrl = environment.config.propertyOrNull("heroku.dbUrl")
 
@@ -69,7 +69,7 @@ fun Application.module(demoContent: Boolean = false, testAdmin: Boolean = false)
 
 
     val demoContentEnabled =
-        environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: demoContent
+        environment.config.propertyOrNull("fabx.access.demoContent")?.getString()?.let { it == "true" } ?: false
 
     if (demoContentEnabled) {
         log.info("Demo Content Enabled")
