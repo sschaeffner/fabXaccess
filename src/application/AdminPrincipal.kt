@@ -24,12 +24,12 @@ data class AdminPrincipal(override val name: String) : XPrincipal {
     override fun allowedToDeleteTool(): Boolean = true
 
     // qualification
-    override fun allowedToGetAllQualifications() = true
-    override fun allowedToGetQualification() = true
-    override fun allowedToCreateQualification() = true
-    override fun allowedToEditQualification() = true
-    override fun allowedToDeleteQualification() = true
-    override fun allowedToAddQualificationToUser() = true
-    override fun allowedToRemoveQualificationFromUser() = true
+    override fun allowedToGetAllQualifications(): Boolean = true
+    override fun allowedToGetQualification(): Boolean = true
+    override fun allowedToCreateQualification(): Boolean = true
+    override fun allowedToEditQualification(): Boolean = true
+    override fun allowedToDeleteQualification(): Boolean = true
+    override fun allowedToAddQualificationToUser(): Boolean = true
+    override fun allowedToRemoveQualificationFromUser(): Boolean = true
 }
 
