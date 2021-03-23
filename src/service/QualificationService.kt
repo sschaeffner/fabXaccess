@@ -99,7 +99,7 @@ class QualificationService(private val mapper: Mapper) {
         log.domainEvent(
             "add qualification {} to user {} by {}",
             StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
-            StructuredArguments.keyValue("userId", user.id.value),
+            StructuredArguments.keyValue("user", mapper.toUserDto(user)),
             StructuredArguments.keyValue("principal", principal)
         )
     }
@@ -122,7 +122,7 @@ class QualificationService(private val mapper: Mapper) {
         log.domainEvent(
             "remove qualification {} from user {} by {}",
             StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
-            StructuredArguments.keyValue("userId", user.id.value),
+            StructuredArguments.keyValue("user", mapper.toUserDto(user)),
             StructuredArguments.keyValue("principal", principal)
         )
     }
