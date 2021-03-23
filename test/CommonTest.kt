@@ -129,6 +129,33 @@ open class CommonTest {
         }
     }
 
+    protected fun TestApplicationEngine.givenLockStateForUser(
+        userId: Int,
+        locked: Boolean,
+        lockedReason: String = ""
+    ) {
+        handleRequest(HttpMethod.Patch, "/api/v1/user/$userId") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditUserDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        locked,
+                        lockedReason,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
+        }.apply {
+            assertThat(response.status()).isOK()
+        }
+    }
+
     protected fun TestApplicationEngine.givenQualification(
         name: String = "New Qualification 1",
         description: String = "A Qualification",
