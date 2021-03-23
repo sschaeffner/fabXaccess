@@ -257,6 +257,54 @@ class QualificationTest : CommonTest() {
     }
 
     @Test
+    fun `given invalid user id when adding qualification to user then BadRequest`() = testApp {
+        // given
+        val qualificationDto = givenQualification()
+        val invalidUserId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Post, "/api/v1/user/${invalidUserId}/qualifications") {
+            setBody(
+                mapper.writeValueAsString(
+                    UserQualificationDto(
+                        invalidUserId,
+                        qualificationDto.id
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
+            assertThat(response.content).isEqualTo("User with id 42 does not exist")
+        }
+    }
+
+    @Test
+    fun `given invalid qualification id when adding qualification to user then BadRequest`() = testApp {
+        // given
+        val userDto = givenUser()
+        val invalidQualificationId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Post, "/api/v1/user/${userDto.id}/qualifications") {
+            setBody(
+                mapper.writeValueAsString(
+                    UserQualificationDto(
+                        userDto.id,
+                        invalidQualificationId
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
+            assertThat(response.content).isEqualTo("Qualification with id 42 does not exist")
+        }
+    }
+
+    @Test
     fun `given user has qualification when removing it then it is no longer there`() = testApp {
         // given
         val userDto = givenUser()
@@ -278,6 +326,35 @@ class QualificationTest : CommonTest() {
                     transform { it.id }.isEqualTo(userDto.id)
                     transform { it.qualifications }.isEmpty()
                 }
+        }
+    }
+
+    @Test
+    fun `given invalid user id when removing qualification from user then BadRequest`() = testApp {
+        // given
+        val qualificationDto = givenQualification()
+        val invalidUserId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/user/${invalidUserId}/qualifications/${qualificationDto.id}").apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
+            assertThat(response.content).isEqualTo("User with id 42 does not exist")
+        }
+    }
+
+
+    @Test
+    fun `given invalid qualification id when removing qualification from user then BadRequest`() = testApp {
+        // given
+        val userDto = givenUser()
+        val invalidQualificationId = 42
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/user/${userDto.id}/qualifications/${invalidQualificationId}").apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
+            assertThat(response.content).isEqualTo("Qualification with id 42 does not exist")
         }
     }
 
