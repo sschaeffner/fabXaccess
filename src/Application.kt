@@ -35,7 +35,6 @@ import io.ktor.request.ContentTransformationException
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
-import java.lang.NumberFormatException
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -47,6 +46,7 @@ val qualificationService = QualificationService(mapper)
 val userService = UserService(mapper)
 val toolService = ToolService(mapper)
 val deviceService = DeviceService(mapper)
+
 @KtorExperimentalAPI
 val authenticationService = AuthenticationService(deviceService)
 

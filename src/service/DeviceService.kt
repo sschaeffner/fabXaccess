@@ -19,7 +19,7 @@ class DeviceService(private val mapper: Mapper) {
 
     suspend fun getAllDevices(principal: XPrincipal): List<DeviceDto> = dbQuery {
         principal.requirePermission("get all devices", XPrincipal::allowedToGetAllDevices)
-        Device.all().map{ mapper.toDeviceDto(it) }.toCollection(ArrayList())
+        Device.all().map { mapper.toDeviceDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getDeviceById(id: Int, principal: XPrincipal): DeviceDto? = dbQuery {

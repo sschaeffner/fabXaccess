@@ -22,7 +22,8 @@ fun Route.clientApi() {
                 return@get
             }
 
-            val qualifiedToolIds = qualificationService.getQualifiedToolsForCardId(cardId, cardSecret, devicePrincipal).map { it.id }
+            val qualifiedToolIds =
+                qualificationService.getQualifiedToolsForCardId(cardId, cardSecret, devicePrincipal).map { it.id }
 
             val permissionsString = qualifiedToolIds.joinToString("\n")
 

@@ -18,7 +18,7 @@ class UserService(private val mapper: Mapper) {
 
     suspend fun getAllUsers(principal: XPrincipal): List<UserDto> = dbQuery {
         principal.requirePermission("get all users", XPrincipal::allowedToGetAllUsers)
-        User.all().map{ mapper.toUserDto(it) }.toCollection(ArrayList())
+        User.all().map { mapper.toUserDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getUserById(id: Int, principal: XPrincipal): UserDto? = dbQuery {

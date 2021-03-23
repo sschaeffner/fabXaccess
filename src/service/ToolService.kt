@@ -21,7 +21,7 @@ class ToolService(private val mapper: Mapper) {
 
     suspend fun getAllTools(principal: XPrincipal): List<ToolDto> = dbQuery {
         principal.requirePermission("get all tools", XPrincipal::allowedToGetAllTools)
-        Tool.all().map{ mapper.toToolDto(it) }.toCollection(ArrayList())
+        Tool.all().map { mapper.toToolDto(it) }.toCollection(ArrayList())
     }
 
     suspend fun getToolById(id: Int, principal: XPrincipal): ToolDto? = dbQuery {
@@ -68,8 +68,8 @@ class ToolService(private val mapper: Mapper) {
         val tool = Tool.findById(id)
         requireNotNull(tool) { "Tool with id $id does not exist" }
 
-        editTool.deviceId?.let {deviceId ->
-            Device.findById(deviceId)?.let {device ->
+        editTool.deviceId?.let { deviceId ->
+            Device.findById(deviceId)?.let { device ->
                 tool.device = device
             }
         }

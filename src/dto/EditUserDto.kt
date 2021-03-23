@@ -1,6 +1,6 @@
 package cloud.fabx.dto
 
-data class EditUserDto (
+data class EditUserDto(
     val firstName: String?,
     val lastName: String?,
     val wikiName: String?,

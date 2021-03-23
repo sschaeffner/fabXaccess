@@ -2,7 +2,7 @@ package cloud.fabx.application
 
 import io.ktor.auth.Principal
 
-interface XPrincipal: Principal {
+interface XPrincipal : Principal {
     val name: String
 
     // user

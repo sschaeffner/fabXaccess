@@ -129,7 +129,11 @@ class QualificationService(private val mapper: Mapper) {
         )
     }
 
-    suspend fun getQualifiedToolsForCardId(cardId: String, cardSecret: String, devicePrincipal: DevicePrincipal): List<ToolDto> = dbQuery {
+    suspend fun getQualifiedToolsForCardId(
+        cardId: String,
+        cardSecret: String,
+        devicePrincipal: DevicePrincipal
+    ): List<ToolDto> = dbQuery {
         val user = User.find { (Users.cardId eq cardId) and (Users.cardSecret eq cardSecret) }.firstOrNull()
         requireNotNull(user) { "User with cardId $cardId and cardSecret $cardSecret does not exist" }
 

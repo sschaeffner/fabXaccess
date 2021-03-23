@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object Devices: IntIdTable() {
+object Devices : IntIdTable() {
     val name = varchar("name", 64)
     val mac = varchar("mac", 64).uniqueIndex("deviceMacUniqueIndex")
     val secret = varchar("secret", 64)
@@ -13,7 +13,7 @@ object Devices: IntIdTable() {
     val backupBackendUrl = varchar("backupBackendUrl", 256)
 }
 
-class Device(id: EntityID<Int>): IntEntity(id) {
+class Device(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Device>(Devices)
 
     var name by Devices.name

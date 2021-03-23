@@ -31,7 +31,7 @@ class AuthenticationService(private val deviceService: DeviceService) {
     private suspend fun findAdmin(username: String, encodedHash: String): Admin? = dbQuery {
         Admin.find {
             (Admins.name eq username) and
-            (Admins.passwordHash eq encodedHash)
+                    (Admins.passwordHash eq encodedHash)
         }.firstOrNull()
     }
 

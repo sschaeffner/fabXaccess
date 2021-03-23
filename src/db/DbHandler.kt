@@ -53,15 +53,16 @@ object DbHandler {
                 Admins,
                 Qualifications,
                 UserQualifications,
-                ToolQualifications)
+                ToolQualifications
+            )
         }
 
         db
     }
 
     suspend fun <T> dbQuery(block: () -> T) = withContext(Dispatchers.IO) {
-            transaction(db) {
-                block()
-            }
+        transaction(db) {
+            block()
         }
+    }
 }

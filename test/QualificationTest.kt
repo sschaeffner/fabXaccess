@@ -17,7 +17,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
@@ -312,7 +311,10 @@ class QualificationTest : CommonTest() {
         givenUserHasQualification(userDto.id, qualificationDto.id)
 
         // when
-        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/user/${userDto.id}/qualifications/${qualificationDto.id}").apply {
+        handleRequestAsAdmin(
+            HttpMethod.Delete,
+            "/api/v1/user/${userDto.id}/qualifications/${qualificationDto.id}"
+        ).apply {
             assertThat(response.status()).isOK()
         }
 
@@ -336,7 +338,10 @@ class QualificationTest : CommonTest() {
         val invalidUserId = 42
 
         // when
-        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/user/${invalidUserId}/qualifications/${qualificationDto.id}").apply {
+        handleRequestAsAdmin(
+            HttpMethod.Delete,
+            "/api/v1/user/${invalidUserId}/qualifications/${qualificationDto.id}"
+        ).apply {
             // then
             assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
             assertThat(response.content).isEqualTo("User with id 42 does not exist")
@@ -351,7 +356,10 @@ class QualificationTest : CommonTest() {
         val invalidQualificationId = 42
 
         // when
-        handleRequestAsAdmin(HttpMethod.Delete, "/api/v1/user/${userDto.id}/qualifications/${invalidQualificationId}").apply {
+        handleRequestAsAdmin(
+            HttpMethod.Delete,
+            "/api/v1/user/${userDto.id}/qualifications/${invalidQualificationId}"
+        ).apply {
             // then
             assertThat(response.status()).isEqualTo(HttpStatusCode.BadRequest)
             assertThat(response.content).isEqualTo("Qualification with id 42 does not exist")

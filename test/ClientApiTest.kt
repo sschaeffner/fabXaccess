@@ -46,7 +46,7 @@ class ClientApiTest : CommonTest() {
         )
 
         // when
-        handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config"){
+        handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config") {
             addBasicAuth(mac, secret)
         }.apply {
             // then
