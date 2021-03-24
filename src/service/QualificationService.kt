@@ -137,12 +137,17 @@ class QualificationService(private val mapper: Mapper) {
         val user = User.find { (Users.cardId eq cardId) and (Users.cardSecret eq cardSecret) }.firstOrNull()
         requireNotNull(user) { "User with cardId $cardId and cardSecret $cardSecret does not exist" }
 
-        val device = Device.find { Devices.mac eq devicePrincipal.mac }.firstOrNull()
-        requireNotNull(device) { "Device with mac ${devicePrincipal.mac} does not exist" }
+        if (!user.locked) {
+            val device = Device.find { Devices.mac eq devicePrincipal.mac }.firstOrNull()
+            requireNotNull(device) { "Device with mac ${devicePrincipal.mac} does not exist" }
 
-        device.tools.filter { tool ->
-            tool.qualifications.all { user.qualifications.contains(it) }
-        }.map { mapper.toToolDto(it) }
+            device.tools.filter { tool ->
+                tool.qualifications.all { user.qualifications.contains(it) }
+            }.map { mapper.toToolDto(it) }
+
+        } else {
+            listOf()
+        }
     }
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {

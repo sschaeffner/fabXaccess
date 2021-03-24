@@ -2,6 +2,7 @@ package cloud.fabx
 
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import cloud.fabx.model.ToolType
@@ -171,6 +172,45 @@ class ClientApiTest : CommonTest() {
             assertThat(response.content)
                 .isNotNull()
                 .contains("${toolDto.id}")
+        }
+    }
+
+    @Test
+    fun `given locked user when getting permissions then return no tool ids`() = testApp {
+        // given
+        val userDto = givenUser()
+        givenLockStateForUser(userDto.id, true)
+
+        val cardId = "aabbccdd"
+        val cardSecret = "11223344556677889900AABBCCDDEEFF11223344556677889900AABBCCDDEEFF"
+        givenCardForUser(
+            userDto.id,
+            cardId,
+            cardSecret
+        )
+
+        val qualificationDto = givenQualification()
+
+        val mac = "aaffeeaaffee"
+        val secret = "someSecret"
+        val deviceDto = givenDevice(
+            mac = mac,
+            secret = secret
+        )
+
+        givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+
+        givenUserHasQualification(userDto.id, qualificationDto.id)
+
+        // when
+        handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/permissions/${cardId}/${cardSecret}") {
+            addBasicAuth(mac, secret)
+        }.apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .isEmpty();
         }
     }
 
