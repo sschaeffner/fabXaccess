@@ -14,6 +14,7 @@ import cloud.fabx.model.Device
 import cloud.fabx.model.Devices
 import cloud.fabx.model.Mapper
 import cloud.fabx.model.Qualification
+import cloud.fabx.model.ToolState
 import cloud.fabx.model.User
 import cloud.fabx.model.Users
 import net.logstash.logback.argument.StructuredArguments
@@ -137,16 +138,16 @@ class QualificationService(private val mapper: Mapper) {
         val user = User.find { (Users.cardId eq cardId) and (Users.cardSecret eq cardSecret) }.firstOrNull()
         requireNotNull(user) { "User with cardId $cardId and cardSecret $cardSecret does not exist" }
 
-        if (!user.locked) {
+        if (user.locked) {
+            listOf()
+        } else {
             val device = Device.find { Devices.mac eq devicePrincipal.mac }.firstOrNull()
             requireNotNull(device) { "Device with mac ${devicePrincipal.mac} does not exist" }
 
             device.tools.filter { tool ->
                 tool.qualifications.all { user.qualifications.contains(it) }
+                        && tool.toolState != ToolState.DISABLED
             }.map { mapper.toToolDto(it) }
-
-        } else {
-            listOf()
         }
     }
 
