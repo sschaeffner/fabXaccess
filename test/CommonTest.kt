@@ -4,6 +4,7 @@ import assertk.Assert
 import assertk.assertThat
 import cloud.fabx.db.DbHandler
 import cloud.fabx.dto.DeviceDto
+import cloud.fabx.dto.EditToolDto
 import cloud.fabx.dto.EditUserDto
 import cloud.fabx.dto.NewDeviceDto
 import cloud.fabx.dto.NewQualificationDto
@@ -225,6 +226,31 @@ open class CommonTest {
         }.apply {
             assertThat(response.status()).isOK()
             return mapper.readValue(response.content!!)
+        }
+    }
+
+    protected fun TestApplicationEngine.givenStateForTool(
+        toolId: Int,
+        state: ToolState
+    ) {
+        handleRequest(HttpMethod.Patch, "/api/v1/tool/${toolId}") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditToolDto(
+                        null,
+                        null,
+                        null,
+                        null,
+                        state,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            addTestAdminAuth()
+        }.apply {
+            assertThat(response.status()).isOK()
         }
     }
 
