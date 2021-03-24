@@ -48,7 +48,7 @@ class DeviceService(private val mapper: Mapper) {
         log.domainEvent(
             "new device: {} by {}",
             keyValue("deviceDto", deviceDto),
-            keyValue("principal", principal)
+            keyValue("principal", principal.name)
         )
         deviceDto
     }
@@ -68,7 +68,7 @@ class DeviceService(private val mapper: Mapper) {
         log.domainEvent(
             "edit device: {} by {}",
             keyValue("deviceDto", mapper.toDeviceDto(device)),
-            keyValue("principal", principal)
+            keyValue("principal", principal.name)
         )
     }
 
@@ -81,7 +81,7 @@ class DeviceService(private val mapper: Mapper) {
         log.domainEvent(
             "delete device: {} by {}",
             keyValue("deviceDto", mapper.toDeviceDto(device)),
-            keyValue("principal", principal)
+            keyValue("principal", principal.name)
         )
         device.delete()
     }

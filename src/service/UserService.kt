@@ -42,7 +42,7 @@ class UserService(private val mapper: Mapper) {
         log.domainEvent(
             "new user: {} by {}",
             StructuredArguments.keyValue("userDto", userDto),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
         userDto
     }
@@ -65,7 +65,7 @@ class UserService(private val mapper: Mapper) {
         log.domainEvent(
             "edit user: {} by {}",
             StructuredArguments.keyValue("userDto", mapper.toUserDto(user)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
     }
 
@@ -78,7 +78,7 @@ class UserService(private val mapper: Mapper) {
         log.domainEvent(
             "delete user: {} by {}",
             StructuredArguments.keyValue("userDto", mapper.toUserDto(user)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
         user.delete()
     }
