@@ -126,7 +126,7 @@ class QualificationService(private val mapper: Mapper) {
         user.qualifications = SizedCollection(newQualifications)
         val qualificationDto = mapper.toQualificationDto(qualification)
         log.domainEvent(
-            "remove qualification {} from user {} by {}",
+            "remove qualification {} {} from user {} by {}",
             StructuredArguments.keyValue("qualificationId", qualificationDto.id),
             StructuredArguments.keyValue("qualificationName", qualificationDto.name),
             StructuredArguments.keyValue("user", mapper.toUserDto(user).wikiName),
