@@ -49,7 +49,7 @@ class QualificationService(private val mapper: Mapper) {
         log.domainEvent(
             "new qualification: {} by {}",
             StructuredArguments.keyValue("qualificationDto", qualificationDto),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
         qualificationDto
     }
@@ -68,7 +68,7 @@ class QualificationService(private val mapper: Mapper) {
         log.domainEvent(
             "edit qualification: {} by {}",
             StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
     }
 
@@ -81,7 +81,7 @@ class QualificationService(private val mapper: Mapper) {
         log.domainEvent(
             "delete qualification: {} by {}",
             StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
         qualification.delete()
     }
@@ -99,11 +99,13 @@ class QualificationService(private val mapper: Mapper) {
         newQualifications.add(qualification)
 
         user.qualifications = SizedCollection(newQualifications)
+        val qualificationDto = mapper.toQualificationDto(qualification)
         log.domainEvent(
-            "add qualification {} to user {} by {}",
-            StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
-            StructuredArguments.keyValue("user", mapper.toUserDto(user)),
-            StructuredArguments.keyValue("principal", principal)
+            "add qualification {} {} to user {} by {}",
+            StructuredArguments.keyValue("qualificationId", qualificationDto.id),
+            StructuredArguments.keyValue("qualificationName", qualificationDto.name),
+            StructuredArguments.keyValue("user", mapper.toUserDto(user).wikiName),
+            StructuredArguments.keyValue("principal", principal.name)
         )
     }
 
@@ -122,11 +124,13 @@ class QualificationService(private val mapper: Mapper) {
         require(success) { "User never had qualification ${qualification.id}/${qualification.name}" }
 
         user.qualifications = SizedCollection(newQualifications)
+        val qualificationDto = mapper.toQualificationDto(qualification)
         log.domainEvent(
             "remove qualification {} from user {} by {}",
-            StructuredArguments.keyValue("qualificationDto", mapper.toQualificationDto(qualification)),
-            StructuredArguments.keyValue("user", mapper.toUserDto(user)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("qualificationId", qualificationDto.id),
+            StructuredArguments.keyValue("qualificationName", qualificationDto.name),
+            StructuredArguments.keyValue("user", mapper.toUserDto(user).wikiName),
+            StructuredArguments.keyValue("principal", principal.name)
         )
     }
 

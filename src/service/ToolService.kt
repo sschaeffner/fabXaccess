@@ -57,7 +57,7 @@ class ToolService(private val mapper: Mapper) {
         log.domainEvent(
             "new tool: {} by {}",
             StructuredArguments.keyValue("toolDto", toolDto),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
         toolDto
     }
@@ -90,7 +90,7 @@ class ToolService(private val mapper: Mapper) {
         log.domainEvent(
             "edit tool: {} by {}",
             StructuredArguments.keyValue("toolDto", mapper.toToolDto(tool)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
     }
 
@@ -103,7 +103,7 @@ class ToolService(private val mapper: Mapper) {
         log.domainEvent(
             "delete tool: {} by {}",
             StructuredArguments.keyValue("toolDto", mapper.toToolDto(tool)),
-            StructuredArguments.keyValue("principal", principal)
+            StructuredArguments.keyValue("principal", principal.name)
         )
         tool.delete()
     }
