@@ -36,6 +36,7 @@ class Mapper {
             tool.pin,
             tool.toolType,
             tool.time,
+            tool.idleState,
             tool.toolState,
             tool.wikiLink,
             tool.qualifications.map { toQualificationDto(it) }

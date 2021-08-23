@@ -7,6 +7,7 @@ import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import cloud.fabx.model.IdleState
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import io.ktor.http.HttpMethod
@@ -39,6 +40,7 @@ class ClientApiV2Test : CommonTest() {
             0,
             ToolType.UNLOCK,
             4200,
+            IdleState.IDLE_LOW,
             qualifications = listOf(qualificationDto.id)
         )
 
@@ -48,6 +50,7 @@ class ClientApiV2Test : CommonTest() {
             1,
             ToolType.UNLOCK,
             8910,
+            IdleState.IDLE_HIGH,
             qualifications = listOf(qualificationDto.id)
         )
 
@@ -61,8 +64,8 @@ class ClientApiV2Test : CommonTest() {
                 .isNotNull()
                 .isEqualTo(
                     "New Device 1\nhttp://bgurl\nhttp://fabx.backup\n"
-                            + "${toolDto1.id},0,UNLOCK,4200,New Tool 1\n"
-                            + "${toolDto2.id},1,UNLOCK,8910,New Tool 2\n"
+                            + "${toolDto1.id},0,UNLOCK,4200,IDLE_LOW,New Tool 1\n"
+                            + "${toolDto2.id},1,UNLOCK,8910,IDLE_HIGH,New Tool 2\n"
                 )
         }
     }

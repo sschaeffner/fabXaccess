@@ -16,6 +16,7 @@ import cloud.fabx.dto.UserDto
 import cloud.fabx.dto.UserQualificationDto
 import cloud.fabx.model.Admins
 import cloud.fabx.model.Devices
+import cloud.fabx.model.IdleState
 import cloud.fabx.model.Qualifications
 import cloud.fabx.model.ToolQualifications
 import cloud.fabx.model.ToolState
@@ -204,6 +205,7 @@ open class CommonTest {
         pin: Int = 0,
         type: ToolType = ToolType.UNLOCK,
         time: Int = 7000,
+        idleState: IdleState = IdleState.IDLE_HIGH,
         state: ToolState = ToolState.GOOD,
         wikiLink: String = "http://wikiurl",
         qualifications: List<Int> = listOf(1)
@@ -217,6 +219,7 @@ open class CommonTest {
                         pin,
                         type,
                         time,
+                        idleState,
                         state,
                         wikiLink,
                         qualifications
@@ -239,6 +242,7 @@ open class CommonTest {
             setBody(
                 mapper.writeValueAsString(
                     EditToolDto(
+                        null,
                         null,
                         null,
                         null,

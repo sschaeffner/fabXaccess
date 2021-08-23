@@ -20,7 +20,7 @@ fun Route.clientApi() {
         }
         route("/v2") {
             permission()
-            config({ "${it.id},${it.pin},${it.toolType},${it.time},${it.name}\n" })
+            config({ "${it.id},${it.pin},${it.toolType},${it.time},${it.idleState},${it.name}\n" })
         }
     }
 }
