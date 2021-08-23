@@ -4,6 +4,7 @@ import cloud.fabx.application.AuthorizationException
 import cloud.fabx.db.DbHandler
 import cloud.fabx.model.Admin
 import cloud.fabx.model.Device
+import cloud.fabx.model.IdleState
 import cloud.fabx.model.Mapper
 import cloud.fabx.model.Qualification
 import cloud.fabx.model.Tool
@@ -196,6 +197,8 @@ fun addDemoContent() {
             name = "Tool 1"
             pin = 0
             toolType = ToolType.UNLOCK
+            time = 100
+            idleState = IdleState.IDLE_HIGH
             toolState = ToolState.GOOD
             wikiLink = ""
         }

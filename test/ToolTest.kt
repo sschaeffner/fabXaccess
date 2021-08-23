@@ -10,6 +10,7 @@ import assertk.assertions.isNotNull
 import cloud.fabx.dto.EditToolDto
 import cloud.fabx.dto.NewToolDto
 import cloud.fabx.dto.ToolDto
+import cloud.fabx.model.IdleState
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import io.ktor.http.ContentType
@@ -47,6 +48,8 @@ class ToolTest : CommonTest() {
         val pin = 0
         val wikiLink = "http://wikiurl"
         val toolType = ToolType.UNLOCK
+        val time = 4000
+        val idleState = IdleState.IDLE_LOW
         val toolState = ToolState.GOOD
 
         // when
@@ -58,6 +61,8 @@ class ToolTest : CommonTest() {
                         name,
                         pin,
                         toolType,
+                        time,
+                        idleState,
                         toolState,
                         wikiLink,
                         listOf(qualificationDto.id)
@@ -78,6 +83,8 @@ class ToolTest : CommonTest() {
                         name,
                         pin,
                         toolType,
+                        time,
+                        idleState,
                         toolState,
                         wikiLink,
                         listOf(qualificationDto)
@@ -101,6 +108,8 @@ class ToolTest : CommonTest() {
                         "New Tool 1",
                         0,
                         ToolType.UNLOCK,
+                        4200,
+                        IdleState.IDLE_LOW,
                         ToolState.GOOD,
                         "http://wikiurl",
                         listOf(qualificationDto.id)
@@ -156,6 +165,8 @@ class ToolTest : CommonTest() {
                         null,
                         null,
                         null,
+                        null,
+                        null,
                         null
                     )
                 )
@@ -193,6 +204,8 @@ class ToolTest : CommonTest() {
         val newName = "Edited Tool Name"
         val newPin = 1
         val newToolType = ToolType.KEEP
+        val newTime = 4200
+        val newIdleState = IdleState.IDLE_LOW
         val newToolState = ToolState.BAD
         val newWikiLink = "http://newwikiurl"
         val newQualifications = listOf(qualificationDto.id)
@@ -206,6 +219,8 @@ class ToolTest : CommonTest() {
                         newName,
                         newPin,
                         newToolType,
+                        newTime,
+                        newIdleState,
                         newToolState,
                         newWikiLink,
                         newQualifications
@@ -230,6 +245,8 @@ class ToolTest : CommonTest() {
                         newName,
                         newPin,
                         newToolType,
+                        newTime,
+                        newIdleState,
                         newToolState,
                         newWikiLink,
                         listOf(qualificationDto)
@@ -248,6 +265,8 @@ class ToolTest : CommonTest() {
             setBody(
                 mapper.writeValueAsString(
                     EditToolDto(
+                        null,
+                        null,
                         null,
                         null,
                         null,
