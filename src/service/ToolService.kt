@@ -47,6 +47,7 @@ class ToolService(private val mapper: Mapper) {
             name = tool.name
             pin = tool.pin
             toolType = tool.toolType
+            time = tool.time
             toolState = tool.toolState
             wikiLink = tool.wikiLink
         }
@@ -76,6 +77,7 @@ class ToolService(private val mapper: Mapper) {
         editTool.name?.let { tool.name = it }
         editTool.pin?.let { tool.pin = it }
         editTool.toolType?.let { tool.toolType = it }
+        editTool.time?.let { tool.time = it }
         editTool.toolState?.let { tool.toolState = it }
         editTool.wikiLink?.let { tool.wikiLink = it }
         editTool.qualifications?.let { qualifications ->

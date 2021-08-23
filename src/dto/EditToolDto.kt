@@ -8,6 +8,7 @@ data class EditToolDto(
     val name: String?,
     val pin: Int?,
     val toolType: ToolType?,
+    val time: Int?,
     val toolState: ToolState?,
     val wikiLink: String?,
     val qualifications: List<Int>?

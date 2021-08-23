@@ -203,6 +203,7 @@ open class CommonTest {
         name: String = "New Tool 1",
         pin: Int = 0,
         type: ToolType = ToolType.UNLOCK,
+        time: Int = 7000,
         state: ToolState = ToolState.GOOD,
         wikiLink: String = "http://wikiurl",
         qualifications: List<Int> = listOf(1)
@@ -215,6 +216,7 @@ open class CommonTest {
                         name,
                         pin,
                         type,
+                        time,
                         state,
                         wikiLink,
                         qualifications
@@ -237,6 +239,7 @@ open class CommonTest {
             setBody(
                 mapper.writeValueAsString(
                     EditToolDto(
+                        null,
                         null,
                         null,
                         null,

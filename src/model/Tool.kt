@@ -9,6 +9,7 @@ object Tools : IntIdTable() {
     val name = varchar("name", 64)
     val pin = integer("pin")
     val toolType = enumeration("toolType", ToolType::class)
+    val time = integer("time") // keep or unlock time in milliseconds
     val toolState = enumeration("toolState", ToolState::class)
     val wikiLink = varchar("wikiLink", 256)
 
@@ -25,6 +26,7 @@ class Tool(id: EntityID<Int>) : IntEntity(id) {
     var name by Tools.name
     var pin by Tools.pin
     var toolType by Tools.toolType
+    var time by Tools.time
     var toolState by Tools.toolState
     var wikiLink by Tools.wikiLink
 

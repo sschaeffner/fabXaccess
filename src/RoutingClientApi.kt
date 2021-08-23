@@ -1,6 +1,7 @@
 package cloud.fabx
 
 import cloud.fabx.application.DevicePrincipal
+import cloud.fabx.dto.ToolDto
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.auth.authentication
@@ -12,44 +13,57 @@ import io.ktor.routing.route
 import io.ktor.util.pipeline.PipelineContext
 
 fun Route.clientApi() {
-    route("/clientApi/v1") {
-        get("/{deviceMac}/permissions/{cardId}/{cardSecret}") {
-            val deviceMac = call.parameters["deviceMac"]!!
-            val cardId = call.parameters["cardId"]!!
-            val cardSecret = call.parameters["cardSecret"]!!
+    route("/clientApi") {
+        route("/v1") {
+            permission()
+            config({ "${it.id},${it.pin},${it.toolType},${it.name}\n" })
+        }
+        route("/v2") {
+            permission()
+            config({ "${it.id},${it.pin},${it.toolType},${it.time},${it.name}\n" })
+        }
+    }
+}
 
-            val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
-                return@get
-            }
+private fun Route.permission() {
+    get("/{deviceMac}/permissions/{cardId}/{cardSecret}") {
+        val deviceMac = call.parameters["deviceMac"]!!
+        val cardId = call.parameters["cardId"]!!
+        val cardSecret = call.parameters["cardSecret"]!!
 
-            val qualifiedToolIds =
-                qualificationService.getQualifiedToolsForCardId(cardId, cardSecret, devicePrincipal).map { it.id }
-
-            val permissionsString = qualifiedToolIds.joinToString("\n")
-
-            call.respond(permissionsString)
+        val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
+            return@get
         }
 
-        get("/{deviceMac}/config") {
-            val deviceMac = call.parameters["deviceMac"]!!
+        val qualifiedToolIds =
+            qualificationService.getQualifiedToolsForCardId(cardId, cardSecret, devicePrincipal).map { it.id }
 
-            val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
-                return@get
+        val permissionsString = qualifiedToolIds.joinToString("\n")
+
+        call.respond(permissionsString)
+    }
+}
+
+private fun Route.config(formatter: (tool: ToolDto) -> String) {
+    get("/{deviceMac}/config") {
+        val deviceMac = call.parameters["deviceMac"]!!
+
+        val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
+            return@get
+        }
+
+        val device = deviceService.getDeviceByMac(devicePrincipal.mac, principal = devicePrincipal)
+
+        if (device == null) {
+            call.respond(HttpStatusCode.NotFound)
+        } else {
+            var configString = "${device.name}\n${device.bgImageUrl}\n${device.backupBackendUrl}\n"
+
+            device.tools.forEach {
+                configString += formatter(it)
             }
 
-            val device = deviceService.getDeviceByMac(devicePrincipal.mac, principal = devicePrincipal)
-
-            if (device == null) {
-                call.respond(HttpStatusCode.NotFound)
-            } else {
-                var configString = "${device.name}\n${device.bgImageUrl}\n${device.backupBackendUrl}\n"
-
-                device.tools.forEach {
-                    configString += "${it.id},${it.pin},${it.toolType},${it.name}\n"
-                }
-
-                call.respond(configString)
-            }
+            call.respond(configString)
         }
     }
 }

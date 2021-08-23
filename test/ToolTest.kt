@@ -47,6 +47,7 @@ class ToolTest : CommonTest() {
         val pin = 0
         val wikiLink = "http://wikiurl"
         val toolType = ToolType.UNLOCK
+        val time = 4000
         val toolState = ToolState.GOOD
 
         // when
@@ -58,6 +59,7 @@ class ToolTest : CommonTest() {
                         name,
                         pin,
                         toolType,
+                        time,
                         toolState,
                         wikiLink,
                         listOf(qualificationDto.id)
@@ -78,6 +80,7 @@ class ToolTest : CommonTest() {
                         name,
                         pin,
                         toolType,
+                        time,
                         toolState,
                         wikiLink,
                         listOf(qualificationDto)
@@ -101,6 +104,7 @@ class ToolTest : CommonTest() {
                         "New Tool 1",
                         0,
                         ToolType.UNLOCK,
+                        4200,
                         ToolState.GOOD,
                         "http://wikiurl",
                         listOf(qualificationDto.id)
@@ -156,6 +160,7 @@ class ToolTest : CommonTest() {
                         null,
                         null,
                         null,
+                        null,
                         null
                     )
                 )
@@ -193,6 +198,7 @@ class ToolTest : CommonTest() {
         val newName = "Edited Tool Name"
         val newPin = 1
         val newToolType = ToolType.KEEP
+        val newTime = 4200
         val newToolState = ToolState.BAD
         val newWikiLink = "http://newwikiurl"
         val newQualifications = listOf(qualificationDto.id)
@@ -206,6 +212,7 @@ class ToolTest : CommonTest() {
                         newName,
                         newPin,
                         newToolType,
+                        newTime,
                         newToolState,
                         newWikiLink,
                         newQualifications
@@ -230,6 +237,7 @@ class ToolTest : CommonTest() {
                         newName,
                         newPin,
                         newToolType,
+                        newTime,
                         newToolState,
                         newWikiLink,
                         listOf(qualificationDto)
@@ -248,6 +256,7 @@ class ToolTest : CommonTest() {
             setBody(
                 mapper.writeValueAsString(
                     EditToolDto(
+                        null,
                         null,
                         null,
                         null,
