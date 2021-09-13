@@ -30,8 +30,8 @@ class UserService(private val mapper: Mapper) {
     suspend fun createNewUser(user: NewUserDto, principal: XPrincipal): UserDto = dbQuery {
         principal.requirePermission("create new user", XPrincipal::allowedToCreateNewUser)
 
-        if (user.phoneNumber.isNotBlank() && !user.phoneNumber.startsWith("+")) {
-            throw ValidationException("Phone number has to be entered with + prefix.")
+        if (user.phoneNumber.isNotBlank()) {
+            validatePhoneNumber(user.phoneNumber)
         }
 
         val newUser = User.new {
@@ -63,7 +63,7 @@ class UserService(private val mapper: Mapper) {
         editUser.wikiName?.let { user.wikiName = it }
         editUser.phoneNumber?.let {
             if (!it.startsWith("+")) {
-                throw ValidationException("Phone number has to be entered with + prefix.")
+                validatePhoneNumber(it)
             }
             user.phoneNumber = it
         }
@@ -97,6 +97,18 @@ class UserService(private val mapper: Mapper) {
         if (!this.permission()) {
             log.info("$name tried to $description")
             throw AuthorizationException("$name not allowed to $description.")
+        }
+    }
+
+    private fun validatePhoneNumber(phoneNumber: String) {
+        if (!phoneNumber.startsWith("+")) {
+            throw ValidationException("Phone number has to be entered with + prefix.")
+        }
+        if (phoneNumber.trim() != phoneNumber) {
+            throw ValidationException("Phone number must not contain whitespace.")
+        }
+        if (!phoneNumber.matches(Regex("\\+[0-9]+"))) {
+            throw ValidationException("Phone number must match \"\\+[0-9]+\".")
         }
     }
 }
