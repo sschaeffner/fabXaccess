@@ -177,7 +177,7 @@ fun addDemoContent() {
             firstName = "Nikola"
             lastName = "Testler"
             wikiName = "wikiTester1"
-            phoneNumber = "0049 123 456"
+            phoneNumber = "0049123456"
             locked = false
             lockedReason = ""
             cardId = "11223344556677"

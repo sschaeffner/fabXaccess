@@ -267,6 +267,106 @@ class ClientApiV2Test : CommonTest() {
     }
 
     @Test
+    fun `given user has qualification when getting permissions via phone number then return toolId`() = testApp {
+        // given
+        val phoneNumber = "004912345"
+        val userDto = givenUser(phoneNumber = phoneNumber)
+
+        val qualificationDto = givenQualification()
+
+        val mac = "aaffeeaaffee"
+        val secret = "someSecret"
+        val deviceDto = givenDevice(
+            mac = mac,
+            secret = secret
+        )
+
+        val toolDto = givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+
+        givenUserHasQualification(userDto.id, qualificationDto.id)
+
+        // when
+        handleRequest(HttpMethod.Get, "/clientApi/v2/${mac}/permissions/${phoneNumber}") {
+            addBasicAuth(mac, secret)
+        }.apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .contains("${toolDto.id}")
+        }
+    }
+
+    @Test
+    fun `given locked user when getting permissions via phone number then return no tool ids`() = testApp {
+        // given
+        val phoneNumber = "004298765"
+        val userDto = givenUser(phoneNumber = phoneNumber)
+        givenLockStateForUser(userDto.id, true)
+
+        val qualificationDto = givenQualification()
+
+        val mac = "aaffeeaaffee"
+        val secret = "someSecret"
+        val deviceDto = givenDevice(
+            mac = mac,
+            secret = secret
+        )
+
+        givenTool(deviceDto.id, qualifications = listOf(qualificationDto.id))
+
+        givenUserHasQualification(userDto.id, qualificationDto.id)
+
+        // when
+        handleRequest(HttpMethod.Get, "/clientApi/v2/${mac}/permissions/${phoneNumber}") {
+            addBasicAuth(mac, secret)
+        }.apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .isEmpty()
+        }
+    }
+
+    @Test
+    fun `given disabled tool when getting permissions via phone number then not return disabled tool id`() = testApp {
+        // given
+        val phoneNumber = "004298765432"
+        val userDto = givenUser(phoneNumber = phoneNumber)
+
+        val qualificationDto = givenQualification()
+        givenUserHasQualification(userDto.id, qualificationDto.id)
+
+        val mac = "aaffeeaaffee"
+        val secret = "someSecret"
+        val deviceDto = givenDevice(
+            mac = mac,
+            secret = secret
+        )
+
+        val enabledToolDto =
+            givenTool(deviceDto.id, name = "enabled tool", pin = 0, qualifications = listOf(qualificationDto.id))
+        val disabledToolDto =
+            givenTool(deviceDto.id, name = "disabled tool", pin = 1, qualifications = listOf(qualificationDto.id))
+        givenStateForTool(disabledToolDto.id, ToolState.DISABLED)
+
+        // when
+        handleRequest(HttpMethod.Get, "/clientApi/v2/${mac}/permissions/${phoneNumber}") {
+            addBasicAuth(mac, secret)
+        }.apply {
+            // then
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .all {
+                    contains("${enabledToolDto.id}")
+                    doesNotContain("${disabledToolDto.id}")
+                }
+        }
+    }
+
+    @Test
     fun `given no authentication when getting permissions then Unauthorized`() = testApp {
         // given
         val mac = "aaffeeaaffee"

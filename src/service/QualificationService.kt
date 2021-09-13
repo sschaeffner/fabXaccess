@@ -142,17 +142,32 @@ class QualificationService(private val mapper: Mapper) {
         val user = User.find { (Users.cardId eq cardId) and (Users.cardSecret eq cardSecret) }.firstOrNull()
         requireNotNull(user) { "User with cardId $cardId and cardSecret $cardSecret does not exist" }
 
-        if (user.locked) {
-            listOf()
-        } else {
-            val device = Device.find { Devices.mac eq devicePrincipal.mac }.firstOrNull()
-            requireNotNull(device) { "Device with mac ${devicePrincipal.mac} does not exist" }
+        getToolsForUserAndDevice(user, devicePrincipal)
+    }
 
-            device.tools.filter { tool ->
-                tool.qualifications.all { user.qualifications.contains(it) }
-                        && tool.toolState != ToolState.DISABLED
-            }.map { mapper.toToolDto(it) }
-        }
+    suspend fun getQualifiedToolsForPhoneNr(
+        phoneNr: String,
+        devicePrincipal: DevicePrincipal
+    ): List<ToolDto> = dbQuery {
+        val user = User.find { (Users.phoneNumber eq phoneNr) }.firstOrNull()
+        requireNotNull(user) { "User with phone number $phoneNr does not exist" }
+
+        getToolsForUserAndDevice(user, devicePrincipal)
+    }
+
+    private fun getToolsForUserAndDevice(
+        user: User,
+        devicePrincipal: DevicePrincipal
+    ) = if (user.locked) {
+        listOf()
+    } else {
+        val device = Device.find { Devices.mac eq devicePrincipal.mac }.firstOrNull()
+        requireNotNull(device) { "Device with mac ${devicePrincipal.mac} does not exist" }
+
+        device.tools.filter { tool ->
+            tool.qualifications.all { user.qualifications.contains(it) }
+                    && tool.toolState != ToolState.DISABLED
+        }.map { mapper.toToolDto(it) }
     }
 
     private fun XPrincipal.requirePermission(description: String, permission: XPrincipal.() -> Boolean) {
