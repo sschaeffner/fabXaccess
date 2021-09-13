@@ -33,7 +33,7 @@ class UserService(private val mapper: Mapper) {
             firstName = user.firstName
             lastName = user.lastName
             wikiName = user.wikiName
-            phoneNumber = user.phoneNumber
+            phoneNumber = user.phoneNumber.ifBlank { null }
             locked = false
             lockedReason = ""
         }

@@ -49,7 +49,7 @@ class Mapper {
             user.firstName,
             user.lastName,
             user.wikiName,
-            user.phoneNumber,
+            user.phoneNumber ?: "",
             user.locked,
             user.lockedReason,
             user.cardId,
