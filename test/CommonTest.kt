@@ -88,7 +88,7 @@ open class CommonTest {
         firstName: String = "New User 1",
         lastName: String = "New User 1 LastName",
         wikiName: String = "newUserWikiName",
-        phoneNumber: String = "123456"
+        phoneNumber: String = "+49123456"
     ): UserDto {
         handleRequest(HttpMethod.Post, "/api/v1/user") {
             setBody(

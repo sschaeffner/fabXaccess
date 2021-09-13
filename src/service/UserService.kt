@@ -10,6 +10,7 @@ import cloud.fabx.dto.UserDto
 import cloud.fabx.logger
 import cloud.fabx.model.Mapper
 import cloud.fabx.model.User
+import cloud.fabx.model.ValidationException
 import net.logstash.logback.argument.StructuredArguments
 
 class UserService(private val mapper: Mapper) {
@@ -28,6 +29,10 @@ class UserService(private val mapper: Mapper) {
 
     suspend fun createNewUser(user: NewUserDto, principal: XPrincipal): UserDto = dbQuery {
         principal.requirePermission("create new user", XPrincipal::allowedToCreateNewUser)
+
+        if (user.phoneNumber.isNotBlank() && !user.phoneNumber.startsWith("+")) {
+            throw ValidationException("Phone number has to be entered with + prefix.")
+        }
 
         val newUser = User.new {
             firstName = user.firstName
@@ -56,7 +61,12 @@ class UserService(private val mapper: Mapper) {
         editUser.firstName?.let { user.firstName = it }
         editUser.lastName?.let { user.lastName = it }
         editUser.wikiName?.let { user.wikiName = it }
-        editUser.phoneNumber?.let { user.phoneNumber = it }
+        editUser.phoneNumber?.let {
+            if (!it.startsWith("+")) {
+                throw ValidationException("Phone number has to be entered with + prefix.")
+            }
+            user.phoneNumber = it
+        }
         editUser.locked?.let { user.locked = it }
         editUser.lockedReason?.let { user.lockedReason = it }
         editUser.cardId?.let { user.cardId = it }

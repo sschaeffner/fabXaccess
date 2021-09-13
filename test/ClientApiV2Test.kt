@@ -269,7 +269,7 @@ class ClientApiV2Test : CommonTest() {
     @Test
     fun `given user has qualification when getting permissions via phone number then return toolId`() = testApp {
         // given
-        val phoneNumber = "004912345"
+        val phoneNumber = "+4912345"
         val userDto = givenUser(phoneNumber = phoneNumber)
 
         val qualificationDto = givenQualification()
@@ -300,7 +300,7 @@ class ClientApiV2Test : CommonTest() {
     @Test
     fun `given locked user when getting permissions via phone number then return no tool ids`() = testApp {
         // given
-        val phoneNumber = "004298765"
+        val phoneNumber = "+4298765"
         val userDto = givenUser(phoneNumber = phoneNumber)
         givenLockStateForUser(userDto.id, true)
 
@@ -332,7 +332,7 @@ class ClientApiV2Test : CommonTest() {
     @Test
     fun `given disabled tool when getting permissions via phone number then not return disabled tool id`() = testApp {
         // given
-        val phoneNumber = "004298765432"
+        val phoneNumber = "+4298765432"
         val userDto = givenUser(phoneNumber = phoneNumber)
 
         val qualificationDto = givenQualification()
