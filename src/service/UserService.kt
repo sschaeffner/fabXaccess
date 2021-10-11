@@ -62,7 +62,7 @@ class UserService(private val mapper: Mapper) {
         editUser.lastName?.let { user.lastName = it }
         editUser.wikiName?.let { user.wikiName = it }
         editUser.phoneNumber?.let {
-            if (!it.startsWith("+")) {
+            if (it.isNotBlank()) {
                 validatePhoneNumber(it)
             }
             user.phoneNumber = it
