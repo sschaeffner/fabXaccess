@@ -249,6 +249,48 @@ class UserTest : CommonTest() {
         }
     }
 
+
+    @Test
+    fun `given empty phone number when editing user then sets to null`() = testApp {
+        // given
+        val userDto = givenUser(
+            "New User 1",
+            "New User 1 LastName",
+            "newUserWikiName",
+            "+123456"
+        )
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/user/${userDto.id}") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditUserDto(
+                        null,
+                        null,
+                        null,
+                        "",
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            assertThat(response.status()).isOK()
+        }
+
+        // then
+        handleRequestAsAdmin(HttpMethod.Get, "/api/v1/user/${userDto.id}").apply {
+            assertThat(response.status()).isOK()
+            assertThat(response.content)
+                .isNotNull()
+                .readValue<UserDto>()
+                .isEqualTo(userDto.copy(phoneNumber = ""))
+        }
+    }
+
     @Test
     fun `given invalid phone number when editing user then UnprocessableEntity`() = testApp {
         // given
@@ -279,6 +321,7 @@ class UserTest : CommonTest() {
             )
             addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
         }.apply {
+            // then
             assertThat(response.status()).isEqualTo(HttpStatusCode.UnprocessableEntity)
             assertThat(response.content)
                 .isNotNull()
