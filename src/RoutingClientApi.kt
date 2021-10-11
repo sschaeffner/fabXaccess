@@ -20,6 +20,7 @@ fun Route.clientApi() {
         }
         route("/v2") {
             permission()
+            permissionPhoneNr()
             config({ "${it.id},${it.pin},${it.toolType},${it.time},${it.idleState},${it.name}\n" })
         }
     }
@@ -37,6 +38,24 @@ private fun Route.permission() {
 
         val qualifiedToolIds =
             qualificationService.getQualifiedToolsForCardId(cardId, cardSecret, devicePrincipal).map { it.id }
+
+        val permissionsString = qualifiedToolIds.joinToString("\n")
+
+        call.respond(permissionsString)
+    }
+}
+
+private fun Route.permissionPhoneNr() {
+    get("/{deviceMac}/permissions/{phoneNr}") {
+        val deviceMac = call.parameters["deviceMac"]!!
+        val phoneNr = call.parameters["phoneNr"]!!
+
+        val devicePrincipal = requireDevicePrincipalWithMacOrElse(deviceMac) {
+            return@get
+        }
+
+        val qualifiedToolIds =
+            qualificationService.getQualifiedToolsForPhoneNr(phoneNr, devicePrincipal).map { it.id }
 
         val permissionsString = qualifiedToolIds.joinToString("\n")
 

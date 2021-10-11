@@ -10,6 +10,7 @@ import cloud.fabx.dto.UserDto
 import cloud.fabx.logger
 import cloud.fabx.model.Mapper
 import cloud.fabx.model.User
+import cloud.fabx.model.ValidationException
 import net.logstash.logback.argument.StructuredArguments
 
 class UserService(private val mapper: Mapper) {
@@ -29,11 +30,15 @@ class UserService(private val mapper: Mapper) {
     suspend fun createNewUser(user: NewUserDto, principal: XPrincipal): UserDto = dbQuery {
         principal.requirePermission("create new user", XPrincipal::allowedToCreateNewUser)
 
+        if (user.phoneNumber.isNotBlank()) {
+            validatePhoneNumber(user.phoneNumber)
+        }
+
         val newUser = User.new {
             firstName = user.firstName
             lastName = user.lastName
             wikiName = user.wikiName
-            phoneNumber = user.phoneNumber
+            phoneNumber = user.phoneNumber.ifBlank { null }
             locked = false
             lockedReason = ""
         }
@@ -56,7 +61,12 @@ class UserService(private val mapper: Mapper) {
         editUser.firstName?.let { user.firstName = it }
         editUser.lastName?.let { user.lastName = it }
         editUser.wikiName?.let { user.wikiName = it }
-        editUser.phoneNumber?.let { user.phoneNumber = it }
+        editUser.phoneNumber?.let {
+            if (!it.startsWith("+")) {
+                validatePhoneNumber(it)
+            }
+            user.phoneNumber = it
+        }
         editUser.locked?.let { user.locked = it }
         editUser.lockedReason?.let { user.lockedReason = it }
         editUser.cardId?.let { user.cardId = it }
@@ -87,6 +97,18 @@ class UserService(private val mapper: Mapper) {
         if (!this.permission()) {
             log.info("$name tried to $description")
             throw AuthorizationException("$name not allowed to $description.")
+        }
+    }
+
+    private fun validatePhoneNumber(phoneNumber: String) {
+        if (!phoneNumber.startsWith("+")) {
+            throw ValidationException("Phone number has to be entered with + prefix.")
+        }
+        if (phoneNumber.trim() != phoneNumber) {
+            throw ValidationException("Phone number must not contain whitespace.")
+        }
+        if (!phoneNumber.matches(Regex("\\+[0-9]+"))) {
+            throw ValidationException("Phone number must match \"\\+[0-9]+\".")
         }
     }
 }

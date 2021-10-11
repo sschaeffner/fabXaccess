@@ -38,7 +38,7 @@ class UserTest : CommonTest() {
         val firstName = "New User 1"
         val lastName = "New User 1 LastName"
         val wikiName = "newUserWikiName"
-        val phoneNumber = "123456"
+        val phoneNumber = "+49123456"
 
         // when
         handleRequestAsAdmin(HttpMethod.Post, "/api/v1/user") {
@@ -77,12 +77,42 @@ class UserTest : CommonTest() {
     }
 
     @Test
+    fun `given phone number in wrong format when creating user then UnprocessableEntity`() = testApp {
+        // given
+        val firstName = "New User 1"
+        val lastName = "New User 1 LastName"
+        val wikiName = "newUserWikiName"
+        val phoneNumber = "123"
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Post, "/api/v1/user") {
+            setBody(
+                mapper.writeValueAsString(
+                    NewUserDto(
+                        firstName,
+                        lastName,
+                        wikiName,
+                        phoneNumber
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.UnprocessableEntity)
+            assertThat(response.content)
+                .isNotNull()
+                .isEqualTo("Phone number has to be entered with + prefix.")
+        }
+    }
+
+    @Test
     fun `given existing user when getting user then ok`() = testApp {
         // given
         val firstName = "New User 1"
         val lastName = "New User 1 LastName"
         val wikiName = "newUserWikiName"
-        val phoneNumber = "123456"
+        val phoneNumber = "+49123456"
         val userDto = givenUser(
             firstName,
             lastName,
@@ -121,7 +151,7 @@ class UserTest : CommonTest() {
             "New User 1",
             "New User 1 LastName",
             "newUserWikiName",
-            "123456"
+            "+123456"
         )
         val newFirstName = "Edit Username 1"
 
@@ -163,13 +193,13 @@ class UserTest : CommonTest() {
             "New User 1",
             "New User 1 LastName",
             "newUserWikiName",
-            "123456"
+            "+123456"
         )
 
         val newFirstName = "Edit Username 1"
         val newLastName = "New User 1 LastName"
         val newWikiName = "editWikiName"
-        val newPhoneNumber = "54321"
+        val newPhoneNumber = "+54321"
         val newLocked = true
         val newLockedReason = "edit locked reason"
         val newCardId = "bbaabbaa"
@@ -216,6 +246,43 @@ class UserTest : CommonTest() {
                         listOf()
                     )
                 )
+        }
+    }
+
+    @Test
+    fun `given invalid phone number when editing user then UnprocessableEntity`() = testApp {
+        // given
+        val userDto = givenUser(
+            "New User 1",
+            "New User 1 LastName",
+            "newUserWikiName",
+            "+123456"
+        )
+
+        val newPhoneNumber = "4321"
+
+        // when
+        handleRequestAsAdmin(HttpMethod.Patch, "/api/v1/user/${userDto.id}") {
+            setBody(
+                mapper.writeValueAsString(
+                    EditUserDto(
+                        null,
+                        null,
+                        null,
+                        newPhoneNumber,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                )
+            )
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }.apply {
+            assertThat(response.status()).isEqualTo(HttpStatusCode.UnprocessableEntity)
+            assertThat(response.content)
+                .isNotNull()
+                .isEqualTo("Phone number has to be entered with + prefix.")
         }
     }
 

@@ -11,6 +11,7 @@ import cloud.fabx.model.Tool
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import cloud.fabx.model.User
+import cloud.fabx.model.ValidationException
 import cloud.fabx.service.AuthenticationService
 import cloud.fabx.service.DeviceService
 import cloud.fabx.service.QualificationService
@@ -138,6 +139,9 @@ fun Application.module(testAdmin: Boolean = false) {
         exception<AuthorizationException> { cause ->
             call.respond(HttpStatusCode.Forbidden, cause.localizedMessage)
         }
+        exception<ValidationException> { cause ->
+            call.respond(HttpStatusCode.UnprocessableEntity, cause.localizedMessage)
+        }
     }
     install(Authentication) {
         basic(name = "apiAuth") {
@@ -177,7 +181,7 @@ fun addDemoContent() {
             firstName = "Nikola"
             lastName = "Testler"
             wikiName = "wikiTester1"
-            phoneNumber = "0049 123 456"
+            phoneNumber = "+49123456"
             locked = false
             lockedReason = ""
             cardId = "11223344556677"
