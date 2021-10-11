@@ -64,8 +64,10 @@ class UserService(private val mapper: Mapper) {
         editUser.phoneNumber?.let {
             if (it.isNotBlank()) {
                 validatePhoneNumber(it)
+                user.phoneNumber = it
+            } else {
+                user.phoneNumber = null
             }
-            user.phoneNumber = it
         }
         editUser.locked?.let { user.locked = it }
         editUser.lockedReason?.let { user.lockedReason = it }
