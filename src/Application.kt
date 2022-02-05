@@ -116,7 +116,6 @@ fun Application.module(testAdmin: Boolean = false) {
 
         anyHost()
 
-        allowCredentials = true
         allowNonSimpleContentTypes = true
     }
     install(ForwardedHeaderSupport) // support for reverse proxies

@@ -391,7 +391,7 @@ class UserTest : CommonTest() {
                 .isNotSuccess()
             assertThat(response.content)
                 .isNotNull()
-                .contains("FK_USERQUALIFICATIONS_USER_ID")
+                .contains("FK_USERQUALIFICATIONS_USER__ID")
         }
     }
 
