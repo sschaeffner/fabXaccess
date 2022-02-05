@@ -4,18 +4,23 @@ import cloud.fabx.application.AdminPrincipal
 import cloud.fabx.application.DevicePrincipal
 import cloud.fabx.application.NewDevicePrincipal
 import cloud.fabx.db.DbHandler.dbQuery
+import cloud.fabx.dto.DeviceDto
 import cloud.fabx.dto.NewDeviceDto
 import cloud.fabx.model.Admin
 import cloud.fabx.model.Admins
 import cloud.fabx.model.Device
 import cloud.fabx.model.Devices
+import cloud.fabx.model.Mapper
 import io.ktor.util.KtorExperimentalAPI
 import io.ktor.util.getDigestFunction
 import java.util.Base64
 import org.jetbrains.exposed.sql.and
 
 @KtorExperimentalAPI
-class AuthenticationService(private val deviceService: DeviceService) {
+class AuthenticationService(
+    private val deviceService: DeviceService,
+    private val mapper: Mapper
+) {
 
     private val digestFunction = getDigestFunction("SHA-256") { "fabXfabXfabX${it.length}" }
 
@@ -39,7 +44,7 @@ class AuthenticationService(private val deviceService: DeviceService) {
         val device = findDevice(mac)
 
         return if (device != null) {
-            if (device.secret == secret) {
+            if (device.secret == secret && device.tools.isNotEmpty()) {
                 DevicePrincipal(mac)
             } else {
                 null
@@ -60,9 +65,10 @@ class AuthenticationService(private val deviceService: DeviceService) {
         }
     }
 
-    private suspend fun findDevice(mac: String): Device? = dbQuery {
+    private suspend fun findDevice(mac: String): DeviceDto? = dbQuery {
         Device.find {
             Devices.mac eq mac
         }.firstOrNull()
+            ?.let { mapper.toDeviceDto(it) }
     }
 }

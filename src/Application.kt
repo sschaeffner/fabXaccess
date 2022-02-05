@@ -50,7 +50,7 @@ val toolService = ToolService(mapper)
 val deviceService = DeviceService(mapper)
 
 @KtorExperimentalAPI
-val authenticationService = AuthenticationService(deviceService)
+val authenticationService = AuthenticationService(deviceService, mapper)
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
