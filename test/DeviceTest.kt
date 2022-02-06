@@ -239,7 +239,7 @@ class DeviceTest : CommonTest() {
                 .isNotSuccess()
             assertThat(response.content)
                 .isNotNull()
-                .contains("FK_TOOLS_DEVICE_ID")
+                .contains("FK_TOOLS_DEVICE__ID")
         }
     }
 

@@ -7,6 +7,7 @@ import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import cloud.fabx.model.ToolState
 import cloud.fabx.model.ToolType
 import io.ktor.http.HttpMethod
@@ -62,6 +63,26 @@ class ClientApiTest : CommonTest() {
                             + "${toolDto1.id},0,UNLOCK,New Tool 1\n"
                             + "${toolDto2.id},1,UNLOCK,New Tool 2\n"
                 )
+        }
+    }
+
+    @Test
+    fun `given no attached tools when getting config then Unauthorized`() = testApp {
+        // given
+        val mac = "aaffeeaaffee"
+        val secret = "newSecret"
+        givenDevice(
+            mac = mac,
+            secret = secret
+        )
+
+        // when
+        handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config") {
+            addBasicAuth(mac, secret)
+        }.apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)
+            assertThat(response.content).isNull()
         }
     }
 
@@ -128,7 +149,11 @@ class ClientApiTest : CommonTest() {
 
         val otherMac = "aabbccddeeff"
         val otherSecret = "otherSecret"
-        givenDevice(mac = otherMac, secret = otherSecret)
+        val otherDevice = givenDevice(mac = otherMac, secret = otherSecret)
+        givenTool(
+            otherDevice.id,
+            qualifications = listOf()
+        )
 
         // when
         handleRequest(HttpMethod.Get, "/clientApi/v1/${mac}/config") {
@@ -278,6 +303,28 @@ class ClientApiTest : CommonTest() {
         handleRequest(
             HttpMethod.Get,
             "/clientApi/v1/${mac}/permissions/${invalidCardUid}/${invalidCardSecret}"
+        ).apply {
+            // then
+            assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)
+        }
+    }
+
+    @Test
+    fun `given no attached tools when getting permissions then Unauthorized`() = testApp {
+        // given
+        val userDto = givenUser()
+
+        val mac = "aaffeeaaffee"
+        val secret = "newSecret"
+        givenDevice(
+            mac = mac,
+            secret = secret
+        )
+
+        // when
+        handleRequest(
+            HttpMethod.Get,
+            "/clientApi/v1/${mac}/permissions/${userDto.cardId}/${userDto.cardSecret}"
         ).apply {
             // then
             assertThat(response.status()).isEqualTo(HttpStatusCode.Unauthorized)

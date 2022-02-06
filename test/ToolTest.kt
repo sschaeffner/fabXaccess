@@ -318,7 +318,7 @@ class ToolTest : CommonTest() {
                 .isNotSuccess()
             assertThat(response.content)
                 .isNotNull()
-                .contains("FK_TOOLQUALIFICATIONS_TOOL_ID")
+                .contains("FK_TOOLQUALIFICATIONS_TOOL__ID")
         }
     }
 

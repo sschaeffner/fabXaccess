@@ -381,7 +381,7 @@ class QualificationTest : CommonTest() {
                 .isNotSuccess()
             assertThat(response.content)
                 .isNotNull()
-                .contains("FK_TOOLQUALIFICATIONS_QUALIFICATION_ID")
+                .contains("FK_TOOLQUALIFICATIONS_QUALIFICATION__ID")
         }
     }
 
@@ -400,7 +400,7 @@ class QualificationTest : CommonTest() {
                 .isNotSuccess()
             assertThat(response.content)
                 .isNotNull()
-                .contains("FK_USERQUALIFICATIONS_QUALIFICATION_ID")
+                .contains("FK_USERQUALIFICATIONS_QUALIFICATION__ID")
         }
     }
 }

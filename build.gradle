@@ -4,7 +4,6 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -30,7 +29,6 @@ sourceSets {
 
 repositories {
     mavenLocal()
-    jcenter()
     maven { url 'https://kotlin.bintray.com/ktor' }
 }
 
@@ -40,15 +38,15 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-auth:$ktor_version"
-    implementation "com.h2database:h2:1.4.200"
-    implementation "org.postgresql:postgresql:42.2.19"
-    implementation "net.logstash.logback:logstash-logback-encoder:6.6"
+    implementation 'com.h2database:h2:2.1.210'
+    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
     implementation "io.ktor:ktor-jackson:$ktor_version"
     implementation "org.jetbrains.exposed:exposed-core:$exposed_version"
     implementation "org.jetbrains.exposed:exposed-dao:$exposed_version"
     implementation "org.jetbrains.exposed:exposed-jdbc:$exposed_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
-    testImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.23.1'
+    testImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.25'
 }
 
 shadowJar {

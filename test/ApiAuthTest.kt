@@ -9,7 +9,6 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.util.InternalAPI
 import io.ktor.util.KtorExperimentalAPI
 import isOK
-import kotlin.test.assertEquals
 import org.junit.Test
 
 @InternalAPI
@@ -36,7 +35,6 @@ class ApiAuthTest : CommonTest() {
         }.apply {
             // then
             assertThat(response.status()).isOK()
-            assertEquals(HttpStatusCode.OK, response.status())
         }
     }
 

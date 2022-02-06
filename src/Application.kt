@@ -50,7 +50,7 @@ val toolService = ToolService(mapper)
 val deviceService = DeviceService(mapper)
 
 @KtorExperimentalAPI
-val authenticationService = AuthenticationService(deviceService)
+val authenticationService = AuthenticationService(deviceService, mapper)
 
 @KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
@@ -116,7 +116,6 @@ fun Application.module(testAdmin: Boolean = false) {
 
         anyHost()
 
-        allowCredentials = true
         allowNonSimpleContentTypes = true
     }
     install(ForwardedHeaderSupport) // support for reverse proxies
