@@ -32,6 +32,8 @@ object DbHandler {
     }
 
     fun configure(jdbcUrl: String, dbUser: String, dbPassword: String) {
+        this.dbDriver = "org.postgresql.Driver"
+
         this.dbUrl = jdbcUrl
         this.dbUser = dbUser
         this.dbPassword = dbPassword
