@@ -1,4 +1,4 @@
-# Deprecated -> https://github.com/fabXlabx/fabX
+# Deprecated -> https://github.com/fabXlabs/fabX
 
 # fabXaccess
 
